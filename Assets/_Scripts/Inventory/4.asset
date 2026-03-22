@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6df925ac0f501ee4eb1df6d4a9070d56, type: 3}
+  m_Name: 4
+  m_EditorClassIdentifier: 
+  itemName: Defense
+  itemIcon: {fileID: 21300000, guid: 81f9d8ca201b9c444827b2dd9cfa5b19, type: 3}
+  itemDesc: ddd
+  itemBuff: {fileID: 11400000, guid: 0f2139cbe682d6f4faaabf213d0f90a6, type: 2}
+  stackSize: 1
