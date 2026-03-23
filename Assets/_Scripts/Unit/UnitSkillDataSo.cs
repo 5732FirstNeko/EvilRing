@@ -16,7 +16,7 @@ public abstract class UnitSkillDataSo : ScriptableObject
     public List<UnitSite> Range = new List<UnitSite>();
     public List<UnitBuffDataSo> UnitBuffs = new List<UnitBuffDataSo>();
 
-    public abstract void Action(ICollection<Unit> units, Unit user);
+    public abstract void Action(ICollection<UnitPlat> unitPlats, UnitPlat user);
 }
 
 public enum TriggerTiming

@@ -12,7 +12,7 @@ public abstract class UnitBuffDataSo : ScriptableObject
 
     public int ContinuousRound;
     public TriggerTiming TriggerTiming;
-    public abstract void OnAction(ICollection<Unit> unit,Unit user);
-    public abstract void BindBuff(Unit unit,Unit user,bool isFirstBind = true);
-    public abstract void UnbindBuff(Unit unit, Unit user);
+    public abstract void OnAction(ICollection<UnitPlat> unit,UnitPlat user);
+    public abstract void BindBuff(UnitPlat unitPlat,UnitPlat user,bool isFirstBind = true);
+    public abstract void UnbindBuff(UnitPlat unitPlat, UnitPlat user);
 }

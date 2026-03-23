@@ -1,25 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 
-public class Unit : MonoBehaviour
+public class Unit
 {
-    [SerializeField] private UnitDataSo unitData;
+    private UnitPlat user;
 
     public byte HP;
     public byte MaxHP;
     public byte speed;
+    public int DamageReduction;
     public Faction faction;
     public List<UnitSkill> unitSkills;
     public UnitSkill SPSkill;
 
     public float DeadAnimationTime;
-    public Action<Unit> OnDead;
+    public Action<UnitPlat> OnDead;
 
-    private void Awake()
+    public Unit(UnitDataSo unitData, UnitPlat user)
     {
+        this.user = user;
         DataInit(unitData);
     }
 
@@ -30,7 +30,7 @@ public class Unit : MonoBehaviour
         return unitSkills[0];
     }
 
-    public void DeadAction(Unit user)
+    public void DeadAction(UnitPlat user)
     {
         OnDead?.Invoke(user);
     }
@@ -59,7 +59,7 @@ public class Unit : MonoBehaviour
         {
             UnitSkill initSkill = new UnitSkill
             {
-                User = this,
+                User = user,
                 SkillTime = skillData.SkillTime,
                 Damage = skillData.Damage,
                 TriggerTiming = skillData.TriggerTiming,
@@ -73,7 +73,7 @@ public class Unit : MonoBehaviour
             {
                 UnitBuff initBuff = new UnitBuff
                 {
-                    User = this,
+                    User = user,
                     BuffActionTime = buffData.BuffActionTime,
                     TriggerTiming = buffData.TriggerTiming,
                 };
@@ -97,7 +97,7 @@ public enum Faction
 
 public class UnitSkill
 {
-    public Unit User;
+    public UnitPlat User;
 
     public float SkillTime;
     public int Damage;
@@ -105,9 +105,9 @@ public class UnitSkill
     public Faction SkillTarget;
     public List<UnitSite> Range = new List<UnitSite>();
     public List<UnitBuff> UnitBuffs = new List<UnitBuff>();
-    public Action<ICollection<Unit>,Unit> OnAction;
+    public Action<ICollection<UnitPlat>, UnitPlat> OnAction;
 
-    public void Action(ICollection<Unit> units)
+    public void Action(ICollection<UnitPlat> units)
     {
         OnAction?.Invoke(units, User);
     }
@@ -115,27 +115,27 @@ public class UnitSkill
 
 public class UnitBuff
 {
-    public Unit User;
+    public UnitPlat User;
 
     public float BuffActionTime;
     public int ContinuousRound;
     public TriggerTiming TriggerTiming;
-    public Action<ICollection<Unit>, Unit> OnAction;
-    public Action<Unit, Unit, bool> OnBindBuff;
-    public Action<Unit, Unit> OnUnBindBuff;
+    public Action<ICollection<UnitPlat>, UnitPlat> OnAction;
+    public Action<UnitPlat, UnitPlat, bool> OnBindBuff;
+    public Action<UnitPlat, UnitPlat> OnUnBindBuff;
 
 
-    public void Action(ICollection<Unit> unit)
+    public void Action(ICollection<UnitPlat> unit)
     {
         OnAction?.Invoke(unit, User);
     }
 
-    public void BindBuff(Unit unit, bool isFirstBind = true)
+    public void BindBuff(UnitPlat unit, bool isFirstBind = true)
     {
         OnBindBuff?.Invoke(unit, User, isFirstBind);
     }
 
-    public void UnBindBuff(Unit unit)
+    public void UnBindBuff(UnitPlat unit)
     {
         OnUnBindBuff?.Invoke(unit, User);
     }

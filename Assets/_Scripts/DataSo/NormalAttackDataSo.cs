@@ -6,13 +6,13 @@ using UnityEngine;
 public class NormalAttackDataSo : UnitSkillDataSo
 {
     // 实现普攻逻辑：给目标扣血
-    public override void Action(ICollection<Unit> units, Unit user)
+    public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
-        foreach (Unit target in units)
+        foreach (UnitPlat target in unitPlats)
         {
             // 扣血（防止血量为负）
-            target.HP = (byte)Mathf.Max(0, target.HP - Damage);
-            Debug.Log($"{user.name} 普攻{target.name}，造成{Damage}伤害，{target.name}剩余血量{target.HP}");
+            target.unit.HP = (byte)Mathf.Max(0, target.unit.HP - Damage);
+            Debug.Log($"{user.name} 普攻{target.name}，造成{Damage}伤害，{target.name}剩余血量{target.unit.HP}");
         }
     }
 }

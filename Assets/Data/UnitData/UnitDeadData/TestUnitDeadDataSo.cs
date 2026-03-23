@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Dead Data/" + nameof(TestUnitDeadDataSo))]
 public class TestUnitDeadDataSo : UnitDeadDataSo
 {
-    public override void DeadAction(Unit user)
+    public override void DeadAction(UnitPlat user)
     {
         Debug.Log("Unit Dead!");
     }

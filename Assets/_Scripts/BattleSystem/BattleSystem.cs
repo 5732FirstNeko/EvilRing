@@ -127,12 +127,12 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    public void BattleInit(List<Unit> hostilityUnits, List<Unit> friendlyUnits)
+    public void BattleInit(List<UnitDataSo> hostilityUnits, List<UnitDataSo> friendlyUnits)
     {
         StartCoroutine(BattleInitCoroutine(hostilityUnits, friendlyUnits));
     }
 
-    private IEnumerator BattleInitCoroutine(List<Unit> hostilityUnits, List<Unit> friendlyUnits)
+    private IEnumerator BattleInitCoroutine(List<UnitDataSo> hostilityUnits, List<UnitDataSo> friendlyUnits)
     {
         //TODO : Battle Start UI Animation
 
@@ -248,8 +248,8 @@ public class BattleSystem : MonoBehaviour
                 UnitPlat unitPlat = battleQueue.Dequeue();
                 UnitSkill OnRoundSkill = unitPlat.unit.UnitSkillChoice();
                 ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
-                ICollection<Unit> targets = GetActionTarget(targetPlats);
-                OnRoundSkill.Action(targets);
+                //ICollection<Unit> targets = GetActionTarget(targetPlats);
+                OnRoundSkill.Action(targetPlats);
                 foreach (var buff in OnRoundSkill.UnitBuffs)
                 {
                     AddBuffToUnitPlat(buff, targetPlats);
@@ -285,7 +285,7 @@ public class BattleSystem : MonoBehaviour
             if (buff.TriggerTiming != timing)
                 continue;
 
-            ICollection<Unit> units = GetActionTarget(plats);
+            ICollection<UnitPlat> units = plats;
             buff.Action(units);
             foreach (var plat in plats)
             {
@@ -311,10 +311,9 @@ public class BattleSystem : MonoBehaviour
         foreach (var (unit, gameStartSkill) in OnGameStartSkills)
         {
             ICollection<UnitPlat> unitPlats = GetActionTargetPlat(unit, gameStartSkill);
-            ICollection<Unit> units = GetActionTarget(unitPlats);
-            if (units != null)
+            if (unitPlats != null)
             {
-                gameStartSkill.Action(units);
+                gameStartSkill.Action(unitPlats);
                 HPCheck(unitPlats);
 
                 foreach (var buff in gameStartSkill.UnitBuffs)
@@ -333,10 +332,9 @@ public class BattleSystem : MonoBehaviour
         foreach (var (unit, roundStartSkill) in OnRoundStartSkills)
         {
             ICollection<UnitPlat> unitPlats = GetActionTargetPlat(unit, roundStartSkill);
-            ICollection<Unit> units = GetActionTarget(unitPlats);
-            if (units != null)
+            if (unitPlats != null)
             {
-                roundStartSkill.Action(units);
+                roundStartSkill.Action(unitPlats);
                 HPCheck(unitPlats);
 
                 foreach (var buff in roundStartSkill.UnitBuffs)
@@ -355,10 +353,9 @@ public class BattleSystem : MonoBehaviour
         foreach (var (unit, roundEndSkill) in OnRoundEndSkills)
         {
             ICollection<UnitPlat> unitPlats = GetActionTargetPlat(unit, roundEndSkill);
-            ICollection<Unit> units = GetActionTarget(unitPlats);
-            if (units != null)
+            if (unitPlats != null)
             {
-                roundEndSkill.Action(units);
+                roundEndSkill.Action(unitPlats);
                 HPCheck(unitPlats);
 
                 foreach (var buff in roundEndSkill.UnitBuffs)
@@ -379,8 +376,7 @@ public class BattleSystem : MonoBehaviour
             {
                 UnitSkill strikeBackSkill = OnStrikeBackSkills[unit];
                 ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unit, strikeBackSkill);
-                ICollection<Unit> targets = GetActionTarget(targetPlats);
-                strikeBackSkill.Action(targets);
+                strikeBackSkill.Action(targetPlats);
                 HPCheck(targetPlats);
 
                 foreach (var buff in strikeBackSkill.UnitBuffs)

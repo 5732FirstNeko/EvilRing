@@ -8,5 +8,5 @@ public abstract class UnitDeadDataSo : ScriptableObject
     //TODO : must have The Reflection [CreateAssetMenu] when creat subClass
     //TODO : and the Implementation of Action must be in subClass to maintain Hierarchy structure
 
-    public abstract void DeadAction(Unit user);
+    public abstract void DeadAction(UnitPlat user);
 }

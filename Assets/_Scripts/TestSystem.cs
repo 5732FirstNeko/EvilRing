@@ -14,7 +14,7 @@ public class TestSystem : MonoBehaviour
         if (!flag)
         {
             flag = true;
-            BattleSystem.instance.BattleInit(hostitlyUnits, friendlyUnits);
+            //BattleSystem.instance.BattleInit(hostitlyUnits, friendlyUnits);
         }
     }
 }

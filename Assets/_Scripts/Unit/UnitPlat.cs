@@ -15,7 +15,7 @@ public class UnitPlat : MonoBehaviour
             _isDead = value;
             if (value)
             {
-                unit.DeadAction(unit);
+                unit.DeadAction(this);
             }
         }
     }
@@ -24,9 +24,9 @@ public class UnitPlat : MonoBehaviour
 
     private bool _isDead;
 
-    public void UnitPlatInit(Unit unit, UnitSite site)
+    public void UnitPlatInit(UnitDataSo unitdata, UnitSite site)
     {
-        this.unit = unit;
+        unit = new Unit(unitdata, this);
         this.site = site;
     }
 
@@ -48,7 +48,7 @@ public class UnitPlat : MonoBehaviour
             buffList.Add(buff, buff.ContinuousRound);
         }
 
-        buff.BindBuff(unit, isFirstBindBuff);
+        buff.BindBuff(this, isFirstBindBuff);
     }
 
     public int BuffActiuon(UnitBuff buff)
@@ -56,7 +56,7 @@ public class UnitPlat : MonoBehaviour
         buffList[buff]--;
         if (buffList[buff] <= 0)
         {
-            buff.UnBindBuff(unit);
+            buff.UnBindBuff(this);
             buffList.Remove(buff);
             return 0;
         }
