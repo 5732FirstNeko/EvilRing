@@ -1,66 +1,83 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
-public class FriendlyUnitUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler,IBeginDragHandler,IEndDragHandler
+public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
+    IDragHandler,IBeginDragHandler,IEndDragHandler
 {
-    public UnitPlat unitPlat;
+    public UnitDataSo unitData;
+    public Image Image;
 
-    private RectTransform rectTransform;
-    private CanvasGroup canvasGroup;
-
-    private Transform originParent;
-    private Vector2 originPosition;
 
     private void Start()
     {
-        rectTransform = GetComponent<RectTransform>();
+        Image = GetComponent<Image>();
+    }
+
+    private void Update()
+    {
+
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        UIManager.instance.UnitDataUnDisPlay();
-        canvasGroup.blocksRaycasts = false;
-        originPosition = rectTransform.anchoredPosition;
-        originParent = transform.parent;
+        UIManager.instance.FriendlyUnitDataUnDisplay();
+        UnitCardSystem.instance.currentFriendlyUnitUI = this;
+        UnitCardSystem.instance.isHaveCardDrag = true;
+
+        Image.color = new Color(Image.color.r, Image.color.g, Image.color.b, 0.75f);
+        UIManager.instance.friendlyUnitInstance.GetComponent<Image>().sprite = unitData.UnitSprite;
+        UIManager.instance.friendlyUnitInstance.gameObject.SetActive(true);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition;
+        UIManager.instance.friendlyUnitInstance.transform.position = Input.mousePosition;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log(eventData.pointerEnter);
-        if (transform.parent != originParent && eventData.pointerEnter == null)
-        {
-            rectTransform.anchoredPosition = originPosition;
-        }
-        else if (transform.parent == originParent && eventData.pointerEnter == null)
-        {
-            rectTransform.anchoredPosition = originPosition;
-            transform.SetParent(originParent);
-        }
-        else
-        {
-            UnitCardSystem.instance.AddOneUnitToFriendlyList(unitPlat,
-                    eventData.pointerEnter.GetComponent<UnitSiteFlag>().site);
-        }
+        UIManager.instance.friendlyUnitInstance.gameObject.SetActive(false);
+        UnitCardSystem.instance.isHaveCardDrag = false;
 
-        canvasGroup.blocksRaycasts = true;
+        Image.color = new Color(Image.color.r, Image.color.g, Image.color.b, 1f);
+
+        if (eventData.pointerEnter != null && eventData.pointerEnter.GetComponent<UnitSiteFlag>() != null)
+        {
+            UnitCardSystem.instance.AddUnitToFriendlyList(unitData,
+                   eventData.pointerEnter.GetComponent<UnitSiteFlag>().site);
+        }
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        //UIManager.instance.UnitDataDisplay(user.unit);
-    }
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            if (UIManager.instance.friendlyUnitDataUIObjectRight.activeSelf)
+            {
+                UIManager.instance.FriendlyUnitDataUnDisplay();
+            }
+            else
+            {
+                UIManager.instance.FriendlyUnitDataDisplay(unitData);
+            }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        //UIManager.instance.UnitDataUnDisPlay();
+            return;
+        }
+        else if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            UIManager.instance.FriendlyUnitDataUnDisplay();
+            if (UnitCardSystem.instance.currentFriendlyUnitUI == this)
+            {
+                UnitCardSystem.instance.currentFriendlyUnitUI = null;
+                return;
+            }
+
+            UnitCardSystem.instance.currentFriendlyUnitUI = this;
+        }
     }
 }

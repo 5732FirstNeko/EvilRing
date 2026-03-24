@@ -37,9 +37,8 @@ public class Inventory : MonoBehaviour, IPointerClickHandler
         
     }
 
-
-public void UpdateUI()
-{
+    public void UpdateUI()
+    {
 
         if (itemSO != null)
         {
@@ -52,8 +51,5 @@ public void UpdateUI()
             itemImage.gameObject.SetActive(false);
 
         }
-    
-    
-
-}
+    }
 }

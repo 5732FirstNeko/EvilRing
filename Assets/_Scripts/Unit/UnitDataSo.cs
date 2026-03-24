@@ -7,7 +7,9 @@ public class UnitDataSo : ScriptableObject
 {
     public byte HP;
     public byte Speed;
+    public int cost;
     public Faction Faction;
+    public Sprite UnitSprite;
     public List<UnitSkillDataSo> Skills = new List<UnitSkillDataSo>();
 
 

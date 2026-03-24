@@ -9,6 +9,7 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager Instance;
 
     public int gold;
+    public int ghost;
     // public UseItem useItem;
     public TextMeshProUGUI goldText;
     public Inventory[] itemSlots;
@@ -16,24 +17,24 @@ public class InventoryManager : MonoBehaviour
 
 
     private void Awake()
-{
-    if (Instance == null)
     {
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
-    else
-    {
-        Destroy(gameObject);
-    }
-}
 
     private void Start()
     {
         foreach (var slot in itemSlots)
-            {
-                slot.UpdateUI();
-            }
+        {
+            slot.UpdateUI();
+        }
         goldText.text = "Gold : " + gold.ToString();
     }
 
@@ -49,16 +50,15 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItem(ItemSO itemSO)
     {
-            foreach (var slot in itemSlots)
+        foreach (var slot in itemSlots)
+        {
+            if (slot.itemSO == null)
             {
-                if (slot.itemSO == null)
-                {
-                    slot.itemSO = itemSO;
-                    slot.UpdateUI();
-                    return;
-                }
+                slot.itemSO = itemSO;
+                slot.UpdateUI();
+                return;
             }
-
+        }
     }
 
 

@@ -23,21 +23,11 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    //TODO : Optimize the value Code
     [Header("Friendly")]
-    //to anchoring the Plat Position
     [SerializeField] private List<UnitSiteFlag> friendlyUnitSiteFlag;
 
-    //to Creat 4 Plat instance, the value will be optimized in future
-    [SerializeField] private List<UnitPlat> friendlyUnitPlats;
-
-    //TODO : Optimize the value Code
     [Header("Hostitly")]
-    //to anchoring the Plat Position
     [SerializeField] private List<UnitSiteFlag> hostilityUnitSiteFlag;
-
-    //to Creat 4 Plat instance, the value will be optimized in future
-    [SerializeField] private List<UnitPlat> hostitlyUnitPlats;
 
     [Header("UnitPlayMoveTime")]
     [SerializeField] private float unitPlatMoveTime;
@@ -127,29 +117,28 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    public void BattleInit(List<UnitDataSo> hostilityUnits, List<UnitDataSo> friendlyUnits)
+    public void BattleInit()
     {
-        StartCoroutine(BattleInitCoroutine(hostilityUnits, friendlyUnits));
+        StartCoroutine(BattleInitCoroutine());
     }
 
-    private IEnumerator BattleInitCoroutine(List<UnitDataSo> hostilityUnits, List<UnitDataSo> friendlyUnits)
+    private IEnumerator BattleInitCoroutine()
     {
         //TODO : Battle Start UI Animation
 
         FriendlyUnitPlatsQueue.Clear();
         HostilityUnitPlatsQueue.Clear();
 
-        //TODO : Optimize the InitCode
+        List<UnitPlat> hostitlyPlats = UnitCardSystem.instance.GetCurrentHostitlyUnitPlats();
+        List<UnitPlat> friendlyPlats = UnitCardSystem.instance.GetCurrentFriendlyUnitPlats();
         {
-            for (int i = 0; i < hostilityUnits.Count; i++)
+            for (int i = 0; i < 4; i++)
             {
-                hostitlyUnitPlats[i].UnitPlatInit(hostilityUnits[i], GetUnitSiteByIndex(i));
-                HostilityUnitPlatsQueue.unitPlatQueue.Add(hostitlyUnitPlats[i]);
+                HostilityUnitPlatsQueue.unitPlatQueue.Add(hostitlyPlats[i]);
             }
-            for (int i = 0; i < friendlyUnits.Count; i++)
+            for (int i = 0; i < 4; i++)
             {
-                friendlyUnitPlats[i].UnitPlatInit(friendlyUnits[i], GetUnitSiteByIndex(i));
-                FriendlyUnitPlatsQueue.unitPlatQueue.Add(friendlyUnitPlats[i]);
+                FriendlyUnitPlatsQueue.unitPlatQueue.Add(friendlyPlats[i]);
             }
         }
 
@@ -218,6 +207,9 @@ public class BattleSystem : MonoBehaviour
 
     private IEnumerator Battle()
     {
+        HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
+        HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
+
         yield return LevelStartBattle();
         yield return AllBuffAction(TriggerTiming.OnLevelStart);
 
@@ -485,7 +477,7 @@ public class BattleSystem : MonoBehaviour
         return units;
     }
 
-    public static int GetindexByUnitSite(UnitSite site)
+    public static int GetIndexByUnitSite(UnitSite site)
     {
         switch (site)
         {

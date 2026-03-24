@@ -46,7 +46,7 @@ public class Unit
         speed = unitData.Speed;
         faction = unitData.Faction;
         DeadAnimationTime = unitData.DeadAnimationTime;
-        OnDead += unitData.UnitDeadData.DeadAction;
+        OnDead += unitData.UnitDeadData != null ? unitData.UnitDeadData.DeadAction : null;
 
         if (faction == Faction.Hostility)
         {

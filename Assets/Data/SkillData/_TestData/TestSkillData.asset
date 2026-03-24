@@ -19,3 +19,4 @@ MonoBehaviour:
   Range: 0000000001000000
   UnitBuffs:
   - {fileID: 11400000, guid: 320eb7c41b845f544b133dfa54d380d7, type: 2}
+  description: 123345

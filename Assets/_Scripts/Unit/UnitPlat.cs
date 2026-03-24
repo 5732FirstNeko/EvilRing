@@ -6,6 +6,7 @@ using UnityEngine;
 public class UnitPlat : MonoBehaviour
 {
     public Unit unit;
+    public UnitDataSo unitData;
     public UnitSite site;
     public bool isDead 
     {
@@ -24,9 +25,10 @@ public class UnitPlat : MonoBehaviour
 
     private bool _isDead;
 
-    public void UnitPlatInit(UnitDataSo unitdata, UnitSite site)
+    public void UnitPlatInit(UnitDataSo unitData, UnitSite site)
     {
-        unit = new Unit(unitdata, this);
+        unit = new Unit(unitData, this);
+        this.unitData = unitData;
         this.site = site;
     }
 
