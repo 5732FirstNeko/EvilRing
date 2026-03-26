@@ -12,15 +12,9 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
     public UnitDataSo unitData;
     public Image Image;
 
-
     private void Start()
     {
         Image = GetComponent<Image>();
-    }
-
-    private void Update()
-    {
-
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -57,7 +51,7 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            if (UIManager.instance.friendlyUnitDataUIObjectRight.activeSelf)
+            if (UIManager.instance.friendlyUnitDataUIRightRect.gameObject.activeSelf)
             {
                 UIManager.instance.FriendlyUnitDataUnDisplay();
             }
@@ -79,5 +73,17 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
 
             UnitCardSystem.instance.currentFriendlyUnitUI = this;
         }
+    }
+
+    public void UnSelectAnimation()
+    {
+        transform.DOScale(new Vector3(1, 1, 1), 0.25f);
+        transform.DORotate(new Vector3(0, 0, 0), 0.25f);
+    }
+
+    public void SelectAnimation()
+    {
+        transform.DOScale(new Vector3(1.1f, 1.1f, 1.1f), 0.25f);
+        transform.DORotate(new Vector3(0, 0, -15), 0.25f);
     }
 }

@@ -30,7 +30,6 @@ public class UnitCardSystem : MonoBehaviour
     [SerializeField] private List<UnitPlat> hostitlyUnitPlats;
     [SerializeField] private List<GameObject> hostitlyUnitRefreshArea;
 
-
     [HideInInspector] public FriendlyUnitUI currentFriendlyUnitUI 
     {
         get => _friendlyUnitUI;
@@ -38,14 +37,12 @@ public class UnitCardSystem : MonoBehaviour
         {
             if (_friendlyUnitUI != null)
             {
-                _friendlyUnitUI.transform.DOScale(new Vector3(1, 1, 1), 0.25f);
-                _friendlyUnitUI.transform.DORotate(new Vector3(0, 0, 0), 0.25f);
+                _friendlyUnitUI.UnSelectAnimation();
             }
             _friendlyUnitUI = value;
             if (_friendlyUnitUI != null)
             {
-                _friendlyUnitUI.transform.DOScale(new Vector3(1.1f, 1.1f, 1.1f), 0.25f);
-                _friendlyUnitUI.transform.DORotate(new Vector3(0, 0, -15), 0.25f);
+                _friendlyUnitUI.SelectAnimation();
             }
         }
     }
@@ -123,9 +120,8 @@ public class UnitCardSystem : MonoBehaviour
 
     private void RefreshFriendlyUnit()
     {
-        //TODO : UnitRefresh Logic -- GetUnitDataSo from OtherSystem
-        currentFriendlyUnitUI.unitData = null;
-        //currentFriendlyUnitUI.GetComponent<Image>().sprite = currentFriendlyUnitUI.unitData.UnitSprite;
+        currentFriendlyUnitUI.unitData = FactorySystem.instance.GetFriendlyUnitData();
+        currentFriendlyUnitUI.GetComponent<Image>().sprite = currentFriendlyUnitUI.unitData.UnitSprite;
 
         currentFriendlyUnitUI.transform.localScale = new(0, 0, 0);
         currentFriendlyUnitUI.transform.rotation = new(0, 0, 0, 0);
@@ -143,5 +139,29 @@ public class UnitCardSystem : MonoBehaviour
             hostitlyUnitPlats[i].UnitPlatInit(hostilityWaveData.hostilityDataList[i], 
                 hostitlyUnitPlats[i].site);
         }
+    }
+
+    public ICollection<UnitPlat> GetActionPlats(Faction faction, ICollection<UnitSite> range)
+    {
+        List<UnitPlat> reslutes = new List<UnitPlat>();
+        switch (faction)
+        {
+            case Faction.Friendly:
+                foreach (var ran in range)
+                {
+                    int index = BattleSystem.GetIndexByUnitSite(ran);
+                    reslutes.Add(friendlyUnitPlats[index]);
+                }
+                break;
+            case Faction.Hostility:
+                foreach (var ran in range)
+                {
+                    int index = BattleSystem.GetIndexByUnitSite(ran);
+                    reslutes.Add(friendlyUnitPlats[index]);
+                }
+                break;
+        }
+
+        return reslutes;
     }
 }

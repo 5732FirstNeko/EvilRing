@@ -25,7 +25,7 @@ public class Unit
 
     public UnitSkill UnitSkillChoice()
     {
-        //TODO : OnRound UnitSkill Change Logic
+        //TODO : OnRound UnitSkill Choice Logic
 
         return unitSkills[0];
     }

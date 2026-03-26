@@ -36,7 +36,8 @@ public class FactorySystem : MonoBehaviour
     public UnitDataSo EmptyFriendlyUnitData;
     public UnitDataSo EmptyHostitlyUnitData;
 
-    public List<HostilityWaveDataSo> hostilityWaveDataList;
+    public List<HostilityWaveDataSo> hostilityWaveDataList = new List<HostilityWaveDataSo>();
+    public List<UnitDataSo> friendlyUnitDataList = new List<UnitDataSo>();
 
     public HostilityWaveDataSo GetHostitlyWaveDataByGhost(int ghostCount)
     {
@@ -47,6 +48,21 @@ public class FactorySystem : MonoBehaviour
                 return waveData;
             }
         }
+        return null;
+    }
+
+    private void Start()
+    {
+        
+    }
+
+    public UnitDataSo GetFriendlyUnitData()
+    {
+        foreach (var data in friendlyUnitDataList)
+        {
+            //TODO : FriendlyUnit Get Logic
+        }
+
         return null;
     }
 }

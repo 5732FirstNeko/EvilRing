@@ -21,7 +21,7 @@ public class UnitPlat : MonoBehaviour
         }
     }
 
-    public Dictionary<UnitBuff, int> buffList;
+    public Dictionary<UnitBuff, int> buffList = new Dictionary<UnitBuff, int>();
 
     private bool _isDead;
 
@@ -34,7 +34,6 @@ public class UnitPlat : MonoBehaviour
 
     private void Start()
     {
-        buffList = new Dictionary<UnitBuff, int>();
         isDead = false;
     }
 

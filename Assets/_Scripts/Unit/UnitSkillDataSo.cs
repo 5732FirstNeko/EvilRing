@@ -21,7 +21,7 @@ public enum TriggerTiming
 {
     OnRoundStart,
     OnRoundEnd,
-    OnLevelStart,
+    OnGameStart,
     OnRound,
     OnStrikeBack
 }

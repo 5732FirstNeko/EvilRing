@@ -58,11 +58,12 @@ public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler, I
                 }
                 break;
         }
-        
+
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+
         switch (faction)
         {
             case Faction.Friendly:

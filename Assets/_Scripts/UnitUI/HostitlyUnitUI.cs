@@ -11,7 +11,7 @@ public class HostitlyUnitUI : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            if (UIManager.instance.hostitlyUnitDataUIObjectLeft.activeSelf)
+            if (UIManager.instance.hostitlyUnitDataUILeftRect.gameObject.activeSelf)
             {
                 UIManager.instance.HostitlyUnitDataUnDisplay();
             }

@@ -35,7 +35,7 @@ public class InventoryManager : MonoBehaviour
         {
             slot.UpdateUI();
         }
-        goldText.text = "Gold : " + gold.ToString();
+        //goldText.text = "Gold : " + gold.ToString();
     }
 
     private void OnEnable()

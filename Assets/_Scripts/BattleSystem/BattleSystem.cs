@@ -156,7 +156,7 @@ public class BattleSystem : MonoBehaviour
             battleQueue.Enqueue(plat, plat.unit.speed);
             foreach (var skill in plat.unit.unitSkills)
             {
-                if (skill.TriggerTiming == TriggerTiming.OnLevelStart)
+                if (skill.TriggerTiming == TriggerTiming.OnGameStart)
                 {
                     OnGameStartSkills.Add(plat.unit,skill);
                 }
@@ -180,7 +180,7 @@ public class BattleSystem : MonoBehaviour
             battleQueue.Enqueue(plat, plat.unit.speed);
             foreach (var skill in plat.unit.unitSkills)
             {
-                if (skill.TriggerTiming == TriggerTiming.OnLevelStart)
+                if (skill.TriggerTiming == TriggerTiming.OnGameStart)
                 {
                     OnGameStartSkills.Add(plat.unit, skill);
                 }
@@ -211,7 +211,7 @@ public class BattleSystem : MonoBehaviour
         HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
 
         yield return LevelStartBattle();
-        yield return AllBuffAction(TriggerTiming.OnLevelStart);
+        yield return AllBuffAction(TriggerTiming.OnGameStart);
 
         int safecount = 0;
         while (friendlyDeadCount < 4 && hostilityDeadCount < 4)
@@ -240,7 +240,6 @@ public class BattleSystem : MonoBehaviour
                 UnitPlat unitPlat = battleQueue.Dequeue();
                 UnitSkill OnRoundSkill = unitPlat.unit.UnitSkillChoice();
                 ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
-                //ICollection<Unit> targets = GetActionTarget(targetPlats);
                 OnRoundSkill.Action(targetPlats);
                 foreach (var buff in OnRoundSkill.UnitBuffs)
                 {
