@@ -142,7 +142,7 @@ public class UIManager : MonoBehaviour
                 new StringBuilder( "GoldCost : " + "<color=green>" + unitData.cost + "</color>").ToString() : 
                 new StringBuilder( "GoldCost : " + "<color=red>" + unitData.cost + "</color>").ToString();
             friendlySpeedTextRight.text = "Speed : " + unitData.Speed;
-            for (int i = 0; i < friendlySkillTextsRight.Count; i++)
+            for (int i = 0; i < unitData.Skills.Count; i++)
             {
                 friendlySkillTextsRight[i].gameObject.SetActive(true);
                 friendlySkillTextsRight[i].text = unitData.Skills[i].description;

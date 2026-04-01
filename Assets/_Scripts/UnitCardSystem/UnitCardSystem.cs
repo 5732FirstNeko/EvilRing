@@ -98,7 +98,7 @@ public class UnitCardSystem : MonoBehaviour
     public void RemoveUnitFromFriendlyList(UnitSite site)
     {
         int index = BattleSystem.GetIndexByUnitSite(site);
-        if (friendlyUnitPlats[index] == null) return;
+        if (friendlyUnitPlats[index] == null || friendlyUnitPlats[index].unitData == null) return;
         
         InventoryManager.instance.gold += friendlyUnitPlats[index].unitData.cost;
 
