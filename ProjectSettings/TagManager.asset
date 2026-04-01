@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - GlobalArea
   layers:
   - Default
   - TransparentFX
@@ -11,11 +12,11 @@ TagManager:
   - 
   - Water
   - UI
+  - BackGround
   - 
+  - UnitSiteFlag
   - 
-  - 
-  - 
-  - 
+  - SpecialEffect
   - 
   - 
   - 
@@ -40,4 +41,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Card
+    uniqueID: 4233239657
+    locked: 0
+  - name: SpecialEffect
+    uniqueID: 3098957403
     locked: 0

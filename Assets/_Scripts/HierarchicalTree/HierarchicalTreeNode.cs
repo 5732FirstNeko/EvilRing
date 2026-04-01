@@ -20,6 +20,7 @@ public class HierarchicalTreeNode : MonoBehaviour, IPointerClickHandler
     public Faction TargetFaction;
     public List<UnitSite> Range;
 
+    [SerializeField] private Image icon;
     public Image lockImage;
     [SerializeField] private Image SelectBorder;
     [SerializeField] private Image imageMask;
@@ -29,8 +30,7 @@ public class HierarchicalTreeNode : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
-        //TODO : HierarchicalNode Data Init Code 
-        //NodeInit();
+        NodeInit();
     }
 
     public void NodeInit()
@@ -38,7 +38,7 @@ public class HierarchicalTreeNode : MonoBehaviour, IPointerClickHandler
         isLocked = true;
         ghostCost = hierarchicalTreeNodeData.ghostCost;
         goldCost = hierarchicalTreeNodeData.goldCost;
-        GetComponent<Image>().sprite = hierarchicalTreeNodeData.sprite;
+        icon.sprite = hierarchicalTreeNodeData.sprite;
 
         GlobalActionTriggerTiming = hierarchicalTreeNodeData.GlobalActionTriggerTiming;
         TargetFaction = hierarchicalTreeNodeData.TargetFaction;
@@ -57,10 +57,19 @@ public class HierarchicalTreeNode : MonoBehaviour, IPointerClickHandler
 
     public void UnLockAction()
     {
-        imageMask.DOKill(true);
-        imageMask.DOColor(new Color(imageMask.color.r, imageMask.color.g,imageMask.color.b, 0),1.5f).SetEase(Ease.InQuart).
-            OnComplete(HierarchicalTreeSystem.instance.HierarchicalTreeLockStateUpdate);
-        OnUnLocalAction?.Invoke();
+        if (InventoryManager.instance.ghost >= ghostCost &&
+            InventoryManager.instance.gold >= goldCost)
+        {
+            imageMask.DOKill(true);
+            imageMask.DOColor(new Color(imageMask.color.r, imageMask.color.g, imageMask.color.b, 0), 1.5f).SetEase(Ease.InQuart).
+                OnComplete(HierarchicalTreeSystem.instance.HierarchicalTreeLockStateUpdate);
+            Debug.Log("NodeUnLock : " + OnUnLocalAction == null);
+            OnUnLocalAction?.Invoke();
+        }
+        else
+        {
+            UIManager.instance.HierarchicalTreeNodeGhostNonEnougthTip();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)

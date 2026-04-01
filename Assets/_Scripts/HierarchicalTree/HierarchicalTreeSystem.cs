@@ -65,7 +65,7 @@ public class HierarchicalTreeSystem : MonoBehaviour
             if (node.isLocked) continue;
 
             ICollection<UnitPlat> unitPlats = 
-                UnitCardSystem.instance.GetActionPlats(node.TargetFaction, node.Range);
+                BattleSystem.instance.GetActionPlats(node.TargetFaction, node.Range);
             node.GlobalAction(unitPlats);
         }
     }

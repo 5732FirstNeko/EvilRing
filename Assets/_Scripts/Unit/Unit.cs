@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Unit
 {
@@ -12,22 +13,42 @@ public class Unit
     public int DamageReduction;
     public Faction faction;
     public List<UnitSkill> unitSkills;
+
+    public int spCost;
     public UnitSkill SPSkill;
 
     public float DeadAnimationTime;
     public Action<UnitPlat> OnDead;
 
+    private int spCount;
+
     public Unit(UnitDataSo unitData, UnitPlat user)
     {
         this.user = user;
+        spCount = 0;
         DataInit(unitData);
     }
 
     public UnitSkill UnitSkillChoice()
     {
-        //TODO : OnRound UnitSkill Choice Logic
+        if (faction == Faction.Hostility && spCount >= spCost)
+        {
+            spCost = 0;
+            return SPSkill;
+        }
+        spCost++;
 
-        return unitSkills[0];
+        List<UnitSkill> usedSkills = new List<UnitSkill>();
+        foreach (var skill in unitSkills)
+        {
+            if (skill.TriggerTiming == TriggerTiming.OnRound)
+            {
+                usedSkills.Add(skill);
+            }
+        }
+        int index = UnityEngine.Random.Range(0, usedSkills.Count);
+
+        return usedSkills[index];
     }
 
     public void DeadAction(UnitPlat user)
@@ -48,10 +69,37 @@ public class Unit
         DeadAnimationTime = unitData.DeadAnimationTime;
         OnDead += unitData.UnitDeadData != null ? unitData.UnitDeadData.DeadAction : null;
 
-        if (faction == Faction.Hostility)
+        if (faction == Faction.Hostility && unitData.SpKillData != null)
         {
-            //TODO : After Creat HostilityData ScriptsObject, give SPSkill value,
-            //TODO : and HostilityData ScriptsObject must be have a UnitSkill as SPSkill !
+            spCost = unitData.spCost;
+            UnitSkill initSkill = new UnitSkill
+            {
+                User = user,
+                SkillTime = unitData.SpKillData.SkillTime,
+                Damage = unitData.SpKillData.Damage,
+                TriggerTiming = unitData.SpKillData.TriggerTiming,
+                SkillTarget = unitData.SpKillData.SkillTarget,
+                Range = unitData.SpKillData.Range,
+                UnitBuffs = new List<UnitBuff>(),
+            };
+            initSkill.OnAction += unitData.SpKillData.Action;
+
+            foreach (var buffData in unitData.SpKillData.UnitBuffs)
+            {
+                UnitBuff initBuff = new UnitBuff
+                {
+                    User = user,
+                    BuffActionTime = buffData.BuffActionTime,
+                    TriggerTiming = buffData.TriggerTiming,
+                };
+                initBuff.OnAction += buffData.OnAction;
+                initBuff.OnBindBuff += buffData.BindBuff;
+                initBuff.OnUnBindBuff += buffData.UnbindBuff;
+
+                initSkill.UnitBuffs.Add(initBuff);
+            }
+
+            SPSkill = initSkill;
         }
 
         unitSkills = new List<UnitSkill>();
@@ -138,5 +186,11 @@ public class UnitBuff
     public void UnBindBuff(UnitPlat unit)
     {
         OnUnBindBuff?.Invoke(unit, User);
+    }
+
+    public bool Equals(UnitBuff obj)
+    {
+        return OnAction.Equals(obj.OnAction) && 
+            OnBindBuff.Equals(obj.OnBindBuff) && OnUnBindBuff.Equals(obj.OnUnBindBuff);
     }
 }

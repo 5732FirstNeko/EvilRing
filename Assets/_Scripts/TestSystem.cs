@@ -8,14 +8,12 @@ public class TestSystem : MonoBehaviour
     [SerializeField] private List<Unit> friendlyUnits = new List<Unit>();
     [SerializeField] private List<Unit> hostitlyUnits = new List<Unit>();
 
-    private bool flag = false;
-    void Update()
+    [SerializeField] private ItemDataSO ItemDataSO;
+
+    private void Start()
     {
-        if (!flag)
-        {
-            flag = true;
-            //BattleSystem.instance.BattleInit(hostitlyUnits, friendlyUnits);
-        }
+        InventoryManager.instance.AddInventoryToList(ItemDataSO);
     }
+
 }
 #endif

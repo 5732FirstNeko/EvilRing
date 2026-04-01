@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public Button battleButton;
     #region UnitCardUIValue
     [Header("UnitCardSystem")]
     public RectTransform friendlyUnitDataUIRightRect;
@@ -29,15 +30,22 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private Text friendlyCostTextRight;
     [SerializeField] private Text friendlyCostTextLeft;
+    [SerializeField] private Text friendlySpeedTextRight;
+    [SerializeField] private Text friendlySpeedTextLeft;
     [SerializeField] private List<Text> friendlySkillTextsRight;
     [SerializeField] private List<Text> friendlySkillTextsLeft;
 
     public RectTransform hostitlyUnitDataUILeftRect;
     public RectTransform hostitlyUnitDataUIRightRect;
+    [SerializeField] private Text hostitlySpeedTextLeft;
+    [SerializeField] private Text hostitlySpeedTextRight;
     [SerializeField] private List<Text> hostitlySkillTextsLeft;
     [SerializeField] private List<Text> hostitlySkillTextsRight;
 
     [SerializeField] private float UnitDataUIHeight;
+
+    public RectTransform goldnonenougthRect;
+    public RectTransform cardnonenougthRect;
 
     public Image friendlyUnitInstance;
     [SerializeField] private RectMask2D mask;
@@ -54,8 +62,23 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text goldCost;
     [SerializeField] private Text ghostCost;
     [SerializeField] private Text hierarchicalTreeNodeDescriptions;
+    [SerializeField] private Button hierarchicalUnLockButton;
 
-    [SerializeField] private float HierarchTreeNOdeUIHeight;
+    [SerializeField] private RectTransform ghostnonenougth;
+    private float HierarchTreeNodeUIHeight;
+    #endregion
+
+    #region InventorySystemValue
+    [Header("Inventory")]
+    [SerializeField] private RectTransform InventoryDataUIRect;
+    [SerializeField] private Image InventoryIcon;
+    [SerializeField] private Text InventoryText;
+    [SerializeField] private Button InventoryUseButton;
+
+    public Text goldText;
+    public Text ghostText;
+    public Text ghostTotalText;
+    private float InventoryRightDistance;
     #endregion
 
     private void Awake()
@@ -75,7 +98,9 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        HostitlyUICloseAnimation();
+        battleButton.transform.localScale = Vector3.zero;
+        battleButton.gameObject.SetActive(false);
+
         hierarchicalTreeButton.onClick.AddListener(HierarchicalTreeUIChange);
 
         UnitDataUIHeight = friendlyUnitDataUIRightRect.anchoredPosition.y;
@@ -92,10 +117,15 @@ public class UIManager : MonoBehaviour
             = new Vector2(hostitlyUnitDataUIRightRect.anchoredPosition.x, 0);
         hostitlyUnitDataUIRightRect.transform.localScale = Vector3.zero;
 
-        HierarchTreeNOdeUIHeight = hierarchicalTreeNodeUIRect.anchoredPosition.y;
+        HierarchTreeNodeUIHeight = hierarchicalTreeNodeUIRect.anchoredPosition.y;
         hierarchicalTreeNodeUIRect.anchoredPosition
             = new Vector2(hierarchicalTreeNodeUIRect.anchoredPosition.x, 0);
         hierarchicalTreeNodeUIRect.transform.localScale = Vector3.zero;
+
+        InventoryRightDistance = InventoryDataUIRect.anchoredPosition.x;
+        InventoryDataUIRect.anchoredPosition = 
+            new Vector2(0, InventoryDataUIRect.anchoredPosition.y);
+        InventoryDataUIRect.transform.localScale = Vector3.zero;
     }
 
     #region UnitDataDisPlayFunction
@@ -103,11 +133,15 @@ public class UIManager : MonoBehaviour
     {
         if (site == UnitSite.first || site == UnitSite.second)
         {
+            friendlyUnitDataUIRightRect.DOKill();
             friendlyUnitDataUIRightRect.gameObject.SetActive(true);
 
             UIDisPlayFunction(friendlyUnitDataUIRightRect, UnitDataUIHeight);
 
-            friendlyCostTextRight.text = "cost : " + unitData.cost;
+            friendlyCostTextRight.text = InventoryManager.Instance.gold >= unitData.cost ?
+                new StringBuilder( "GoldCost : " + "<color=green>" + unitData.cost + "</color>").ToString() : 
+                new StringBuilder( "GoldCost : " + "<color=red>" + unitData.cost + "</color>").ToString();
+            friendlySpeedTextRight.text = "Speed : " + unitData.Speed;
             for (int i = 0; i < friendlySkillTextsRight.Count; i++)
             {
                 friendlySkillTextsRight[i].gameObject.SetActive(true);
@@ -116,11 +150,15 @@ public class UIManager : MonoBehaviour
         }
         else if(site == UnitSite.third || site == UnitSite.fourth)
         {
+            friendlyUnitDataUILeftRect.DOKill();
             friendlyUnitDataUILeftRect.gameObject.SetActive(true);
 
             UIDisPlayFunction(friendlyUnitDataUILeftRect, UnitDataUIHeight);
 
-            friendlyCostTextLeft.text = "cost : " + unitData.cost;
+            friendlyCostTextLeft.text = InventoryManager.Instance.gold >= unitData.cost ?
+                new StringBuilder("GoldCost : " + "<color=green>" + unitData.cost + "</color>").ToString() :
+                new StringBuilder("GoldCost : " + "<color=red>" + unitData.cost + "</color>").ToString();
+            friendlySpeedTextLeft.text = "Speed : " + unitData.Speed;
             for (int i = 0; i < unitData.Skills.Count; i++)
             {
                 friendlySkillTextsLeft[i].gameObject.SetActive(true);
@@ -135,7 +173,11 @@ public class UIManager : MonoBehaviour
 
         UIDisPlayFunction(friendlyUnitDataUIRightRect, UnitDataUIHeight);
 
-        friendlyCostTextRight.text = "cost : " + unitData.cost;
+        friendlyCostTextRight.text = InventoryManager.Instance.gold >= unitData.cost ?
+                new StringBuilder("GoldCost : " + "<color=green>" + unitData.cost + "</color>").ToString() :
+                new StringBuilder("GoldCost : " + "<color=red>" + unitData.cost + "</color>").ToString();
+        friendlySpeedTextRight.text = "Speed : " + unitData.Speed;
+        Debug.Log(unitData.Skills.Count);
         for (int i = 0; i < unitData.Skills.Count; i++)
         {
             friendlySkillTextsRight[i].gameObject.SetActive(true);
@@ -164,10 +206,11 @@ public class UIManager : MonoBehaviour
     {
         if (site == UnitSite.first || site == UnitSite.second)
         {
+            hostitlyUnitDataUILeftRect.DOKill();
             hostitlyUnitDataUILeftRect.gameObject.SetActive(true);
 
             UIDisPlayFunction(hostitlyUnitDataUILeftRect, UnitDataUIHeight);
-
+            hostitlySpeedTextLeft.text = "Speed : " + unitData.Speed;
             for (int i = 0; i < unitData.Skills.Count; i++)
             {
                 hostitlySkillTextsLeft[i].gameObject.SetActive(true);
@@ -176,10 +219,11 @@ public class UIManager : MonoBehaviour
         }
         else if (site == UnitSite.third || site == UnitSite.fourth)
         {
+            hostitlyUnitDataUIRightRect.DOKill();
             hostitlyUnitDataUIRightRect.gameObject.SetActive(true);
 
             UIDisPlayFunction(hostitlyUnitDataUIRightRect, UnitDataUIHeight);
-
+            hostitlySpeedTextRight.text = "Speed : " + unitData.Speed;
             for (int i = 0; i < unitData.Skills.Count; i++)
             {
                 hostitlySkillTextsRight[i].gameObject.SetActive(true);
@@ -193,7 +237,7 @@ public class UIManager : MonoBehaviour
         hostitlyUnitDataUILeftRect.gameObject.SetActive(true);
 
         UIDisPlayFunction(hostitlyUnitDataUILeftRect, UnitDataUIHeight);
-
+        hostitlySpeedTextLeft.text = "Speed : " + unitData.Speed;
         for (int i = 0; i < unitData.Skills.Count; i++)
         {
             hostitlySkillTextsLeft[i].gameObject.SetActive(true);
@@ -216,21 +260,22 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void HostitlyUICloseAnimation()
+    public void HostitlyUIRefreshAnimation()
     {
         DOTween.To(
             () => (float)mask.softness.x,
             (x) => mask.softness = new Vector2Int((int)x, mask.softness.y),
             150,
             1f
-        ).SetEase(Ease.OutQuad);
-
-        DOTween.To(
+        ).SetEase(Ease.OutQuad).OnComplete(() =>
+        {
+            DOTween.To(
             () => (float)mask.padding.x,
             (x) => mask.padding = new Vector4((int)x, 0, 0, 0),
             700,
             3f
-        ).SetEase(Ease.OutQuart).SetDelay(1f);
+        ).OnComplete(HostitlyUIOpenAnimation);
+        });
     }
 
     public void HostitlyUIOpenAnimation()
@@ -249,6 +294,38 @@ public class UIManager : MonoBehaviour
            1f
         ).SetEase(Ease.OutQuad).SetDelay(2f);
     }
+
+    public void UnitCardGoldNonEnougthTip()
+    {
+        goldnonenougthRect.gameObject.SetActive(true);
+        goldnonenougthRect.DOKill();
+        goldnonenougthRect.DOScale(Vector3.one, 0.25f).OnComplete(
+            () =>
+            {
+                goldnonenougthRect.DOScale(Vector3.one, 1.5f).OnComplete(() =>
+            {
+                goldnonenougthRect.DOScale(Vector3.zero, 0.75f).OnComplete(() =>
+            { goldnonenougthRect.gameObject.SetActive(false); });
+            });
+            }
+            );
+    }
+
+    public void UnitCardNonEnougthTip()
+    {
+        cardnonenougthRect.gameObject.SetActive(true);
+        cardnonenougthRect.DOKill();
+        cardnonenougthRect.DOScale(Vector3.one, 0.25f).OnComplete(
+            () =>
+            {
+                cardnonenougthRect.DOScale(Vector3.one, 1.5f).OnComplete(() =>
+                {
+                    cardnonenougthRect.DOScale(Vector3.zero, 0.75f).OnComplete(() =>
+                    { cardnonenougthRect.gameObject.SetActive(false); });
+                });
+            }
+            );
+    }
     #endregion
 
     #region HierarchTreeFunction
@@ -260,11 +337,18 @@ public class UIManager : MonoBehaviour
         }
 
         hierarchicalTreeObject.SetActive(!hierarchicalTreeObject.activeSelf);
+        battleButton.gameObject.SetActive(!battleButton.gameObject.activeSelf);
     }
 
     public void HierarchicalTreeNodeUIDisplay(HierarchicalTreeNode node)
     {
         hierarchicalTreeNodeUIRect.gameObject.SetActive(true);
+
+        if (node.isLocked)
+        {
+            hierarchicalUnLockButton.onClick.AddListener(node.UnLockAction);
+            hierarchicalUnLockButton.gameObject.SetActive(true);
+        }
 
         goldCost.text = InventoryManager.Instance.gold >= node.goldCost ? 
             new StringBuilder("gold : " + "<color=green>" + node.goldCost + "</color>").ToString() :
@@ -275,15 +359,54 @@ public class UIManager : MonoBehaviour
         hierarchicalTreeNodeIcon.sprite = node.hierarchicalTreeNodeData.sprite;
         hierarchicalTreeNodeDescriptions.text = node.hierarchicalTreeNodeData.descriptions;
 
-        UIDisPlayFunction(hierarchicalTreeNodeUIRect, HierarchTreeNOdeUIHeight);
+        UIDisPlayFunction(hierarchicalTreeNodeUIRect, HierarchTreeNodeUIHeight);
     }
 
     public void HierarchicalTreeNodeUIUnDisplay()
     {
+        hierarchicalUnLockButton.gameObject.SetActive(false);
         UIUnDisPlayFunction(hierarchicalTreeNodeUIRect);
+        hierarchicalUnLockButton.onClick.RemoveAllListeners();
+    }
+
+    public void HierarchicalTreeNodeGhostNonEnougthTip()
+    {
+        ghostnonenougth.DOScale(Vector3.one, 0.25f).OnComplete(
+            () => {
+                ghostnonenougth.DOScale(Vector3.one, 1.5f).OnComplete(() =>
+                { ghostnonenougth.DOScale(Vector3.zero, 0.75f); });
+            }
+            );
     }
     #endregion
 
+    #region InventorySystemFunction
+    public void InventoryDataUIDisplay(ItemDataSO itemData)
+    {
+        InventoryIcon.sprite = itemData.itemIcon;
+        InventoryText.text = itemData.itemDescription;
+
+        if (itemData.itemType == ItemBuffType.Global)
+        {
+            InventoryUseButton.gameObject.SetActive(true);
+        }
+
+        InventoryDataUIRect.gameObject.SetActive(true);
+        InventoryDataUIRect.DOScale(Vector3.one, 0.25f);
+        InventoryDataUIRect.DOAnchorPosX(InventoryRightDistance,0.25f);
+    }
+
+    public void InventoryDataUIUnDisplay()
+    {
+        InventoryUseButton.gameObject.SetActive(false);
+
+        InventoryDataUIRect.DOScale(Vector3.zero, 0.25f);
+        InventoryDataUIRect.DOAnchorPosX(0, 0.25f).
+            OnComplete(() => InventoryDataUIRect.gameObject.SetActive(true));
+    }
+    #endregion
+
+    #region otherFunction
     private void UIDisPlayFunction(RectTransform UIRectTransfrom, float height)
     {
         UIRectTransfrom.DOScale(Vector3.one, 0.25f);
@@ -296,4 +419,19 @@ public class UIManager : MonoBehaviour
         UIRectTransfrom.DOAnchorPosY(0, 0.25f).OnComplete(
             () =>{ UIRectTransfrom.gameObject.SetActive(false); });
     }
+
+    public void BattleButtonDisPlaty()
+    {
+        battleButton.DOKill();
+        battleButton.gameObject.SetActive(true);
+        battleButton.transform.DOScale(Vector3.one,0.25f);
+    }
+
+    public void BattleButtonUnDisPlay()
+    {
+        battleButton.DOKill();
+        battleButton.transform.DOScale(Vector3.zero, 0.25f);
+        battleButton.gameObject.SetActive(false);
+    }
+    #endregion
 }

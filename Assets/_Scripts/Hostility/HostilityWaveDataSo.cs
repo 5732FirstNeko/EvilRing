@@ -5,6 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "newUnitWaveData", menuName = "Data/HostilityWave Data")]
 public class HostilityWaveDataSo : ScriptableObject
 {
-    public int cost;
+    public int ghostCost;
     public List<UnitDataSo> hostilityDataList;
 }

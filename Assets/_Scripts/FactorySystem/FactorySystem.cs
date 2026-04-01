@@ -43,7 +43,7 @@ public class FactorySystem : MonoBehaviour
     {
         foreach (var waveData in hostilityWaveDataList)
         {
-            if (ghostCount * 0.9f < waveData.cost && waveData.cost < ghostCount * 1.1f)
+            if (ghostCount * 0.9f <= waveData.ghostCost && waveData.ghostCost <= ghostCount * 1.1f)
             {
                 return waveData;
             }
@@ -58,11 +58,8 @@ public class FactorySystem : MonoBehaviour
 
     public UnitDataSo GetFriendlyUnitData()
     {
-        foreach (var data in friendlyUnitDataList)
-        {
-            //TODO : FriendlyUnit Get Logic
-        }
+        int index = Random.Range(0, friendlyUnitDataList.Count);
 
-        return null;
+        return friendlyUnitDataList[index];
     }
 }

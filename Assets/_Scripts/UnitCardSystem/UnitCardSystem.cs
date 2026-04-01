@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,15 +22,19 @@ public class UnitCardSystem : MonoBehaviour
         }
     }
 
+    [SerializeField] private Sprite defaultCardSprite;
     [Header("Friendly")]
-    [SerializeField] private List<UnitPlat> friendlyUnitPlats = new List<UnitPlat>();
+    public List<UnitPlat> friendlyUnitPlats = new List<UnitPlat>();
     [SerializeField] private List<FriendlyUnitUI> friendlyUnitRefreshArea;
+
+    public int friendlyCardCount { get => friendlyUnitRefreshArea.Count; }
 
     [Header("Hostitly")]
     public HostilityWaveDataSo hostilityWaveData;
-    [SerializeField] private List<UnitPlat> hostitlyUnitPlats;
-    [SerializeField] private List<GameObject> hostitlyUnitRefreshArea;
+    public List<UnitPlat> hostitlyUnitPlats;
+    [SerializeField] private List<HostitlyUnitUI> hostitlyUnitRefreshArea;
 
+    [SerializeField] private Text ghostCount;
     [HideInInspector] public FriendlyUnitUI currentFriendlyUnitUI 
     {
         get => _friendlyUnitUI;
@@ -43,6 +48,7 @@ public class UnitCardSystem : MonoBehaviour
             if (_friendlyUnitUI != null)
             {
                 _friendlyUnitUI.SelectAnimation();
+                InventoryManager.instance.currentSelectInventory = null;
             }
         }
     }
@@ -65,8 +71,6 @@ public class UnitCardSystem : MonoBehaviour
 
     public void AddUnitToFriendlyList(UnitDataSo unitData, UnitSite site)
     {
-        RefreshFriendlyUnit();
-
         if (InventoryManager.Instance.gold > unitData.cost)
         {
             int index = BattleSystem.GetIndexByUnitSite(site);
@@ -74,27 +78,41 @@ public class UnitCardSystem : MonoBehaviour
             unitPlat.UnitPlatInit(unitData, site);
             InventoryManager.Instance.gold -= unitData.cost;
 
-            unitPlat.GetComponent<SpriteRenderer>().sprite = unitData.UnitSprite;
+            friendlyUnitPlats[index].unitData = unitData;
+
+            unitPlat.iconSpriteRender.sprite = unitData.UnitSprite;
             Vector3 originScale = unitPlat.transform.localScale;
             unitPlat.transform.localScale = Vector3.zero;
             unitPlat.transform.DOScale(originScale, 1.5f);
+
+            currentFriendlyUnitUI.unitData = null;
+            currentFriendlyUnitUI = null;
+            RefreshFriendlyUnit();
         }
         else
         {
-            //TODO : gold is not enougth Tip Logic
+            UIManager.instance.UnitCardGoldNonEnougthTip();
         }
     }
 
     public void RemoveUnitFromFriendlyList(UnitSite site)
     {
         int index = BattleSystem.GetIndexByUnitSite(site);
-        InventoryManager.Instance.gold += friendlyUnitPlats[index].unitData.cost;
+        if (friendlyUnitPlats[index] == null) return;
+        
+        InventoryManager.instance.gold += friendlyUnitPlats[index].unitData.cost;
 
         friendlyUnitPlats[index].unit = null;
         friendlyUnitPlats[index].unitData = null;
+        friendlyUnitPlats[index].iconSpriteRender.sprite = defaultCardSprite;
     }
 
     public List<UnitPlat> GetCurrentFriendlyUnitPlats()
+    {
+        return friendlyUnitPlats;
+    }
+
+    public List<UnitPlat> GetFinalFriendlyUnitPlats()
     {
         List<UnitPlat> reslutes = new List<UnitPlat>();
         foreach (var plat in friendlyUnitPlats)
@@ -113,31 +131,93 @@ public class UnitCardSystem : MonoBehaviour
         return reslutes;
     }
 
-    public List<UnitPlat> GetCurrentHostitlyUnitPlats()
+    public List<UnitPlat> GetHostitlyUnitPlats()
     {
         return hostitlyUnitPlats;
     }
 
-    private void RefreshFriendlyUnit()
+    public void RefreshFriendlyUnit()
     {
-        currentFriendlyUnitUI.unitData = FactorySystem.instance.GetFriendlyUnitData();
-        currentFriendlyUnitUI.GetComponent<Image>().sprite = currentFriendlyUnitUI.unitData.UnitSprite;
+        FriendlyUnitUI activeFriendlyUnitUI = null;
+        foreach (var unit in friendlyUnitRefreshArea)
+        {
+            if (unit.unitData == null)
+            {
+                activeFriendlyUnitUI = unit;
+                break;
+            }
+        }
 
-        currentFriendlyUnitUI.transform.localScale = new(0, 0, 0);
-        currentFriendlyUnitUI.transform.rotation = new(0, 0, 0, 0);
+        if (activeFriendlyUnitUI == null) return;
 
-        currentFriendlyUnitUI.transform.DOScale(new Vector3(1, 1, 1), 1.5f).SetEase(Ease.OutBounce).
-            OnComplete(() => { currentFriendlyUnitUI = null; });
+        activeFriendlyUnitUI.unitData = FactorySystem.instance.GetFriendlyUnitData();
+        activeFriendlyUnitUI.Image.sprite = activeFriendlyUnitUI.unitData.UnitSprite;
+
+        activeFriendlyUnitUI.transform.localScale = new(0, 0, 0);
+        activeFriendlyUnitUI.transform.rotation = new(0, 0, 0, 0);
+        activeFriendlyUnitUI.Image.color = new Color(activeFriendlyUnitUI.Image.color.r,
+            activeFriendlyUnitUI.Image.color.g, activeFriendlyUnitUI.Image.color.b, 0);
+
+        activeFriendlyUnitUI.transform.DOScale(new Vector3(1, 1, 1), 1.5f).SetEase(Ease.OutBounce);
+        activeFriendlyUnitUI.Image.DOFade(1,1.5f).SetEase(Ease.OutQuad);
+    }
+
+    public void RefreshAllFriendlyUnit()
+    {
+        foreach (var friendlyUnitUI in friendlyUnitRefreshArea)
+        {
+            friendlyUnitUI.unitData = FactorySystem.instance.GetFriendlyUnitData();
+            friendlyUnitUI.Image.sprite = friendlyUnitUI.unitData.UnitSprite;
+
+            friendlyUnitUI.transform.localScale = new(0, 0, 0);
+            friendlyUnitUI.transform.rotation = new(0, 0, 0, 0);
+            friendlyUnitUI.Image.color = new Color(friendlyUnitUI.Image.color.r,
+                friendlyUnitUI.Image.color.g, friendlyUnitUI.Image.color.b, 0);
+
+            friendlyUnitUI.transform.DOScale(new Vector3(1, 1, 1), 1.5f).SetEase(Ease.OutBounce);
+            friendlyUnitUI.Image.DOFade(1, 1.5f).SetEase(Ease.OutQuad);
+        }
     }
 
     public void RefreshHostitlyUnit()
     {
-        hostilityWaveData = FactorySystem.instance.GetHostitlyWaveDataByGhost(InventoryManager.Instance.ghost);
+        hostilityWaveData = FactorySystem.instance.GetHostitlyWaveDataByGhost(InventoryManager.Instance.ghostTotal);
 
-        for (int i = 0; i < 4; i++)
+        ghostCount.text = "Áé»êÊý : " + hostilityWaveData.ghostCost;
+        for (int i = 0; i < hostitlyUnitRefreshArea.Count; i++)
         {
-            hostitlyUnitPlats[i].UnitPlatInit(hostilityWaveData.hostilityDataList[i], 
-                hostitlyUnitPlats[i].site);
+            HostitlyUnitUI hostitlyUnitUI = hostitlyUnitRefreshArea[i];
+
+            hostitlyUnitUI.unitData = hostilityWaveData.hostilityDataList[i];
+            hostitlyUnitUI.image.sprite = hostilityWaveData.hostilityDataList[i].UnitSprite;
+            hostitlyUnitUI.image.color = new Color(hostitlyUnitUI.image.color.r,
+            hostitlyUnitUI.image.color.g, hostitlyUnitUI.image.color.b, 0);
+
+            hostitlyUnitUI.image.DOFade(1, 1.5f).SetEase(Ease.OutQuad);
+
+            UnitPlat hostitlyUnitplat = hostitlyUnitPlats[i];
+            hostitlyUnitplat.UnitPlatInit(hostilityWaveData.hostilityDataList[i],
+                hostitlyUnitplat.site);
+
+            if (hostilityWaveData.hostilityDataList[i] == FactorySystem.instance.EmptyHostitlyUnitData)
+            {
+                hostitlyUnitRefreshArea[i].image.gameObject.SetActive(false);
+                continue;
+            }
+
+            hostitlyUnitRefreshArea[i].image.gameObject.SetActive(true);
+            hostitlyUnitplat.iconSpriteRender.sprite = hostilityWaveData.hostilityDataList[i].UnitSprite;
+            Vector3 originScale = hostitlyUnitplat.transform.localScale;
+            hostitlyUnitplat.transform.localScale = Vector3.zero;
+            hostitlyUnitplat.transform.DOScale(originScale, 1.5f);
+        }
+    }
+
+    public void RecoverDefaultHostitlyUnitSprite()
+    {
+        foreach (var unit in hostitlyUnitPlats)
+        {
+            unit.iconSpriteRender.sprite = defaultCardSprite;
         }
     }
 

@@ -12,11 +12,6 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
     public UnitDataSo unitData;
     public Image Image;
 
-    private void Start()
-    {
-        Image = GetComponent<Image>();
-    }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         UIManager.instance.FriendlyUnitDataUnDisplay();
@@ -36,11 +31,13 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
     public void OnEndDrag(PointerEventData eventData)
     {
         UIManager.instance.friendlyUnitInstance.gameObject.SetActive(false);
+        UIManager.instance.friendlyUnitInstance.raycastTarget = false;
         UnitCardSystem.instance.isHaveCardDrag = false;
 
         Image.color = new Color(Image.color.r, Image.color.g, Image.color.b, 1f);
 
-        if (eventData.pointerEnter != null && eventData.pointerEnter.GetComponent<UnitSiteFlag>() != null)
+        UnitSiteFlag unitSiteFlag = eventData.pointerEnter.GetComponent<UnitSiteFlag>();
+        if (eventData.pointerEnter != null && unitSiteFlag != null && unitSiteFlag.faction == Faction.Friendly)
         {
             UnitCardSystem.instance.AddUnitToFriendlyList(unitData,
                    eventData.pointerEnter.GetComponent<UnitSiteFlag>().site);

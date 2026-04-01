@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using DG.Tweening;
 using PriorityQueue;
 using UnityEngine;
@@ -24,10 +26,10 @@ public class BattleSystem : MonoBehaviour
     }
 
     [Header("Friendly")]
-    [SerializeField] private List<UnitSiteFlag> friendlyUnitSiteFlag;
+    public List<UnitSiteFlag> friendlyUnitSiteFlag;
 
     [Header("Hostitly")]
-    [SerializeField] private List<UnitSiteFlag> hostilityUnitSiteFlag;
+    public List<UnitSiteFlag> hostilityUnitSiteFlag;
 
     [Header("UnitPlayMoveTime")]
     [SerializeField] private float unitPlatMoveTime;
@@ -49,7 +51,7 @@ public class BattleSystem : MonoBehaviour
     private Dictionary<Unit, UnitSkill> OnStrikeBackSkills;
 
     private Dictionary<Unit, byte> OnStrikeBackMap;
-    private Dictionary<UnitBuff, ICollection<UnitPlat>> UnitBuffMap;
+    private Dictionary<UnitBuff, List<UnitPlat>> UnitBuffMap;
 
     private int friendlyDeadCount;
     private int hostilityDeadCount;
@@ -76,7 +78,7 @@ public class BattleSystem : MonoBehaviour
         OnStrikeBackSkills = new Dictionary<Unit, UnitSkill>();
 
         OnStrikeBackMap = new Dictionary<Unit, byte>();
-        UnitBuffMap = new Dictionary<UnitBuff, ICollection<UnitPlat>>();
+        UnitBuffMap = new Dictionary<UnitBuff, List<UnitPlat>>();
 
         FriendlyUnitPlatsQueue = new UnitPlatQueue();
         HostilityUnitPlatsQueue = new UnitPlatQueue();
@@ -99,11 +101,6 @@ public class BattleSystem : MonoBehaviour
                 friendlyplats[2].transform.DOMoveX(friendlyUnitSiteFlag[2].transform.position.x, unitPlatMoveTime);
                 friendlyplats[3].transform.DOMoveX(friendlyUnitSiteFlag[3].transform.position.x, unitPlatMoveTime);
 
-                foreach (var flag in friendlyUnitSiteFlag)
-                {
-                    Debug.Log(flag.transform.position.x);
-                }
-
                 break;
             case Faction.Hostility:
                 List<UnitPlat> hostitlyplats = HostilityUnitPlatsQueue.UnitPlatSiteChange(fromSite, toSite);
@@ -117,20 +114,28 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    public void BattleInit()
+    public void BattleEnd()
     {
-        StartCoroutine(BattleInitCoroutine());
+        UnitBuffMap.Clear();
+        foreach (var unitplat in FriendlyUnitPlatsQueue.GetAllUnitPlat())
+        {
+            unitplat.UnitPlatClear();
+        }
+        foreach (var unitplat in HostilityUnitPlatsQueue.GetAllUnitPlat())
+        {
+            unitplat.UnitPlatClear();
+        }
     }
 
-    private IEnumerator BattleInitCoroutine()
+    public void BattleInit()
     {
         //TODO : Battle Start UI Animation
 
         FriendlyUnitPlatsQueue.Clear();
         HostilityUnitPlatsQueue.Clear();
 
-        List<UnitPlat> hostitlyPlats = UnitCardSystem.instance.GetCurrentHostitlyUnitPlats();
-        List<UnitPlat> friendlyPlats = UnitCardSystem.instance.GetCurrentFriendlyUnitPlats();
+        List<UnitPlat> hostitlyPlats = UnitCardSystem.instance.GetHostitlyUnitPlats();
+        List<UnitPlat> friendlyPlats = UnitCardSystem.instance.GetFinalFriendlyUnitPlats();
         {
             for (int i = 0; i < 4; i++)
             {
@@ -199,16 +204,35 @@ public class BattleSystem : MonoBehaviour
                 }
             }
         }
+    }
 
-        yield return null;
-
+    public void BattleFunction()
+    {
         StartCoroutine(Battle());
     }
 
     private IEnumerator Battle()
     {
-        HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
-        HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
+        yield return HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
+        yield return HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
+
+        List<Inventory> removeInventory = new List<Inventory>();
+        foreach (var inventory in InventoryManager.instance.globalInventoryList)
+        {
+            inventory.Action(HostilityUnitPlatsQueue.GetAllUnitPlat());
+            inventory.roundContinue--;
+            if (inventory.roundContinue <= 0)
+            {
+                removeInventory.Add(inventory);
+            }
+            yield return HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
+            yield return new WaitForSeconds(inventory.itemData.itemBuff.BuffActionTime);
+        }
+
+        for (int i = removeInventory.Count - 1; i >= 0; i--)
+        {
+            InventoryManager.instance.RemoveInventoryfromGlobal(removeInventory[i]);
+        }
 
         yield return LevelStartBattle();
         yield return AllBuffAction(TriggerTiming.OnGameStart);
@@ -238,18 +262,28 @@ public class BattleSystem : MonoBehaviour
                 yield return AllBuffAction(TriggerTiming.OnRoundStart);
 
                 UnitPlat unitPlat = battleQueue.Dequeue();
-                UnitSkill OnRoundSkill = unitPlat.unit.UnitSkillChoice();
-                ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
-                OnRoundSkill.Action(targetPlats);
-                foreach (var buff in OnRoundSkill.UnitBuffs)
+                if (!unitPlat.isDead)
                 {
-                    AddBuffToUnitPlat(buff, targetPlats);
+                    UnitSkill OnRoundSkill = unitPlat.unit.UnitSkillChoice();
+                    ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
+                    OnRoundSkill.Action(targetPlats);
+
+                    Debug.Log(unitPlat.name);
+                    Debug.Log(unitPlat.unit.faction + " " + unitPlat.site + " Attack ");
+                    foreach (var tar in targetPlats)
+                    {
+                        Debug.Log(tar.unit.faction + " " + tar.site);
+                    }
+                    Debug.Log("----------------");
+
+                    foreach (var buff in OnRoundSkill.UnitBuffs)
+                    {
+                        AddBuffToUnitPlat(buff, targetPlats);
+                    }
+                    yield return AllBuffAction(TriggerTiming.OnRound);
+                    yield return new WaitForSeconds(OnRoundSkill.SkillTime);
                 }
-                yield return AllBuffAction(TriggerTiming.OnRound);
-                yield return new WaitForSeconds(OnRoundSkill.SkillTime);
-
-                Debug.Log("After Swap Site " + unitPlat.unit.faction + " " +unitPlat.unit);
-
+                
                 yield return RoundEndBattle();
                 yield return AllBuffAction(TriggerTiming.OnRoundEnd);
 
@@ -280,20 +314,44 @@ public class BattleSystem : MonoBehaviour
             buff.Action(units);
             foreach (var plat in plats)
             {
-                int continueRound = plat.BuffActiuon(buff);
+                int continueRound = plat.BuffConsumption(buff);
                 if (continueRound <= 0)
                 {
                     removeBuff.Add(buff);
                 }
             }
 
-            HPCheck(plats);
+            yield return HPCheck(plats);
             yield return new WaitForSeconds(buff.BuffActionTime);
         }
 
         for (int i = removeBuff.Count - 1; i >= 0; i--)
         {
             UnitBuffMap.Remove(removeBuff[i]);
+        }
+
+        List<Inventory> removeInventory = new List<Inventory>();
+        foreach (var (inventory, plat) in InventoryManager.instance.InventoryTargetMap)
+        {
+            Debug.Log("Inventory : " + inventory.name + " " + plat.name);
+            if (inventory.itemData.itemBuff.TriggerTiming != timing)
+                continue;
+
+            UnitPlat[] actionPlat = new UnitPlat[] { plat };
+            Debug.Log("actionPlatCount : " +  actionPlat.Length);
+            inventory.Action(actionPlat);
+            inventory.roundContinue--;
+            if (inventory.roundContinue <= 0)
+            {
+                removeInventory.Add(inventory);
+            }
+            yield return HPCheck(actionPlat);
+            yield return new WaitForSeconds(inventory.itemData.itemBuff.BuffActionTime);
+        }
+
+        for (int i = removeInventory.Count - 1; i >= 0; i--)
+        {
+            InventoryManager.instance.RemoveInventoryfromUnit(removeInventory[i]);
         }
     }
 
@@ -305,7 +363,7 @@ public class BattleSystem : MonoBehaviour
             if (unitPlats != null)
             {
                 gameStartSkill.Action(unitPlats);
-                HPCheck(unitPlats);
+                yield return HPCheck(unitPlats);
 
                 foreach (var buff in gameStartSkill.UnitBuffs)
                 {
@@ -326,7 +384,7 @@ public class BattleSystem : MonoBehaviour
             if (unitPlats != null)
             {
                 roundStartSkill.Action(unitPlats);
-                HPCheck(unitPlats);
+                yield return HPCheck(unitPlats);
 
                 foreach (var buff in roundStartSkill.UnitBuffs)
                 {
@@ -347,7 +405,7 @@ public class BattleSystem : MonoBehaviour
             if (unitPlats != null)
             {
                 roundEndSkill.Action(unitPlats);
-                HPCheck(unitPlats);
+                yield return HPCheck(unitPlats);
 
                 foreach (var buff in roundEndSkill.UnitBuffs)
                 {
@@ -368,7 +426,7 @@ public class BattleSystem : MonoBehaviour
                 UnitSkill strikeBackSkill = OnStrikeBackSkills[unit];
                 ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unit, strikeBackSkill);
                 strikeBackSkill.Action(targetPlats);
-                HPCheck(targetPlats);
+                yield return HPCheck(targetPlats);
 
                 foreach (var buff in strikeBackSkill.UnitBuffs)
                 {
@@ -395,16 +453,26 @@ public class BattleSystem : MonoBehaviour
                     battleQueue.Remove(plat);
                     friendlyDeadCount++;
                 }
-                hostilityDeadCount++;
-
-                if (hostilityDeadCount >= 4)
+                else
                 {
-                    //TODO : Game Win Logic
+                    hostilityDeadCount++;
                 }
 
-                if (friendlyDeadCount >= 4)
+
+                if (hostilityDeadCount >= unitPlatQueueCount)
+                {
+                    //TODO : Game Win Logic
+                    StopAllCoroutines();
+                    BattleEnd();
+                    GameManager.instance.GameBattleEnd(true);
+                }
+
+                if (friendlyDeadCount >= unitPlatQueueCount)
                 {
                     //TODO : Game Lose Logic
+                    StopAllCoroutines();
+                    BattleEnd();
+                    GameManager.instance.GameBattleEnd(false);
                 }
 
                 if (maxDeadTIme < plat.unit.DeadAnimationTime)
@@ -423,11 +491,23 @@ public class BattleSystem : MonoBehaviour
         {
             plat.AddBuff(buff);
         }
-        UnitBuffMap.Add(buff, plats);
+
+        foreach (var (buf, plat) in UnitBuffMap)
+        {
+            if (buf.Equals(buff))
+            {
+                plat.AddRange(plats);
+                return;
+            }
+        }
+
+        UnitBuffMap.Add(buff, plats.ToList());
     }
 
     private ICollection<UnitPlat> GetActionTargetPlat(Unit self, UnitSkill skill)
     {
+        Debug.Log(self.faction + " " + skill.SkillTarget);
+
         if (self.faction == Faction.Friendly)
         {
             if (skill.SkillTarget == Faction.Friendly)
@@ -474,6 +554,30 @@ public class BattleSystem : MonoBehaviour
         }
 
         return units;
+    }
+
+    public ICollection<UnitPlat> GetActionPlats(Faction faction, ICollection<UnitSite> range)
+    {
+        List<UnitPlat> reslutes = new List<UnitPlat>();
+        switch (faction)
+        {
+            case Faction.Friendly:
+                foreach (var ran in range)
+                {
+                    int index = GetIndexByUnitSite(ran);
+                    reslutes.Add(FriendlyUnitPlatsQueue.GetUnitPlatByUnitSite(ran).plat);
+                }
+                break;
+            case Faction.Hostility:
+                foreach (var ran in range)
+                {
+                    int index = BattleSystem.GetIndexByUnitSite(ran);
+                    reslutes.Add(HostilityUnitPlatsQueue.GetUnitPlatByUnitSite(ran).plat);
+                }
+                break;
+        }
+
+        return reslutes;
     }
 
     public static int GetIndexByUnitSite(UnitSite site)

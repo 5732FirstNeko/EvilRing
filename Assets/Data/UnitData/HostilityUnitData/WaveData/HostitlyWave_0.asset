@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de18ad89a37016e45976c00938e98226, type: 3}
+  m_Name: HostitlyWave_0
+  m_EditorClassIdentifier: 
+  ghostCost: 0
+  hostilityDataList:
+  - {fileID: 11400000, guid: 559303999895c174fbe640c7dc9eaf44, type: 2}
+  - {fileID: 11400000, guid: 725da0d1ea63e9a418d0c698cfb08fa2, type: 2}
+  - {fileID: 11400000, guid: b09d957700c5b044cbaa4f33b8810acb, type: 2}
+  - {fileID: 11400000, guid: 4b20e1d5148a5764e98914598f8fb6df, type: 2}

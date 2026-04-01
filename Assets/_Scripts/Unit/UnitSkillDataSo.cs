@@ -15,6 +15,22 @@ public abstract class UnitSkillDataSo : ScriptableObject
     [TextArea] public string description;
 
     public abstract void Action(ICollection<UnitPlat> unitPlats, UnitPlat user);
+
+    public static void DamageHurt(ICollection<UnitPlat> unitPlats, int hurt)
+    {
+        foreach (var plat in unitPlats)
+        {
+            plat.unit.HP -= (byte)hurt;
+        }
+    }
+
+    public static void HPReceive(ICollection<UnitPlat> unitPlats, int receive)
+    {
+        foreach (var plat in unitPlats)
+        {
+            plat.unit.HP += (byte)receive;
+        }
+    }
 }
 
 public enum TriggerTiming

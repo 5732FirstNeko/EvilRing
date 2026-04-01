@@ -4,7 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler, 
+    IPointerEnterHandler, IPointerExitHandler
 {
     public Faction faction;
     public UnitSite site;
@@ -16,21 +17,44 @@ public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler, I
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left &&
+        if (faction == Faction.Friendly)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left &&
             UnitCardSystem.instance.currentFriendlyUnitUI != null)
-        {
-            UnitCardSystem.instance.AddUnitToFriendlyList(UnitCardSystem.instance.currentFriendlyUnitUI.unitData,
-                                    eventData.pointerEnter.GetComponent<UnitSiteFlag>().site);
+            {
+                UnitCardSystem.instance.AddUnitToFriendlyList(UnitCardSystem.instance.currentFriendlyUnitUI.unitData,
+                    eventData.pointerEnter.GetComponent<UnitSiteFlag>().site);
+            }
+            else if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                UnitCardSystem.instance.RemoveUnitFromFriendlyList(site);
+            }
         }
-        else if(eventData.button == PointerEventData.InputButton.Right)
+        else
         {
-            UnitCardSystem.instance.RemoveUnitFromFriendlyList(site);
+            if (InventoryManager.instance.currentSelectInventory != null)
+            {
+                if (InventoryManager.instance.currentSelectInventory.itemData.itemType == ItemBuffType.Unit)
+                {
+                    InventoryManager.instance.AddInventoryToUnit(InventoryManager.instance.currentSelectInventory,
+                        UnitCardSystem.instance.GetCurrentFriendlyUnitPlats()[BattleSystem.GetIndexByUnitSite(site)]);
+                    InventoryManager.instance.RemoveInventryFromList(InventoryManager.instance.currentSelectInventory);
+                    InventoryManager.instance.currentSelectInventory = null;
+                }
+                else
+                {
+                    InventoryManager.instance.AddInventoryToGlobal(InventoryManager.instance.currentSelectInventory);
+                    InventoryManager.instance.RemoveInventryFromList(InventoryManager.instance.currentSelectInventory);
+                    InventoryManager.instance.currentSelectInventory = null;
+                }
+            }
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (UnitCardSystem.instance.isHaveCardDrag)
+        if (GameManager.instance.isHaveDrag || 
+            GameManager.instance.gameState == GameManager.GameState.Game)
         {
             return;
         }
@@ -49,7 +73,7 @@ public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler, I
                 break;
             case Faction.Hostility:
 
-                List<UnitPlat> hostitlyUnitPlats = UnitCardSystem.instance.GetCurrentHostitlyUnitPlats();
+                List<UnitPlat> hostitlyUnitPlats = UnitCardSystem.instance.GetHostitlyUnitPlats();
 
                 if (hostitlyUnitPlats.Count == 4 && hostitlyUnitPlats[index].unitData != null &&
                     hostitlyUnitPlats[index].unitData.Skills.Count > 0)
@@ -58,12 +82,10 @@ public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler, I
                 }
                 break;
         }
-
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-
         switch (faction)
         {
             case Faction.Friendly:

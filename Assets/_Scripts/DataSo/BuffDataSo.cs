@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CommonBuff", menuName = "Data/Buff/CommonBuff")]
+[CreateAssetMenu(fileName = "CommonBuff", menuName = "Data/BuffConsumption/CommonBuff")]
 public class BuffDataSo : UnitBuffDataSo
 {
     [Header("Buff属性")]
