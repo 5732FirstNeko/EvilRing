@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14528fe8c0f335340af67484ad4643f6, type: 3}
+  m_Name: WarlockSkill_BallBullet
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: 
+  bulletPrefab: {fileID: 2371654865258559980, guid: 48369539b2b1aa04c9d86f5cebdc4da9, type: 3}
+  bullethitPrefab: {fileID: 3568482901057249483, guid: cf6ecb3a1fbb9b14a80e72868361cdec, type: 3}
+  skillListIndex: 0
+  firebuletSpeed: 0
+  bulletUpOffest: {x: -1.5, y: 2, z: 0}
+  bulletDownOffest: {x: -1.5, y: -2, z: 0}

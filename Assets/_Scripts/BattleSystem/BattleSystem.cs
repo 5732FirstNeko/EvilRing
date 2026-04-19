@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,17 +45,32 @@ public class BattleSystem : MonoBehaviour
     /// </summary>
     public UnitPlatQueue HostilityUnitPlatsQueue { get; private set; }
 
-    private PriorityQueue<UnitPlat> battleQueue;
-    private Dictionary<Unit, UnitSkill> OnGameStartSkills;
-    private Dictionary<Unit, UnitSkill> OnRoundStartSkills;
-    private Dictionary<Unit, UnitSkill> OnRoundEndSkills;
-    private Dictionary<Unit, UnitSkill> OnStrikeBackSkills;
+    public Func<float> OnGameStart;
+    public Func<int,float> OnRoundStart;
+    public Func<int,float> OnRound;
+    public Func<int,float> OnRoundEnd;
 
-    private Dictionary<Unit, byte> OnStrikeBackMap;
+    public Action<UnitPlat> OnUnitplatDequeue;
+
+    public Action OnGameEnd;
+
+    private PriorityQueue<UnitPlat> battleQueue;
+    private LinkedList<UnitPlat> dequeueList;
+
+    private Dictionary<UnitSkill,Unit> OnGameStartSkills;
+    private Dictionary<UnitSkill,Unit> OnRoundStartSkills;
+    private Dictionary<UnitSkill,Unit> OnRoundEndSkills;
+    private Dictionary<UnitSkill,Unit> OnStrikeBackSkills;
+
+    private Dictionary<Unit, int> OnStrikeBackMap;
     private Dictionary<UnitBuff, List<UnitPlat>> UnitBuffMap;
 
-    private int friendlyDeadCount;
-    private int hostilityDeadCount;
+    private Coroutine battleIEnumerator;
+
+    public int friendlyDeadCount;
+    public int hostilityDeadCount;
+
+    public int currentRound = -1;
 
     private void Awake()
     {
@@ -72,12 +88,14 @@ public class BattleSystem : MonoBehaviour
     private void Start()
     {
         battleQueue = new PriorityQueue<UnitPlat>(true);
-        OnGameStartSkills = new Dictionary<Unit, UnitSkill>();
-        OnRoundStartSkills = new Dictionary<Unit, UnitSkill>();
-        OnRoundEndSkills = new Dictionary<Unit, UnitSkill>();
-        OnStrikeBackSkills = new Dictionary<Unit, UnitSkill>();
+        dequeueList = new LinkedList<UnitPlat>();
 
-        OnStrikeBackMap = new Dictionary<Unit, byte>();
+        OnGameStartSkills = new Dictionary<UnitSkill, Unit>();
+        OnRoundStartSkills = new Dictionary<UnitSkill, Unit>();
+        OnRoundEndSkills = new Dictionary<UnitSkill, Unit>();
+        OnStrikeBackSkills = new Dictionary<UnitSkill, Unit>();
+
+        OnStrikeBackMap = new Dictionary<Unit, int>();
         UnitBuffMap = new Dictionary<UnitBuff, List<UnitPlat>>();
 
         FriendlyUnitPlatsQueue = new UnitPlatQueue();
@@ -114,6 +132,97 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
+    public void UnitResurrection(UnitPlat unitPlat)
+    {
+        unitPlat.isDead = false;
+        unitPlat.iconSpriteRender.DOColor(Color.white, 1f).SetEase(Ease.OutQuart);
+        unitPlat.unit.HP = Mathf.RoundToInt(unitPlat.unit.HP * 0.5f);
+        battleQueue.Enqueue(unitPlat, unitPlat.unit.speed);
+
+        switch (unitPlat.unit.faction)
+        {
+            case Faction.Friendly:
+                friendlyDeadCount--;
+                break;
+            case Faction.Hostility:
+                hostilityDeadCount--;
+                break;
+        }
+
+        foreach (var skill in unitPlat.unit.unitSkills)
+        {
+            if (skill.TriggerTiming == TriggerTiming.OnGameStart)
+            {
+                OnGameStartSkills.Add(skill, unitPlat.unit);
+            }
+            if (skill.TriggerTiming == TriggerTiming.OnRoundStart)
+            {
+                OnRoundStartSkills.Add(skill, unitPlat.unit);
+            }
+            if (skill.TriggerTiming == TriggerTiming.OnRoundEnd)
+            {
+                OnRoundEndSkills.Add(skill, unitPlat.unit);
+            }
+            if (skill.TriggerTiming == TriggerTiming.OnStrikeBack)
+            {
+                OnStrikeBackSkills.Add(skill, unitPlat.unit);
+                OnStrikeBackMap.Add(unitPlat.unit, unitPlat.unit.HP);
+            }
+        }
+    }
+
+    public void UnitDead(UnitPlat unitPlat)
+    {
+        unitPlat.isDead = true;
+        if (battleQueue.Contains(unitPlat))
+        {
+            battleQueue.Remove(unitPlat);
+        }
+        switch (unitPlat.unit.faction)
+        {
+            case Faction.Friendly:
+                friendlyDeadCount++;
+                break;
+            case Faction.Hostility:
+                hostilityDeadCount++;
+                break;
+        }
+
+        foreach (var skill in unitPlat.unit.unitSkills)
+        {
+            if (skill.TriggerTiming == TriggerTiming.OnGameStart)
+            {
+                OnGameStartSkills.Remove(skill);
+            }
+            if (skill.TriggerTiming == TriggerTiming.OnRoundStart)
+            {
+                OnRoundStartSkills.Remove(skill);
+            }
+            if (skill.TriggerTiming == TriggerTiming.OnRoundEnd)
+            {
+                OnRoundEndSkills.Remove(skill);
+            }
+            if (skill.TriggerTiming == TriggerTiming.OnStrikeBack)
+            {
+                OnStrikeBackSkills.Remove(skill);
+                OnStrikeBackMap.Remove(unitPlat.unit);
+            }
+        }
+
+        unitPlat.unit.DeadAction();
+    }
+
+    public void UnitReEnqueue(UnitPlat unitPlat)
+    {
+        battleQueue.Enqueue(unitPlat,unitPlat.unit.speed);
+    }
+
+    public void UnitRemoveQueue(UnitPlat unitPlat)
+    {
+        battleQueue.Remove(unitPlat);
+    }
+
+    #region BattleFunction
     public void BattleEnd()
     {
         UnitBuffMap.Clear();
@@ -125,24 +234,50 @@ public class BattleSystem : MonoBehaviour
         {
             unitplat.UnitPlatClear();
         }
+
+        currentRound = -1;
+        OnGameStart = null;
+        OnRoundStart = null;
+        OnRound = null;
+        OnRoundEnd = null;
+        OnGameStartSkills = null;
+        OnGameEnd = null;
+
+        battleIEnumerator = null;
     }
 
     public void BattleInit()
     {
         //TODO : Battle Start UI Animation
 
+        Debug.Log("BattleStart");
+
         FriendlyUnitPlatsQueue.Clear();
         HostilityUnitPlatsQueue.Clear();
 
-        List<UnitPlat> hostitlyPlats = UnitCardSystem.instance.GetHostitlyUnitPlats();
+        List<UnitPlat> hostitlyPlats = UnitCardSystem.instance.GetFinalHostitlyUnitPlats();
         List<UnitPlat> friendlyPlats = UnitCardSystem.instance.GetFinalFriendlyUnitPlats();
         {
             for (int i = 0; i < 4; i++)
             {
+                foreach (var skill in hostitlyPlats[i].unitData.Skills)
+                {
+                    skill.GameStartInit();
+                }
+                if (hostitlyPlats[i].unitData.SpKillData != null)
+                {
+                    hostitlyPlats[i].unitData.SpKillData.GameStartInit();
+                }
+                hostitlyPlats[i].unitData.UnitDeadData?.PrefabInit();
                 HostilityUnitPlatsQueue.unitPlatQueue.Add(hostitlyPlats[i]);
             }
             for (int i = 0; i < 4; i++)
             {
+                foreach (var skill in friendlyPlats[i].unitData.Skills)
+                {
+                    skill.GameStartInit();
+                }
+                friendlyPlats[i].unitData.UnitDeadData?.PrefabInit();
                 FriendlyUnitPlatsQueue.unitPlatQueue.Add(friendlyPlats[i]);
             }
         }
@@ -158,86 +293,105 @@ public class BattleSystem : MonoBehaviour
 
         foreach (var plat in FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
-            battleQueue.Enqueue(plat, plat.unit.speed);
             foreach (var skill in plat.unit.unitSkills)
             {
                 if (skill.TriggerTiming == TriggerTiming.OnGameStart)
                 {
-                    OnGameStartSkills.Add(plat.unit,skill);
+                    OnGameStartSkills.Add(skill, plat.unit);
                 }
                 if (skill.TriggerTiming == TriggerTiming.OnRoundStart)
                 {
-                    OnRoundStartSkills.Add(plat.unit, skill);
+                    OnRoundStartSkills.Add(skill, plat.unit);
                 }
                 if (skill.TriggerTiming == TriggerTiming.OnRoundEnd)
                 {
-                    OnRoundEndSkills.Add(plat.unit, skill);
+                    OnRoundEndSkills.Add(skill, plat.unit);
                 }
                 if (skill.TriggerTiming == TriggerTiming.OnStrikeBack)
                 {
-                    OnStrikeBackSkills.Add(plat.unit, skill);
+                    OnStrikeBackSkills.Add(skill, plat.unit);
                     OnStrikeBackMap.Add(plat.unit, plat.unit.HP);
                 }
             }
         }
         foreach (var plat in HostilityUnitPlatsQueue.GetAllUnitPlat())
         {
-            battleQueue.Enqueue(plat, plat.unit.speed);
             foreach (var skill in plat.unit.unitSkills)
             {
                 if (skill.TriggerTiming == TriggerTiming.OnGameStart)
                 {
-                    OnGameStartSkills.Add(plat.unit, skill);
+                    OnGameStartSkills.Add(skill, plat.unit);
                 }
                 if (skill.TriggerTiming == TriggerTiming.OnRoundStart)
                 {
-                    OnRoundStartSkills.Add(plat.unit, skill);
+                    OnRoundStartSkills.Add(skill, plat.unit);
                 }
                 if (skill.TriggerTiming == TriggerTiming.OnRoundEnd)
                 {
-                    OnRoundEndSkills.Add(plat.unit, skill);
+                    OnRoundEndSkills.Add(skill, plat.unit);
                 }
                 if (skill.TriggerTiming == TriggerTiming.OnStrikeBack)
                 {
-                    OnStrikeBackSkills.Add(plat.unit, skill);
+                    OnStrikeBackSkills.Add(skill, plat.unit);
                     OnStrikeBackMap.Add(plat.unit, plat.unit.HP);
                 }
             }
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            foreach (var skill in hostitlyPlats[i].unitData.Skills)
+            {
+                skill.GameStartInit();
+            }
+            if (hostitlyPlats[i].unitData.SpKillData != null)
+            {
+                hostitlyPlats[i].unitData.SpKillData.GameStartInit();
+            }
+            hostitlyPlats[i].unitData.UnitDeadData?.PrefabInit();
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            foreach (var skill in friendlyPlats[i].unitData.Skills)
+            {
+                skill.GameStartInit();
+            }
+            friendlyPlats[i].unitData.UnitDeadData?.PrefabInit();
         }
     }
 
     public void BattleFunction()
     {
-        StartCoroutine(Battle());
+        battleIEnumerator = StartCoroutine(Battle());
     }
 
     private IEnumerator Battle()
     {
+        float ongameStarttime = OnGameStart?.Invoke() ?? 0;
+        yield return new WaitForSeconds(ongameStarttime);
+
         yield return HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
         yield return HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
 
-        List<Inventory> removeInventory = new List<Inventory>();
-        foreach (var inventory in InventoryManager.instance.globalInventoryList)
-        {
-            inventory.Action(HostilityUnitPlatsQueue.GetAllUnitPlat());
-            inventory.roundContinue--;
-            if (inventory.roundContinue <= 0)
-            {
-                removeInventory.Add(inventory);
-            }
-            yield return HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
-            yield return new WaitForSeconds(inventory.itemData.itemBuff.BuffActionTime);
-        }
+        Debug.Log(friendlyDeadCount);
+        Debug.Log(hostilityDeadCount);
 
-        for (int i = removeInventory.Count - 1; i >= 0; i--)
+        foreach (var plat in FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
-            InventoryManager.instance.RemoveInventoryfromGlobal(removeInventory[i]);
+            battleQueue.Enqueue(plat, plat.unit.speed);
+        }
+        foreach (var plat in HostilityUnitPlatsQueue.GetAllUnitPlat())
+        {
+            battleQueue.Enqueue(plat, plat.unit.speed);
         }
 
         yield return LevelStartBattle();
         yield return AllBuffAction(TriggerTiming.OnGameStart);
 
+        Debug.Log(battleQueue.Count);
+
         int safecount = 0;
+        currentRound = 0;
         while (friendlyDeadCount < 4 && hostilityDeadCount < 4)
         {
             safecount++;
@@ -245,6 +399,10 @@ public class BattleSystem : MonoBehaviour
             {
                 yield break;
             }
+            yield return RoundStartBattle();
+            yield return AllBuffAction(TriggerTiming.OnRoundStart);
+            float onroundStarttime = OnRoundStart?.Invoke(currentRound) ?? 0;
+            yield return new WaitForSeconds(onroundStarttime);
 
             while (battleQueue.Count > 0)
             {
@@ -258,47 +416,63 @@ public class BattleSystem : MonoBehaviour
                 {
                     OnStrikeBackMap[unit] = unit.HP;
                 }
-                yield return RoundStartBattle();
-                yield return AllBuffAction(TriggerTiming.OnRoundStart);
 
                 UnitPlat unitPlat = battleQueue.Dequeue();
+                Material litMaterial = unitPlat.iconSpriteRender.material;
+                unitPlat.iconSpriteRender.material = GameManager.UnlitMaterial;
                 if (!unitPlat.isDead)
                 {
                     UnitSkill OnRoundSkill = unitPlat.unit.UnitSkillChoice();
-                    ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
-                    OnRoundSkill.Action(targetPlats);
-
-                    Debug.Log(unitPlat.name);
-                    Debug.Log(unitPlat.unit.faction + " " + unitPlat.site + " Attack ");
-                    foreach (var tar in targetPlats)
+                    if (OnRoundSkill != null)
                     {
-                        Debug.Log(tar.unit.faction + " " + tar.site);
-                    }
-                    Debug.Log("----------------");
+                        ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
+                        OnRoundSkill.Action(targetPlats);
 
-                    foreach (var buff in OnRoundSkill.UnitBuffs)
-                    {
-                        AddBuffToUnitPlat(buff, targetPlats);
+                        Debug.Log(unitPlat.name);
+                        Debug.Log(unitPlat.unit.faction + " " + unitPlat.site + " Attack ");
+                        foreach (var tar in targetPlats)
+                        {
+                            Debug.Log(tar.unit.faction + " " + tar.site);
+                        }
+                        Debug.Log("----------------");
+
+                        foreach (var buff in OnRoundSkill.UnitBuffs)
+                        {
+                            AddBuffToUnitPlat(buff, targetPlats);
+                        }
+
+                        yield return new WaitForSeconds(OnRoundSkill.SkillTime);
                     }
                     yield return AllBuffAction(TriggerTiming.OnRound);
-                    yield return new WaitForSeconds(OnRoundSkill.SkillTime);
+                    unitPlat.iconSpriteRender.material = litMaterial;
+                    dequeueList.AddLast(unitPlat);
+                    OnUnitplatDequeue?.Invoke(unitPlat);
+                    Debug.Log(hostilityDeadCount);
                 }
-                
-                yield return RoundEndBattle();
-                yield return AllBuffAction(TriggerTiming.OnRoundEnd);
+
+                yield return HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
+                yield return HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
 
                 yield return StrikeBackBattle();
                 yield return AllBuffAction(TriggerTiming.OnStrikeBack);
             }
 
+            yield return RoundEndBattle();
+            yield return AllBuffAction(TriggerTiming.OnRoundEnd);
+            float onRoundEndtime = OnRound?.Invoke(currentRound) ?? 0;
+            yield return new WaitForSeconds(onRoundEndtime);
+
+            battleQueue.Clear();
             foreach (var plat in FriendlyUnitPlatsQueue.GetAllUnitPlat())
             {
+                if(plat.isDead) continue;
                 battleQueue.Enqueue(plat, plat.unit.speed);
             }
             foreach (var plat in HostilityUnitPlatsQueue.GetAllUnitPlat())
             {
                 battleQueue.Enqueue(plat, plat.unit.speed);
             }
+            currentRound++;
         }
     }
 
@@ -329,35 +503,11 @@ public class BattleSystem : MonoBehaviour
         {
             UnitBuffMap.Remove(removeBuff[i]);
         }
-
-        List<Inventory> removeInventory = new List<Inventory>();
-        foreach (var (inventory, plat) in InventoryManager.instance.InventoryTargetMap)
-        {
-            Debug.Log("Inventory : " + inventory.name + " " + plat.name);
-            if (inventory.itemData.itemBuff.TriggerTiming != timing)
-                continue;
-
-            UnitPlat[] actionPlat = new UnitPlat[] { plat };
-            Debug.Log("actionPlatCount : " +  actionPlat.Length);
-            inventory.Action(actionPlat);
-            inventory.roundContinue--;
-            if (inventory.roundContinue <= 0)
-            {
-                removeInventory.Add(inventory);
-            }
-            yield return HPCheck(actionPlat);
-            yield return new WaitForSeconds(inventory.itemData.itemBuff.BuffActionTime);
-        }
-
-        for (int i = removeInventory.Count - 1; i >= 0; i--)
-        {
-            InventoryManager.instance.RemoveInventoryfromUnit(removeInventory[i]);
-        }
     }
 
     private IEnumerator LevelStartBattle()
     {
-        foreach (var (unit, gameStartSkill) in OnGameStartSkills)
+        foreach (var (gameStartSkill, unit) in OnGameStartSkills)
         {
             ICollection<UnitPlat> unitPlats = GetActionTargetPlat(unit, gameStartSkill);
             if (unitPlats != null)
@@ -378,7 +528,7 @@ public class BattleSystem : MonoBehaviour
 
     private IEnumerator RoundStartBattle()
     {
-        foreach (var (unit, roundStartSkill) in OnRoundStartSkills)
+        foreach (var (roundStartSkill, unit) in OnRoundStartSkills.ToList())
         {
             ICollection<UnitPlat> unitPlats = GetActionTargetPlat(unit, roundStartSkill);
             if (unitPlats != null)
@@ -399,7 +549,7 @@ public class BattleSystem : MonoBehaviour
 
     private IEnumerator RoundEndBattle()
     {
-        foreach (var (unit, roundEndSkill) in OnRoundEndSkills)
+        foreach (var (roundEndSkill, unit) in OnRoundEndSkills)
         {
             ICollection<UnitPlat> unitPlats = GetActionTargetPlat(unit, roundEndSkill);
             if (unitPlats != null)
@@ -423,7 +573,14 @@ public class BattleSystem : MonoBehaviour
         {
             if (unit.HP < HP)
             {
-                UnitSkill strikeBackSkill = OnStrikeBackSkills[unit];
+                UnitSkill strikeBackSkill = null;
+                foreach (var skill in unit.unitSkills)
+                {
+                    if (skill.TriggerTiming == TriggerTiming.OnStrikeBack)
+                    {
+                        strikeBackSkill = skill;
+                    }
+                }
                 ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unit, strikeBackSkill);
                 strikeBackSkill.Action(targetPlats);
                 yield return HPCheck(targetPlats);
@@ -438,51 +595,52 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
+    #endregion
+
     private IEnumerator HPCheck(ICollection<UnitPlat> unitPlats)
     {
-        float maxDeadTIme = 0;
+        float maxDeadTime = 0;
         foreach (var plat in unitPlats)
         {
             if (plat.isDead) continue;
 
             if (plat.unit.HP <= 0)
             {
-                plat.isDead = true;
-                if (plat.unit.faction == Faction.Friendly)
-                {
-                    battleQueue.Remove(plat);
-                    friendlyDeadCount++;
-                }
-                else
-                {
-                    hostilityDeadCount++;
-                }
-
+                UnitDead(plat);
 
                 if (hostilityDeadCount >= unitPlatQueueCount)
                 {
                     //TODO : Game Win Logic
-                    StopAllCoroutines();
-                    BattleEnd();
-                    GameManager.instance.GameBattleEnd(true);
+                    OnGameEnd?.Invoke();
+                    if (hostilityDeadCount >= unitPlatQueueCount)
+                    {
+                        Debug.Log("win");
+                        StopAllCoroutines();
+                        BattleEnd();
+                        GameManager.instance.GameBattleEnd(true);
+                    }
                 }
 
                 if (friendlyDeadCount >= unitPlatQueueCount)
                 {
                     //TODO : Game Lose Logic
-                    StopAllCoroutines();
-                    BattleEnd();
-                    GameManager.instance.GameBattleEnd(false);
+                    OnGameEnd?.Invoke();
+                    if (hostilityDeadCount >= unitPlatQueueCount)
+                    {
+                        StopAllCoroutines();
+                        BattleEnd();
+                        GameManager.instance.GameBattleEnd(false);
+                    }
                 }
 
-                if (maxDeadTIme < plat.unit.DeadAnimationTime)
+                if (maxDeadTime < plat.unit.DeadAnimationTime)
                 {
-                    maxDeadTIme = plat.unit.DeadAnimationTime;
+                    maxDeadTime = plat.unit.DeadAnimationTime;
                 }
             }
         }
 
-        yield return maxDeadTIme;
+        yield return maxDeadTime;
     }
 
     private void AddBuffToUnitPlat(UnitBuff buff, ICollection<UnitPlat> plats)
@@ -663,7 +821,7 @@ public class BattleSystem : MonoBehaviour
             }
         }
 
-        public ICollection<UnitPlat> GetAllUnitPlat()
+        public List<UnitPlat> GetAllUnitPlat()
         {
             return unitPlatQueue;
         }

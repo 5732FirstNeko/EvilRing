@@ -78,6 +78,8 @@ public class InventoryManager : MonoBehaviour
     public List<Inventory> globalInventoryList;
     public Dictionary<Inventory, UnitPlat> InventoryTargetMap;
 
+    public ItemDataSO lastUsedItem;
+
     private void Awake()
     {
         if (Instance == null)
@@ -116,29 +118,6 @@ public class InventoryManager : MonoBehaviour
     {
         InventoryTargetMap.Add(inventory, target);
     }
-
-    public void RemoveInventoryfromUnit(Inventory inventory)
-    {
-        inventory.UnBindBuff(InventoryTargetMap[inventory]);
-        InventoryTargetMap.Remove(inventory);
-        Destroy(inventory.gameObject);
-    }
-
-    public void UnitInventoryBind()
-    {
-        foreach (var (invent, tar) in InventoryTargetMap)
-        {
-            invent.BindBuff(tar);
-        }
-    }
-
-    public void UnitInventoryUnBind()
-    {
-        foreach (var (invent, tar) in InventoryTargetMap)
-        {
-            invent.UnBindBuff(tar);
-        }
-    }
     #endregion
 
     #region GlobalInventory
@@ -147,36 +126,5 @@ public class InventoryManager : MonoBehaviour
         globalInventoryList.Add(inventory);
     }
 
-    public void RemoveInventoryfromGlobal(Inventory inventory)
-    {
-        foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.unitPlatQueue)
-        {
-            inventory.UnBindBuff(unit);
-        }
-        globalInventoryList.Remove(inventory);
-        Destroy(inventory.gameObject);
-    }
-
-    public void GlobalInventoryBind()
-    {
-        foreach (var inventory in globalInventoryList)
-        {
-            foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.unitPlatQueue)
-            {
-                inventory.BindBuff(unit);
-            }
-        }
-    }
-
-    public void GlobalInventoryUnbind()
-    {
-        foreach (var inventory in globalInventoryList)
-        {
-            foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.unitPlatQueue)
-            {
-                inventory.UnBindBuff(unit);
-            }
-        }
-    }
     #endregion
 }

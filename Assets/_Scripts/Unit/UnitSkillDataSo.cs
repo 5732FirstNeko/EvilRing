@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class UnitSkillDataSo : ScriptableObject
 {
+    protected static float attackScale = 1.1f;
+
     public float SkillTime;
 
     public int Damage;
@@ -13,6 +15,8 @@ public abstract class UnitSkillDataSo : ScriptableObject
     public List<UnitBuffDataSo> UnitBuffs = new List<UnitBuffDataSo>();
 
     [TextArea] public string description;
+
+    public virtual void GameStartInit() { }
 
     public abstract void Action(ICollection<UnitPlat> unitPlats, UnitPlat user);
 
@@ -39,5 +43,6 @@ public enum TriggerTiming
     OnRoundEnd,
     OnGameStart,
     OnRound,
-    OnStrikeBack
+    OnStrikeBack,
+    Manual
 }

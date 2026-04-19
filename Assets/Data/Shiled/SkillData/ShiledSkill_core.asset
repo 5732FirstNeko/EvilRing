@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b9e60d8419543547b666e4d3d752366, type: 3}
+  m_Name: ShiledSkill_core
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 2
+  SkillTarget: 0
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: 
+  buffprefab: {fileID: 1119162677063963613, guid: 0c6410dd96fb874498fed03034012509, type: 3}
+  hitprefab: {fileID: 3568482901057249483, guid: 0d8e0fe3d26dd694e8338df99d629fb1, type: 3}
+  skillListIndex: 0

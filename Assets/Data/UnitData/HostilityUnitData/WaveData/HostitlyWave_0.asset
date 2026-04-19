@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ghostCost: 0
   hostilityDataList:
-  - {fileID: 11400000, guid: 559303999895c174fbe640c7dc9eaf44, type: 2}
   - {fileID: 11400000, guid: 725da0d1ea63e9a418d0c698cfb08fa2, type: 2}
-  - {fileID: 11400000, guid: b09d957700c5b044cbaa4f33b8810acb, type: 2}
-  - {fileID: 11400000, guid: 4b20e1d5148a5764e98914598f8fb6df, type: 2}
+  - {fileID: 11400000, guid: 8eff2a006f2d1a949913bc620172fd9f, type: 2}
+  - {fileID: 11400000, guid: a13d680cb76c64b499215bdf02d94e26, type: 2}
+  - {fileID: 11400000, guid: f99238941bfbda64b9432fce85453193, type: 2}

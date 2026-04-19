@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40ed14985d292ef4da8f00c859308772, type: 3}
+  m_Name: WizardSKill_shiled
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 0
+  Range: 00000000000000000000000000000000
+  UnitBuffs: []
+  description: 
+  shiledPrefab: {fileID: 1449007908159375197, guid: 139b0eab9efbb934e9324f0d149e3890, type: 3}
+  standrdMagicPrefab: {fileID: 5596916657426874754, guid: d21ef24a1ae8c4646975ff1a25245870, type: 3}
+  standrdhitPrefab: {fileID: 6494932906943325404, guid: f402a66af6073754a8e292e97561e0c2, type: 3}
+  skillListIndex: 0
+  explsionEnergy: 0
+  standrdAttackSpeed: 0

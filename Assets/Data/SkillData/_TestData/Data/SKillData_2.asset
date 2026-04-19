@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92584448cde56214fa1e76fbaa2c62ec, type: 3}
   m_Name: SKillData_2
   m_EditorClassIdentifier: 
-  SkillTime: 0
+  SkillTime: 1
   Damage: 0
   TriggerTiming: 0
   SkillTarget: 0

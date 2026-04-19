@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4486a38921584a43af06cf964d890d7, type: 3}
+  m_Name: WizardSKill_Damage
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 15
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 0200000003000000
+  UnitBuffs: []
+  description: 
+  laserPrefab: {fileID: 8283968461094585400, guid: 8df10721c7fe4c5478936964e51df447, type: 3}
+  laserHitPrefab: {fileID: 6494932906943325404, guid: f402a66af6073754a8e292e97561e0c2, type: 3}
+  skillListIndex: 0

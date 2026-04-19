@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: EmptyFriendlyUnitData
   m_EditorClassIdentifier: 
+  cardName: 
   HP: 0
   Speed: 0
   cost: 0
   Faction: 0
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: -2109069450, guid: a23ace9c98f5c7541ae314ab6185a390, type: 3}
   Skills: []
+  spCost: 0
+  SpKillData: {fileID: 0}
   DeadAnimationTime: 0
   UnitDeadData: {fileID: 0}

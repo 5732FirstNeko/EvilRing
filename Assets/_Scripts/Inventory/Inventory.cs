@@ -13,10 +13,8 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
     public Image itemImage;
 
     public int roundContinue;
-
-    public Action<ICollection<UnitPlat>, UnitPlat> OnAction;
-    public Action<UnitPlat, UnitPlat, bool> OnBindBuff;
-    public Action<UnitPlat, UnitPlat> OnUnBindBuff;
+    public Action OnAction;
+    public Action<UnitPlat> OnUnitplatAction;
 
     private void Start()
     {
@@ -32,37 +30,26 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
     {
         this.itemData = itemData;
         itemImage.sprite = itemData.itemIcon;
-
-        roundContinue = itemData.itemBuff.ContinuousRound;
-        OnAction += itemData.itemBuff.OnAction;
-        OnBindBuff += itemData.itemBuff.BindBuff;
-        OnUnBindBuff += itemData.itemBuff.UnbindBuff;
+        OnAction += itemData.Action;
+        OnUnitplatAction += itemData.Action;
     }
 
     public void DataClear()
     {
         itemData = null;
         itemImage.sprite = null;
-
-        roundContinue = -1;
-        OnAction = null;
-        OnBindBuff = null;
-        OnUnBindBuff = null;
     }
 
-    public void Action(ICollection<UnitPlat> unit)
+    public void Action()
     {
-        OnAction?.Invoke(unit, null);
+        OnAction?.Invoke();
+        InventoryManager.instance.lastUsedItem = itemData;
     }
 
-    public void BindBuff(UnitPlat unit, bool isFirstBind = true)
+    public void Action(UnitPlat unitPlat)
     {
-        OnBindBuff?.Invoke(unit, null, isFirstBind);
-    }
-
-    public void UnBindBuff(UnitPlat unit)
-    {
-        OnUnBindBuff?.Invoke(unit, null);
+        OnUnitplatAction?.Invoke(unitPlat);
+        InventoryManager.instance.lastUsedItem = itemData;
     }
 
     private void InventorySelectChange()
@@ -105,25 +92,41 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
         UnitSiteFlag unitSiteFlag = hit.collider.GetComponent<UnitSiteFlag>();
-        GlobalArea globalArea = hit.collider.GetComponent<GlobalArea>();
 
-        if (itemData.itemType == ItemBuffType.Unit &&
+        if (itemData.itemType == ItemBuffType.HostitlyUnit &&
             unitSiteFlag != null && unitSiteFlag.faction == Faction.Hostility)
         {
-            InventoryManager.instance.AddInventoryToUnit(this,
-                UnitCardSystem.instance.GetHostitlyUnitPlats()
-                [BattleSystem.GetIndexByUnitSite(unitSiteFlag.site)]);
+            UnitPlat unitPlat = UnitCardSystem.instance.GetHostitlyUnitPlats()
+                [BattleSystem.GetIndexByUnitSite(unitSiteFlag.site)];
+
+            if (unitPlat.unitData == null) return;
+
             transform.DOKill();
             InventoryManager.instance.RemoveInventryFromList(this);
             InventoryManager.instance.currentSelectInventory = null;
+
+            Action(unitPlat);
         }
-        else if (itemData.itemType == ItemBuffType.Global && (globalArea != null ||
-            (unitSiteFlag != null && unitSiteFlag.faction == Faction.Friendly)))
+        else if (itemData.itemType == ItemBuffType.FriendlyUnit &&
+            unitSiteFlag != null && unitSiteFlag.faction == Faction.Friendly)
         {
-            InventoryManager.instance.AddInventoryToGlobal(this);
+            UnitPlat unitPlat = UnitCardSystem.instance.GetCurrentFriendlyUnitPlats()
+                [BattleSystem.GetIndexByUnitSite(unitSiteFlag.site)];
+            if (unitPlat.unitData == null) return;
+
             transform.DOKill();
             InventoryManager.instance.RemoveInventryFromList(this);
             InventoryManager.instance.currentSelectInventory = null;
+
+            Action(unitPlat);
+        }
+        else if (itemData.itemType == ItemBuffType.Global)
+        {
+            transform.DOKill();
+            InventoryManager.instance.RemoveInventryFromList(this);
+            InventoryManager.instance.currentSelectInventory = null;
+
+            Action();
         }
     }
 

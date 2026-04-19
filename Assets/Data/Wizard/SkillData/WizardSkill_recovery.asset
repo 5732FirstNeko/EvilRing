@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dfc88ef46f2df345ba9d43361a7ad1f, type: 3}
+  m_Name: WizardSkill_recovery
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 10
+  TriggerTiming: 3
+  SkillTarget: 0
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: "\u4E3A\u5168\u4F53\u961F\u53CB\u6062\u590D10\u70B9\u7684\u751F\u547D\u503C"
+  recoveryPrefab: {fileID: 5531262020395606572, guid: 3b8c66008ac801a44bee8f074dfc0616, type: 3}
+  recoverAreaPosition: {x: 1.75, y: -2}
+  skillListIndex: 0

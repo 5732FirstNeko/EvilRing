@@ -7,9 +7,31 @@ public class Unit
 {
     private UnitPlat user;
 
-    public byte HP;
-    public byte MaxHP;
-    public byte speed;
+    public int HP 
+    {
+        get => _hp;
+        set
+        {
+            int hpchange = value - _hp;
+            value = OnDefend?.Invoke(hpchange, user) ?? 0 + value;
+            hpchange = value - _hp;
+            if (value >= MaxHP)
+            {
+                _hp = MaxHP;
+            }
+            else if (value <= 0)
+            {
+                _hp = 0;
+            }
+            else
+            {
+                _hp = value;
+            }
+            OnHPChange?.Invoke(hpchange, user);
+        }
+    }
+    public int MaxHP;
+    public int speed;
     public int DamageReduction;
     public Faction faction;
     public List<UnitSkill> unitSkills;
@@ -20,7 +42,12 @@ public class Unit
     public float DeadAnimationTime;
     public Action<UnitPlat> OnDead;
 
-    private int spCount;
+    public Action<int,UnitPlat> OnHPChange;
+    public Func<int,UnitPlat,int> OnDefend;
+
+    public int spCount;
+
+    private int _hp;
 
     public Unit(UnitDataSo unitData, UnitPlat user)
     {
@@ -46,12 +73,18 @@ public class Unit
                 usedSkills.Add(skill);
             }
         }
+
+        if (usedSkills.Count <= 0)
+        {
+            return null;
+        }
+
         int index = UnityEngine.Random.Range(0, usedSkills.Count);
 
         return usedSkills[index];
     }
 
-    public void DeadAction(UnitPlat user)
+    public void DeadAction()
     {
         OnDead?.Invoke(user);
     }

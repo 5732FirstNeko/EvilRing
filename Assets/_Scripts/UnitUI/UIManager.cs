@@ -30,6 +30,10 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private Text friendlyCostTextRight;
     [SerializeField] private Text friendlyCostTextLeft;
+    [SerializeField] private Text friendlyNameTextRight;
+    [SerializeField] private Text friendlyNameTextLeft;
+    [SerializeField] private Text friendlyHPTextRight;
+    [SerializeField] private Text friendlyHPTextLeft;
     [SerializeField] private Text friendlySpeedTextRight;
     [SerializeField] private Text friendlySpeedTextLeft;
     [SerializeField] private List<Text> friendlySkillTextsRight;
@@ -37,6 +41,10 @@ public class UIManager : MonoBehaviour
 
     public RectTransform hostitlyUnitDataUILeftRect;
     public RectTransform hostitlyUnitDataUIRightRect;
+    [SerializeField] private Text hostitlyNameTextLeft;
+    [SerializeField] private Text hostitlyNameTextRight;
+    [SerializeField] private Text hostitlyHPTextLeft;
+    [SerializeField] private Text hostitlyHPTextRight;
     [SerializeField] private Text hostitlySpeedTextLeft;
     [SerializeField] private Text hostitlySpeedTextRight;
     [SerializeField] private List<Text> hostitlySkillTextsLeft;
@@ -139,11 +147,18 @@ public class UIManager : MonoBehaviour
             UIDisPlayFunction(friendlyUnitDataUIRightRect, UnitDataUIHeight);
 
             friendlyCostTextRight.text = InventoryManager.Instance.gold >= unitData.cost ?
-                new StringBuilder( "GoldCost : " + "<color=green>" + unitData.cost + "</color>").ToString() : 
-                new StringBuilder( "GoldCost : " + "<color=red>" + unitData.cost + "</color>").ToString();
-            friendlySpeedTextRight.text = "Speed : " + unitData.Speed;
+                new StringBuilder( "黄金花费 : " + "<color=white>" + unitData.cost + "</color>").ToString() : 
+                new StringBuilder( "黄金花费 : " + "<color=red>" + unitData.cost + "</color>").ToString();
+            friendlySpeedTextRight.text = "速度 : " + unitData.Speed;
+            friendlyNameTextRight.text = unitData.cardName;
+            friendlyHPTextRight.text = "生命值 : " + (int)unitData.HP;
             for (int i = 0; i < unitData.Skills.Count; i++)
             {
+                if (i + 1 >= friendlySkillTextsRight.Count)
+                {
+                    break;
+                }
+
                 friendlySkillTextsRight[i].gameObject.SetActive(true);
                 friendlySkillTextsRight[i].text = unitData.Skills[i].description;
             }
@@ -156,11 +171,18 @@ public class UIManager : MonoBehaviour
             UIDisPlayFunction(friendlyUnitDataUILeftRect, UnitDataUIHeight);
 
             friendlyCostTextLeft.text = InventoryManager.Instance.gold >= unitData.cost ?
-                new StringBuilder("GoldCost : " + "<color=green>" + unitData.cost + "</color>").ToString() :
-                new StringBuilder("GoldCost : " + "<color=red>" + unitData.cost + "</color>").ToString();
-            friendlySpeedTextLeft.text = "Speed : " + unitData.Speed;
+                new StringBuilder("黄金花费 : " + "<color=white>" + unitData.cost + "</color>").ToString() :
+                new StringBuilder("黄金花费 : " + "<color=red>" + unitData.cost + "</color>").ToString();
+            friendlySpeedTextLeft.text = "速度 : " + unitData.Speed;
+            friendlyNameTextLeft.text = unitData.cardName;
+            friendlyHPTextLeft.text = "生命值 : " + (int)unitData.HP;
             for (int i = 0; i < unitData.Skills.Count; i++)
             {
+                if (i + 1 >= friendlySkillTextsRight.Count)
+                {
+                    break;
+                }
+
                 friendlySkillTextsLeft[i].gameObject.SetActive(true);
                 friendlySkillTextsLeft[i].text = unitData.Skills[i].description;
             }
@@ -174,12 +196,18 @@ public class UIManager : MonoBehaviour
         UIDisPlayFunction(friendlyUnitDataUIRightRect, UnitDataUIHeight);
 
         friendlyCostTextRight.text = InventoryManager.Instance.gold >= unitData.cost ?
-                new StringBuilder("GoldCost : " + "<color=green>" + unitData.cost + "</color>").ToString() :
-                new StringBuilder("GoldCost : " + "<color=red>" + unitData.cost + "</color>").ToString();
-        friendlySpeedTextRight.text = "Speed : " + unitData.Speed;
-        Debug.Log(unitData.Skills.Count);
+                new StringBuilder("黄金花费 : " + "<color=white>" + unitData.cost + "</color>").ToString() :
+                new StringBuilder("黄金花费 : " + "<color=red>" + unitData.cost + "</color>").ToString();
+        friendlySpeedTextRight.text = "速度 : " + unitData.Speed;
+        friendlyNameTextRight.text = unitData.cardName;
+        friendlyHPTextRight.text = "生命值 : " + (int)unitData.HP;
         for (int i = 0; i < unitData.Skills.Count; i++)
         {
+            if (i + 1 >= friendlySkillTextsRight.Count)
+            {
+                break;
+            }
+
             friendlySkillTextsRight[i].gameObject.SetActive(true);
             friendlySkillTextsRight[i].text = unitData.Skills[i].description;
         }
@@ -210,7 +238,9 @@ public class UIManager : MonoBehaviour
             hostitlyUnitDataUILeftRect.gameObject.SetActive(true);
 
             UIDisPlayFunction(hostitlyUnitDataUILeftRect, UnitDataUIHeight);
-            hostitlySpeedTextLeft.text = "Speed : " + unitData.Speed;
+            hostitlySpeedTextLeft.text = "速度 : " + unitData.Speed;
+            hostitlyNameTextLeft.text = unitData.cardName;
+            hostitlyHPTextLeft.text = "生命值 : " + (int)unitData.HP;
             for (int i = 0; i < unitData.Skills.Count; i++)
             {
                 hostitlySkillTextsLeft[i].gameObject.SetActive(true);
@@ -223,7 +253,9 @@ public class UIManager : MonoBehaviour
             hostitlyUnitDataUIRightRect.gameObject.SetActive(true);
 
             UIDisPlayFunction(hostitlyUnitDataUIRightRect, UnitDataUIHeight);
-            hostitlySpeedTextRight.text = "Speed : " + unitData.Speed;
+            hostitlySpeedTextRight.text = "速度 : " + unitData.Speed;
+            hostitlyNameTextRight.text = unitData.cardName;
+            hostitlyHPTextRight.text = "生命值 : " + (int)unitData.HP;
             for (int i = 0; i < unitData.Skills.Count; i++)
             {
                 hostitlySkillTextsRight[i].gameObject.SetActive(true);
@@ -237,7 +269,9 @@ public class UIManager : MonoBehaviour
         hostitlyUnitDataUILeftRect.gameObject.SetActive(true);
 
         UIDisPlayFunction(hostitlyUnitDataUILeftRect, UnitDataUIHeight);
-        hostitlySpeedTextLeft.text = "Speed : " + unitData.Speed;
+        hostitlySpeedTextLeft.text = "速度 : " + unitData.Speed;
+        hostitlyNameTextLeft.text = unitData.cardName;
+        hostitlyHPTextLeft.text = "生命值 : " + (int)unitData.HP;
         for (int i = 0; i < unitData.Skills.Count; i++)
         {
             hostitlySkillTextsLeft[i].gameObject.SetActive(true);

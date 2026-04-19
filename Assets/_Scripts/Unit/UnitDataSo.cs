@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Unit Data")]
 public class UnitDataSo : ScriptableObject
 {
+    public string cardName;
+
     public byte HP;
     public byte Speed;
     public int cost;

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
+  m_Name: lycoris_core
+  m_EditorClassIdentifier: 
+  cardName: 
+  HP: 15
+  Speed: 9
+  cost: 30
+  Faction: 0
+  UnitSprite: {fileID: 21300000, guid: 5b609fbdb41655c4c90b1a32ff47b677, type: 3}
+  Skills:
+  - {fileID: 11400000, guid: c214cddf2b1d28740bc7f6748e4bbefd, type: 2}
+  spCost: 0
+  SpKillData: {fileID: 0}
+  DeadAnimationTime: 5
+  UnitDeadData: {fileID: 11400000, guid: 80f4ae6b686e4314091dce091c00dca1, type: 2}

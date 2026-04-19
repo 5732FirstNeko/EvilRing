@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -20,7 +23,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public static Material UnlitMaterial;
+
     public GameState gameState;
+
+    public Light2D globalLight;
+    public List<Light2D> otherlights;
+    public float[] otherLightIntensity;
+
+    public Collider2D BackGroundCollider;
+    [SerializeField] private Material unlitmaterial;
 
     public bool isHaveDrag 
     {
@@ -38,14 +50,21 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        UnlitMaterial = unlitmaterial;
     }
 
     private void Start()
     {
+        otherLightIntensity = new float[otherlights.Count];
+        for (int i = 0; i < otherlights.Count; i++)
+        {
+            otherLightIntensity[i] = otherlights[i].intensity;
+        }
+
         UIManager.instance.battleButton.onClick.AddListener(() => 
         {
             GameBattleInit();
-            GameBattle();
         });
     }
 
@@ -68,11 +87,12 @@ public class GameManager : MonoBehaviour
         int friendlyCardCount = 0;
         foreach (var plat in UnitCardSystem.instance.GetCurrentFriendlyUnitPlats())
         {
-            if (plat.unitData != null)
+            if (plat.unitData != null && plat.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 friendlyCardCount++;
             }
         }
+
         if (friendlyCardCount <= 0)
         {
             UIManager.instance.UnitCardNonEnougthTip();
@@ -84,8 +104,7 @@ public class GameManager : MonoBehaviour
         BattleSystem.instance.BattleInit();
 
         HierarchicalTreeSystem.instance.HierarchicalTreeNodeGlobalAction();
-        InventoryManager.instance.GlobalInventoryBind();
-        InventoryManager.instance.UnitInventoryBind();
+        GameBattle();
     }
 
     public void GameBattle()
@@ -97,8 +116,6 @@ public class GameManager : MonoBehaviour
     public void GameBattleEnd(bool iswin)
     {
         gameState = GameState.Preparation;
-        InventoryManager.instance.GlobalInventoryUnbind();
-        InventoryManager.instance.UnitInventoryUnBind();
         UnitPlatPositionReset();
 
         if (iswin)
@@ -134,6 +151,34 @@ public class GameManager : MonoBehaviour
             UnitCardSystem.instance.hostitlyUnitPlats[i].transform.position =
                 new Vector3(BattleSystem.instance.hostilityUnitSiteFlag[i].transform.position.x,
                 UnitCardSystem.instance.hostitlyUnitPlats[i].transform.position.y, 0);
+        }
+    }
+
+    public GameObject GameObjectInit(GameObject gameObject)
+    {
+        GameObject game = Instantiate(gameObject, Vector3.zero, Quaternion.identity);
+        game.SetActive(false);
+        return game;
+    }
+
+    public void GlobalLightControll(float insentity, float time)
+    {
+        DOTween.To(
+            () => globalLight.intensity,
+            (x) => globalLight.intensity = x,
+            insentity,
+            time
+        );
+
+        for (int i = 0; i < otherlights.Count; i++)
+        {
+            int index = i;
+            DOTween.To(
+            () => otherlights[index].intensity,
+            (x) => otherlights[index].intensity = x,
+            insentity * otherLightIntensity[index],
+            time
+        );
         }
     }
 

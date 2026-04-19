@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a2ef414e36cb28489ee0035cbd9fb50, type: 3}
+  m_Name: SHiledSkill_resurrection
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 0
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: 
+  recoveryPrefab: {fileID: 5786931074595547879, guid: 333375f0e5bcd624abebb6de6a6752d4, type: 3}
+  resurrectionPrefab: {fileID: 6522218815400425276, guid: 1cfb6dd17eb8c844db6f51aa4f6cbf56, type: 3}
+  skillListIndex: 0

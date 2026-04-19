@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ab420d0481a07a44ac250bf1bda910d, type: 3}
+  m_Name: SwordSkill_Slash
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 0000000001000000
+  UnitBuffs: []
+  description: 
+  slashPrefab: {fileID: 4579642666522337268, guid: 51d844f37fa75e34c9c8de6262e9e4fb, type: 3}
+  swordHitPrefab: {fileID: 4967559944245486512, guid: 7052ec0a2f414e444b6d1913df092128, type: 3}
+  magicStaffPrefab: {fileID: 4294526613493036364, guid: ba45ef5eff2d61744851e15846e7b11e, type: 3}
+  skillListIndex: 0

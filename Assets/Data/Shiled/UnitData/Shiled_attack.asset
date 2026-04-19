@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
+  m_Name: Shiled_attack
+  m_EditorClassIdentifier: 
+  HP: 0
+  Speed: 7
+  cost: 0
+  Faction: 0
+  UnitSprite: {fileID: 0}
+  Skills:
+  - {fileID: 11400000, guid: 4dc027f7739ad0e4c8ff749d44f428d5, type: 2}
+  spCost: 0
+  SpKillData: {fileID: 0}
+  DeadAnimationTime: 1
+  UnitDeadData: {fileID: 11400000, guid: b0094004dc8c9b34b8b020f5086ae4a5, type: 2}

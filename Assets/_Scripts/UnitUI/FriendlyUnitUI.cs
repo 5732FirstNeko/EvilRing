@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,8 +11,13 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
     public UnitDataSo unitData;
     public Image Image;
 
+    public bool isLock = false;
+
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (unitData == null || isLock) return;
+
+        //GameManager.instance.BackGroundCollider.enabled = false;
         UIManager.instance.FriendlyUnitDataUnDisplay();
         UnitCardSystem.instance.currentFriendlyUnitUI = this;
         UnitCardSystem.instance.isHaveCardDrag = true;
@@ -25,16 +29,27 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (unitData == null || isLock) return;
+
         UIManager.instance.friendlyUnitInstance.transform.position = Input.mousePosition;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (unitData == null || isLock) return;
+
         UIManager.instance.friendlyUnitInstance.gameObject.SetActive(false);
         UIManager.instance.friendlyUnitInstance.raycastTarget = false;
         UnitCardSystem.instance.isHaveCardDrag = false;
 
         Image.color = new Color(Image.color.r, Image.color.g, Image.color.b, 1f);
+
+
+        if (eventData.pointerEnter == null) 
+        {
+            //GameManager.instance.BackGroundCollider.enabled = true;
+            return;
+        } 
 
         UnitSiteFlag unitSiteFlag = eventData.pointerEnter.GetComponent<UnitSiteFlag>();
         if (eventData.pointerEnter != null && unitSiteFlag != null && unitSiteFlag.faction == Faction.Friendly)
@@ -42,10 +57,14 @@ public class FriendlyUnitUI : MonoBehaviour, IPointerClickHandler,
             UnitCardSystem.instance.AddUnitToFriendlyList(unitData,
                    eventData.pointerEnter.GetComponent<UnitSiteFlag>().site);
         }
+
+        //GameManager.instance.BackGroundCollider.enabled = true;
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (unitData == null || isLock) return;
+
         if (eventData.button == PointerEventData.InputButton.Right)
         {
             if (UIManager.instance.friendlyUnitDataUIRightRect.gameObject.activeSelf)

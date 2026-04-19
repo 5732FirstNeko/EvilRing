@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FactorySystem : MonoBehaviour
@@ -39,6 +38,18 @@ public class FactorySystem : MonoBehaviour
     public List<HostilityWaveDataSo> hostilityWaveDataList = new List<HostilityWaveDataSo>();
     public List<UnitDataSo> friendlyUnitDataList = new List<UnitDataSo>();
 
+    public List<UnitDataSo> LycorisCards;
+    public List<UnitDataSo> wizardCards;
+    public List<UnitDataSo> swordmanCards;
+    public List<UnitDataSo> warlockCards;
+    public List<UnitDataSo> shiledCards;
+    public List<UnitDataSo> knightCards;
+
+    public List<UnitDataSo> GoblineCards;
+    public List<UnitDataSo> GuardsCards;
+
+    public List<ItemDataSO> items;
+
     public HostilityWaveDataSo GetHostitlyWaveDataByGhost(int ghostCount)
     {
         foreach (var waveData in hostilityWaveDataList)
@@ -61,5 +72,12 @@ public class FactorySystem : MonoBehaviour
         int index = Random.Range(0, friendlyUnitDataList.Count);
 
         return friendlyUnitDataList[index];
+    }
+
+    public ItemDataSO GetRandomItem()
+    {
+        int index = Random.Range(0, items.Count);
+
+        return items[index];
     }
 }

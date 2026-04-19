@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler, 
-    IPointerEnterHandler, IPointerExitHandler
+public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler
 {
     public Faction faction;
     public UnitSite site;
+
+    private bool isUIDataDisplay;
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -25,6 +25,43 @@ public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler,
                 UnitCardSystem.instance.AddUnitToFriendlyList(UnitCardSystem.instance.currentFriendlyUnitUI.unitData,
                     eventData.pointerEnter.GetComponent<UnitSiteFlag>().site);
             }
+            else if (eventData.button == PointerEventData.InputButton.Left &&
+                UnitCardSystem.instance.currentFriendlyUnitUI == null)
+            {
+                if (!isUIDataDisplay)
+                {
+                    isUIDataDisplay = true;
+                    OnUIDataDisplay(eventData);
+                }
+                else
+                {
+                    isUIDataDisplay = false;
+                    OnUIDataUnDisplay(eventData);
+                }
+            }
+            else if (eventData.button == PointerEventData.InputButton.Left &&
+                InventoryManager.instance.currentSelectInventory != null &&
+                InventoryManager.instance.currentSelectInventory.itemData.itemType == ItemBuffType.FriendlyUnit)
+            {
+                UnitPlat unitPlat = UnitCardSystem.instance.GetHostitlyUnitPlats()
+                    [BattleSystem.GetIndexByUnitSite(site)];
+
+                if (unitPlat != null) return;
+
+                InventoryManager.instance.RemoveInventryFromList(InventoryManager.instance.currentSelectInventory);
+                InventoryManager.instance.currentSelectInventory = null;
+
+                InventoryManager.instance.currentSelectInventory.Action(unitPlat);
+            }
+            else if (eventData.button == PointerEventData.InputButton.Left &&
+                InventoryManager.instance.currentSelectInventory != null &&
+                InventoryManager.instance.currentSelectInventory.itemData.itemType == ItemBuffType.Global)
+            {
+                InventoryManager.instance.RemoveInventryFromList(InventoryManager.instance.currentSelectInventory);
+                InventoryManager.instance.currentSelectInventory = null;
+
+                InventoryManager.instance.currentSelectInventory.Action();
+            }
             else if (eventData.button == PointerEventData.InputButton.Right)
             {
                 UnitCardSystem.instance.RemoveUnitFromFriendlyList(site);
@@ -34,24 +71,30 @@ public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler,
         {
             if (InventoryManager.instance.currentSelectInventory != null)
             {
-                if (InventoryManager.instance.currentSelectInventory.itemData.itemType == ItemBuffType.Unit)
+                if (InventoryManager.instance.currentSelectInventory.itemData.itemType == ItemBuffType.HostitlyUnit)
                 {
-                    InventoryManager.instance.AddInventoryToUnit(InventoryManager.instance.currentSelectInventory,
-                        UnitCardSystem.instance.GetCurrentFriendlyUnitPlats()[BattleSystem.GetIndexByUnitSite(site)]);
+                    UnitPlat unitPlat = UnitCardSystem.instance.GetHostitlyUnitPlats()
+                        [BattleSystem.GetIndexByUnitSite(site)];
+
+                    if (unitPlat != null) return;
+
                     InventoryManager.instance.RemoveInventryFromList(InventoryManager.instance.currentSelectInventory);
                     InventoryManager.instance.currentSelectInventory = null;
+
+                    InventoryManager.instance.currentSelectInventory.Action(unitPlat);
                 }
-                else
+                else if(InventoryManager.instance.currentSelectInventory.itemData.itemType == ItemBuffType.Global)
                 {
-                    InventoryManager.instance.AddInventoryToGlobal(InventoryManager.instance.currentSelectInventory);
                     InventoryManager.instance.RemoveInventryFromList(InventoryManager.instance.currentSelectInventory);
                     InventoryManager.instance.currentSelectInventory = null;
+
+                    InventoryManager.instance.currentSelectInventory.Action();
                 }
             }
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnUIDataDisplay(PointerEventData eventData)
     {
         if (GameManager.instance.isHaveDrag || 
             GameManager.instance.gameState == GameManager.GameState.Game)
@@ -84,7 +127,7 @@ public class UnitSiteFlag : MonoBehaviour, IDropHandler, IPointerClickHandler,
         }
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnUIDataUnDisplay(PointerEventData eventData)
     {
         switch (faction)
         {

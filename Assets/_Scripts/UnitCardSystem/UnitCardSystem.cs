@@ -25,7 +25,7 @@ public class UnitCardSystem : MonoBehaviour
     [SerializeField] private Sprite defaultCardSprite;
     [Header("Friendly")]
     public List<UnitPlat> friendlyUnitPlats = new List<UnitPlat>();
-    [SerializeField] private List<FriendlyUnitUI> friendlyUnitRefreshArea;
+    public List<FriendlyUnitUI> friendlyUnitRefreshArea;
 
     public int friendlyCardCount { get => friendlyUnitRefreshArea.Count; }
 
@@ -55,6 +55,8 @@ public class UnitCardSystem : MonoBehaviour
     private FriendlyUnitUI _friendlyUnitUI;
 
     public bool isHaveCardDrag;
+
+    [SerializeField] private RectTransform contentRect;
 
     private void Awake()
     {
@@ -86,8 +88,9 @@ public class UnitCardSystem : MonoBehaviour
             unitPlat.transform.DOScale(originScale, 1.5f);
 
             currentFriendlyUnitUI.unitData = null;
+            currentFriendlyUnitUI.Image.sprite = defaultCardSprite;
             currentFriendlyUnitUI = null;
-            RefreshFriendlyUnit();
+            FriendlyCardAreaAdjust();
         }
         else
         {
@@ -136,6 +139,66 @@ public class UnitCardSystem : MonoBehaviour
         return hostitlyUnitPlats;
     }
 
+    public List<UnitPlat> GetFinalHostitlyUnitPlats()
+    {
+        for (int i = 0; i < hostitlyUnitPlats.Count; i++)
+        {
+            hostitlyUnitPlats[i].UnitPlatInit(
+                hostitlyUnitPlats[i].unitData, hostitlyUnitPlats[i].site);
+        }
+
+        return hostitlyUnitPlats;
+    }
+
+    public void RefreshRandomFriendlyUnit()
+    {
+        int index = Random.Range(0, friendlyUnitRefreshArea.Count);
+
+        if (friendlyUnitRefreshArea[index].unitData == null)
+        {
+            for (int i = 0; i < friendlyUnitRefreshArea.Count; i++)
+            {
+                if (friendlyUnitRefreshArea[i].unitData != null)
+                {
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        friendlyUnitRefreshArea[index].unitData = null;
+
+        RefreshFriendlyUnit();
+        FriendlyCardAreaAdjust();
+    }
+
+    public void DestoryOneFriendlyUnit()
+    {
+        int index = Random.Range(0, friendlyUnitRefreshArea.Count);
+
+        if (friendlyUnitRefreshArea[index].unitData == null)
+        {
+            for (int i = 0; i < friendlyUnitRefreshArea.Count; i++)
+            {
+                if (friendlyUnitRefreshArea[i].unitData != null)
+                {
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        friendlyUnitRefreshArea[index].transform.SetAsLastSibling();
+
+        friendlyUnitRefreshArea[index].unitData = null;
+        Color color = friendlyUnitRefreshArea[index].Image.color;
+        friendlyUnitRefreshArea[index].Image.color = new Color(color.r, color.g, color.b, 0);
+        friendlyUnitRefreshArea[index].Image.sprite = defaultCardSprite;
+        friendlyUnitRefreshArea[index].Image.DOColor(color, 0.5f);
+
+        FriendlyCardAreaAdjust();
+    }
+
     public void RefreshFriendlyUnit()
     {
         FriendlyUnitUI activeFriendlyUnitUI = null;
@@ -152,6 +215,28 @@ public class UnitCardSystem : MonoBehaviour
 
         activeFriendlyUnitUI.unitData = FactorySystem.instance.GetFriendlyUnitData();
         activeFriendlyUnitUI.Image.sprite = activeFriendlyUnitUI.unitData.UnitSprite;
+        activeFriendlyUnitUI.isLock = false;
+
+        activeFriendlyUnitUI.transform.localScale = new(0, 0, 0);
+        activeFriendlyUnitUI.transform.rotation = new(0, 0, 0, 0);
+        activeFriendlyUnitUI.Image.color = new Color(activeFriendlyUnitUI.Image.color.r,
+            activeFriendlyUnitUI.Image.color.g, activeFriendlyUnitUI.Image.color.b, 0);
+
+        activeFriendlyUnitUI.transform.DOScale(new Vector3(1, 1, 1), 1.5f).SetEase(Ease.Linear);
+        activeFriendlyUnitUI.Image.DOFade(1,1.5f).SetEase(Ease.OutQuad);
+
+        FriendlyCardAreaAdjust();
+    }
+
+    public void RefreshFriendlyUnit(UnitDataSo unitData, int index)
+    {
+        FriendlyUnitUI activeFriendlyUnitUI = friendlyUnitRefreshArea[index];
+
+        if (activeFriendlyUnitUI == null || unitData == null) return;
+
+        activeFriendlyUnitUI.unitData = FactorySystem.instance.GetFriendlyUnitData();
+        activeFriendlyUnitUI.Image.sprite = activeFriendlyUnitUI.unitData.UnitSprite;
+        activeFriendlyUnitUI.isLock = false;
 
         activeFriendlyUnitUI.transform.localScale = new(0, 0, 0);
         activeFriendlyUnitUI.transform.rotation = new(0, 0, 0, 0);
@@ -159,7 +244,9 @@ public class UnitCardSystem : MonoBehaviour
             activeFriendlyUnitUI.Image.color.g, activeFriendlyUnitUI.Image.color.b, 0);
 
         activeFriendlyUnitUI.transform.DOScale(new Vector3(1, 1, 1), 1.5f).SetEase(Ease.OutBounce);
-        activeFriendlyUnitUI.Image.DOFade(1,1.5f).SetEase(Ease.OutQuad);
+        activeFriendlyUnitUI.Image.DOFade(1, 1.5f).SetEase(Ease.OutQuad);
+
+        FriendlyCardAreaAdjust();
     }
 
     public void RefreshAllFriendlyUnit()
@@ -168,6 +255,7 @@ public class UnitCardSystem : MonoBehaviour
         {
             friendlyUnitUI.unitData = FactorySystem.instance.GetFriendlyUnitData();
             friendlyUnitUI.Image.sprite = friendlyUnitUI.unitData.UnitSprite;
+            friendlyUnitUI.isLock = false;
 
             friendlyUnitUI.transform.localScale = new(0, 0, 0);
             friendlyUnitUI.transform.rotation = new(0, 0, 0, 0);
@@ -177,6 +265,8 @@ public class UnitCardSystem : MonoBehaviour
             friendlyUnitUI.transform.DOScale(new Vector3(1, 1, 1), 1.5f).SetEase(Ease.OutBounce);
             friendlyUnitUI.Image.DOFade(1, 1.5f).SetEase(Ease.OutQuad);
         }
+
+        FriendlyCardAreaAdjust();
     }
 
     public void RefreshHostitlyUnit()
@@ -201,7 +291,7 @@ public class UnitCardSystem : MonoBehaviour
 
             if (hostilityWaveData.hostilityDataList[i] == FactorySystem.instance.EmptyHostitlyUnitData)
             {
-                hostitlyUnitRefreshArea[i].image.gameObject.SetActive(false);
+                hostitlyUnitRefreshArea[i].image.sprite = defaultCardSprite;
                 continue;
             }
 
@@ -211,6 +301,28 @@ public class UnitCardSystem : MonoBehaviour
             hostitlyUnitplat.transform.localScale = Vector3.zero;
             hostitlyUnitplat.transform.DOScale(originScale, 1.5f);
         }
+    }
+
+    public void FriendlyCardAreaAdjust()
+    {
+        int displayCount = 0;
+        foreach (var area in friendlyUnitRefreshArea)
+        {
+            if (area.unitData == null || area.Image.sprite == defaultCardSprite)
+            {
+                area.transform.SetAsLastSibling();
+            }
+            else
+            {
+                displayCount++;
+            }
+        }
+
+        float targetRight = 750 - displayCount * 187.5f;
+
+        Vector2 pos = contentRect.anchoredPosition;
+        pos.x = contentRect.rect.width - targetRight;
+        contentRect.anchoredPosition = pos;
     }
 
     public void RecoverDefaultHostitlyUnitSprite()

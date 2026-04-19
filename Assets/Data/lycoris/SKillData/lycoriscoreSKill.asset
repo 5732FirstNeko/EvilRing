@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5894163baf6e8e4449310b87cbaf25b1, type: 3}
+  m_Name: lycoriscoreSKill
+  m_EditorClassIdentifier: 
+  SkillTime: 10.08
+  Damage: 75
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: "\u9009\u62E9\u961F\u53CB\u6216\u8005\u81EA\u8EAB\u4E3A\u76EE\u6807\uFF0C\u5438\u6536\u76EE\u680799%\u751F\u547D\u503C\uFF0C\u7136\u540E\u53D1\u52A8\u5F7C\u5CB8\u82B1\u653B\u51FB\uFF0C\u524A\u51CF\u653B\u51FB\u76EE\u6807\u6700\u5927\u751F\u547D\u503C90%\u7684\u751F\u547D"
+  LycorisHitprefab: {fileID: 2218712393669873144, guid: 0070495f7c355d74bae2d052422d3b6f, type: 3}
+  attackprefab: {fileID: 2812866088388879329, guid: fb830bc6d0584cd46b52b66b9760d497, type: 3}
+  friDeadprefab: {fileID: 5419461871491854399, guid: 079f67a4225434b4082e06f5661a0496, type: 3}
+  friDeadStateTime: 2
+  hitStateTIme: 5.58

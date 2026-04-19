@@ -2,19 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "Data/Item")]
-public class ItemDataSO : ScriptableObject
+
+public abstract class ItemDataSO : ScriptableObject
 {
     public string itemName;
     public Sprite itemIcon;
     [TextArea(3, 5)] public string itemDescription;
 
     public ItemBuffType itemType;
-    public UnitBuffDataSo itemBuff;
+
+    public virtual void Action() { }
+
+    public virtual void Action(UnitPlat unitPlat) { }
 }
 
 public enum ItemBuffType
 {
-    Unit,
+    FriendlyUnit,
+    HostitlyUnit,
     Global
 }

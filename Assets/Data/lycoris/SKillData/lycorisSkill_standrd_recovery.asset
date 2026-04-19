@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 611e920b8eb2c6a4d9436697038df1e3, type: 3}
+  m_Name: lycorisSkill_standrd_recovery
+  m_EditorClassIdentifier: 
+  SkillTime: 8
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 0
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: "\u5438\u6536\u81EA\u5DF1\u768425%\u6700\u5927\u751F\u547D\u503C\u7684\u8840\u91CF\uFF0C\u4E3A\u751F\u547D\u503C\u4F4E\u4E8E50%\u7684\u6240\u6709\u961F\u53CB\u6062\u590D50%\u6700\u5927\u751F\u547D\u503C\u7684\u8840\u91CF\uFF0C\u6BCF\u591A\u4E00\u4E2A\u961F\u53CB\uFF0C\u591A\u6D88\u801725%\u81EA\u8EAB\u751F\u547D\u503C"
+  effectprefab: {fileID: 216100886333515221, guid: edd57ec8c7aaa7a44b3b1c827978ad03, type: 3}
+  frihurttime: 1
+  friRecoverytime: 5

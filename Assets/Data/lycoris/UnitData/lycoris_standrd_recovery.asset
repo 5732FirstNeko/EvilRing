@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
+  m_Name: lycoris_standrd_recovery
+  m_EditorClassIdentifier: 
+  HP: 70
+  Speed: 5
+  cost: 15
+  Faction: 0
+  UnitSprite: {fileID: 21300000, guid: 4262ff0dc4dbe124f883302428aa88f3, type: 3}
+  Skills:
+  - {fileID: 11400000, guid: a507826ef865b424b8753ca61f6e21bc, type: 2}
+  spCost: 0
+  SpKillData: {fileID: 0}
+  DeadAnimationTime: 5
+  UnitDeadData: {fileID: 11400000, guid: 6e334a1b612b82a48ab7acf6ab2c341a, type: 2}
