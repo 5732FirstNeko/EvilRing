@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa1dacc46cdf9c4e867d19c0eb64c39, type: 3}
+  m_Name: GuardSkill_bladeWarden
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: 
+  doubleEdgedPrefab: {fileID: 1009293010862531325, guid: 5e9b8f86fad70bd45ba1d5f71a9e18a8, type: 3}
+  attackPrefab: {fileID: 1181859378568650234, guid: ed15cc6b11fa8b54583e3977d93d7ffc, type: 3}
+  hitPrefab: {fileID: 5678834818006547596, guid: 3ce4ec7b29a002c4c93313a4793303b7, type: 3}
+  skillListIndex: 0
+  userData: {fileID: 11400000, guid: 2458d93af2bc9c943b8764618249730e, type: 2}

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class UnitPlat : MonoBehaviour
@@ -198,9 +199,10 @@ public class UnitPlat : MonoBehaviour
     {
         recoveryEffect.SetActive(true);
 
-        recoveryEffect.GetComponentInChildren<ParticleSystem>().Play();
+        ParticleSystem director = recoveryEffect.GetComponentInChildren<ParticleSystem>();
+        director.Play();
 
-        recoveryEffect.transform.DOMove(transform.position, 3f).OnComplete(() => 
+        recoveryEffect.transform.DOMove(transform.position, director.main.duration).OnComplete(() => 
         {
             recoveryEffect.SetActive(false);
         });

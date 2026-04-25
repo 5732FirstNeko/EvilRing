@@ -8,7 +8,9 @@ using UnityEngine.Playables;
 public class Witch_core_standrd : UnitSkillDataSo
 {
     [SerializeField] private GameObject potPrefab;
+
     [SerializeField] private int skillListIndex;
+    [SerializeField] private UnitDataSo potCard;
 
     private GameObject potEffect;
 
@@ -28,13 +30,19 @@ public class Witch_core_standrd : UnitSkillDataSo
             return;
         }
 
+        UnitPlat pool = BattleSystem.instance.HostilityUnitPlatsQueue.GetUnitPlatByUnitSite(UnitSite.first).plat;
+
+        if (pool.unitData != potCard)
+        {
+            user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
+            return;
+        }
+
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
-        UnitPlat pool = BattleSystem.instance.HostilityUnitPlatsQueue.GetUnitPlatByUnitSite(UnitSite.first).plat;
-
         PlayableDirector director = potEffect.GetComponent<PlayableDirector>();
-        TimerManager.instance.StartTimer(name + "PoolEffect",0.6f, 
+        TimerManager.instance.StartTimer(name + "PotEffect",0.6f, 
             () => 
             {
                 potEffect.transform.position = pool.transform.position;
@@ -53,7 +61,7 @@ public class Witch_core_standrd : UnitSkillDataSo
             });
 
 
-        TimerManager.instance.StartTimer(name + "poolEffectClose", 0.7f + (float)director.duration, 
+        TimerManager.instance.StartTimer(name + "potEffectClose", 0.7f + (float)director.duration, 
             () => 
             {
                 potEffect.SetActive(false);

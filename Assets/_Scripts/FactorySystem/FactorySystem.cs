@@ -36,7 +36,13 @@ public class FactorySystem : MonoBehaviour
     public UnitDataSo EmptyHostitlyUnitData;
 
     public List<HostilityWaveDataSo> hostilityWaveDataList = new List<HostilityWaveDataSo>();
+    public List<UnitDataSo> lowLevelCards = new List<UnitDataSo>();
+    public List<UnitDataSo> heighlevelCards = new List<UnitDataSo>();
     public List<UnitDataSo> friendlyUnitDataList = new List<UnitDataSo>();
+
+    public int cardLevel = 0;
+    private int freshlowCardCount;
+    [SerializeField] private int freshCardCount = 20;
 
     public List<UnitDataSo> LycorisCards;
     public List<UnitDataSo> wizardCards;
@@ -45,8 +51,14 @@ public class FactorySystem : MonoBehaviour
     public List<UnitDataSo> shiledCards;
     public List<UnitDataSo> knightCards;
 
+    public List<UnitDataSo> WitchCards;
+    public List<UnitDataSo> SlimeCards;
+    public List<UnitDataSo> ThiefCards;
     public List<UnitDataSo> GoblineCards;
     public List<UnitDataSo> GuardsCards;
+    public List<UnitDataSo> NecroCards;
+    public List<UnitDataSo> ElementCards;
+    public List<UnitDataSo> FinalBoss;
 
     public List<ItemDataSO> items;
 
@@ -62,16 +74,53 @@ public class FactorySystem : MonoBehaviour
         return null;
     }
 
-    private void Start()
-    {
-        
-    }
-
     public UnitDataSo GetFriendlyUnitData()
     {
-        int index = Random.Range(0, friendlyUnitDataList.Count);
+        int midValue = 100;
 
-        return friendlyUnitDataList[index];
+        switch (cardLevel)
+        {
+            case 0:
+                midValue = 97;
+                break;
+            case 1:
+                midValue = 95;
+                break;
+            case 2:
+                midValue = 90;
+                break;
+            case 3:
+                midValue = 80;
+                break;
+            case 4:
+                midValue = 85;
+                break;
+        }
+
+        int value = Random.Range(0, 101);
+
+        if (value < midValue)
+        {
+            freshlowCardCount += cardLevel >= 2 ? 1 : 0;
+
+            if (freshlowCardCount >= freshCardCount && cardLevel >= 2)
+            {
+                int heightCardIndex = Random.Range(0, heighlevelCards.Count);
+                freshlowCardCount = 0;
+
+                return heighlevelCards[heightCardIndex];
+            }
+
+            int index = Random.Range(0, lowLevelCards.Count);
+            return lowLevelCards[index];
+        }
+        else
+        {
+            int index = Random.Range(0, heighlevelCards.Count);
+
+            freshlowCardCount = 0;
+            return heighlevelCards[index];
+        }
     }
 
     public ItemDataSO GetRandomItem()
@@ -79,5 +128,22 @@ public class FactorySystem : MonoBehaviour
         int index = Random.Range(0, items.Count);
 
         return items[index];
+    }
+
+    public void UnLockCardToList(ICollection<UnitDataSo> cards, bool islowCard = false)
+    {
+        foreach (var unit in cards)
+        {
+            if (islowCard)
+            {
+                lowLevelCards.Add(unit);
+            }
+            else
+            {
+                heighlevelCards.Add(unit);
+            }
+
+            friendlyUnitDataList.Add(unit);
+        }
     }
 }

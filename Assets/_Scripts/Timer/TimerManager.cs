@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -56,7 +57,7 @@ public class TimerManager : MonoBehaviour
     #region Timer
     private void TimerUpdate()
     {
-        foreach (Timer timer in timers.Values)
+        foreach (Timer timer in timers.Values.ToList())
         {
             timer.UpdateTimer();
         }

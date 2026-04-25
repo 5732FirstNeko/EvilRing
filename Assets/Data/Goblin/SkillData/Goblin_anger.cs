@@ -4,14 +4,13 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Playables;
 
-[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/" + nameof(Goblin_anger))]
+[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/Goblin/" + nameof(Goblin_anger))]
 public class Goblin_anger : UnitSkillDataSo
 {
     [SerializeField] private GameObject attackPrefab;
     [SerializeField] private GameObject hitPrefab;
 
     [SerializeField] private int skillListIndex;
-    [SerializeField] private Vector3 attackSpwanPosition;
 
     private List<GameObject> attackEffects;
     private List<GameObject> hitEffects;
@@ -59,7 +58,7 @@ public class Goblin_anger : UnitSkillDataSo
                     foreach (var unit in unitPlats)
                     {
                         int index = i;
-                        attackEffects[index].transform.position = attackSpwanPosition;
+                        attackEffects[index].transform.position = user.transform.position;
                         attackEffects[index].SetActive(true);
                         attackEffects[index].transform.DOMove(unit.transform.position, 2f).SetEase(Ease.InQuart).
                             OnComplete(() =>

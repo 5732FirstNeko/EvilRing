@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f73598783aaac8498560712a3c05bac, type: 3}
+  m_Name: ElementSkill_flash
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: 
+  flashAttackPrefab: {fileID: 2927323577754467999, guid: 6e26aa9c81467904b8dc1e77c596cf88, type: 3}
+  flashHitPrefab: {fileID: 5678834818006547596, guid: 3ce4ec7b29a002c4c93313a4793303b7, type: 3}
+  hitEffectRate: 1

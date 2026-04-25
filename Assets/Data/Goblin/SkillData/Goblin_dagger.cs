@@ -5,7 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Playables;
 
-[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/" + nameof(Goblin_dagger))]
+[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/Goblin/" + nameof(Goblin_dagger))]
 public class Goblin_dagger : UnitSkillDataSo
 {
     [SerializeField] private GameObject daggerPrefab;
@@ -64,7 +64,8 @@ public class Goblin_dagger : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "ArrowEffect", 0.6f,
             () =>
             {
-                daggerEffect.transform.position = user.transform.position;
+                daggerEffect.transform.position = user.transform.position + 
+                    UnitPlat.topDistance + new Vector3(0, 1.5f);
                 daggerEffect.SetActive(true);
 
                 daggerEffect.transform.DOMove(target.transform.position, 1f).

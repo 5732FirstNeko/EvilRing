@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c47723ab82deeb4581e5d3fc6254e09, type: 3}
+  m_Name: WitchSkill_dagger
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 0
+  SkillTarget: 0
+  Range: 
+  UnitBuffs: []
+  description: 
+  arrowPrefab: {fileID: 3754975539053869936, guid: 1c156865fa2043c4fa45fbce95656de6, type: 3}
+  hitPrefab: {fileID: 1405229123078902876, guid: ad7b2a8ebe70f7d45b280d8b5222741c, type: 3}
+  skillListIndex: 0
+  potCard: {fileID: 11400000, guid: d5f0d6b6d3fe9584d84e04062900a4af, type: 2}

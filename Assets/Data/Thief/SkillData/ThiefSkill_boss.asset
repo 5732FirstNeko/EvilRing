@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed3ccf8ea81ff404985ba55f48c1bc82, type: 3}
+  m_Name: ThiefSkill_boss
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: 
+  daggerPrefab: {fileID: 8326128187646857615, guid: f0669a64553b9a640b40ef7c0d9628c6, type: 3}
+  hitPrefab: {fileID: 1536340600430396621, guid: 6a57cb3c76c9dae49898dd6fb37aa39e, type: 3}
+  skilllistIndex: 0

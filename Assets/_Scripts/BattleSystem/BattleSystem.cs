@@ -174,6 +174,7 @@ public class BattleSystem : MonoBehaviour
     public void UnitDead(UnitPlat unitPlat)
     {
         unitPlat.isDead = true;
+        unitPlat.iconSpriteRender.DOColor(Color.cyan, 1f).SetEase(Ease.OutQuart);
         if (battleQueue.Contains(unitPlat))
         {
             battleQueue.Remove(unitPlat);
@@ -714,7 +715,7 @@ public class BattleSystem : MonoBehaviour
         return units;
     }
 
-    public ICollection<UnitPlat> GetActionPlats(Faction faction, ICollection<UnitSite> range)
+    public List<UnitPlat> GetActionPlats(Faction faction, ICollection<UnitSite> range)
     {
         List<UnitPlat> reslutes = new List<UnitPlat>();
         switch (faction)

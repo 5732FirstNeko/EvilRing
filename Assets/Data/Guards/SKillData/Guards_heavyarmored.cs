@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Playables;
 
-[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/" + nameof(Guards_heavyarmored))]
+[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/Guards/" + nameof(Guards_heavyarmored))]
 public class Guards_heavyarmored : UnitSkillDataSo
 {
     [SerializeField] private GameObject attackHitPrefab;

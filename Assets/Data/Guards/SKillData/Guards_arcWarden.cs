@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Playables;
 
-[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/" + nameof(Guards_arcWarden))]
+[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/Guards/" + nameof(Guards_arcWarden))]
 public class Guards_arcWarden : UnitSkillDataSo
 {
     [SerializeField] private GameObject arrowPrefab;

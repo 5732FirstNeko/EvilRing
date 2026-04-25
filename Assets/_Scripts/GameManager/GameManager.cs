@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
 
     public static Material UnlitMaterial;
 
+    public static Color purple = new Color(0.5f, 0f, 0.5f, 1f);
+
     public GameState gameState;
 
     public Light2D globalLight;

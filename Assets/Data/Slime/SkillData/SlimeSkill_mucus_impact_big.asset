@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a76ff18aaaf0884db959686547941a5, type: 3}
+  m_Name: SlimeSkill_mucus_impact_big
+  m_EditorClassIdentifier: 
+  SkillTime: 0
+  Damage: 0
+  TriggerTiming: 3
+  SkillTarget: 1
+  Range: 00000000010000000200000003000000
+  UnitBuffs: []
+  description: 
+  mucusAttackPrefab: {fileID: 179228301984206450, guid: 66dc15f3baff97745aab0c64a075543f, type: 3}
+  mucusHitPrefab: {fileID: 165539337525448472, guid: 38fabe2ace0853b49aaa05c222884a9f, type: 3}
+  impactHitPrefab: {fileID: 2717312285242599747, guid: b0d621939bdeefa4386bd978d105c1ec, type: 3}
+  mucusSpeed: 8
+  skillListIndex: 0
+  impactPosition: {x: 6, y: -0.5, z: 0}

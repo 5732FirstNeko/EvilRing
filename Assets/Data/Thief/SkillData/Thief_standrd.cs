@@ -45,6 +45,12 @@ public class Thief_standrd : UnitSkillDataSo
             }
         }
 
+        if (target == null)
+        {
+            user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
+            return;
+        }
+
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
@@ -53,7 +59,8 @@ public class Thief_standrd : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "DaggerMove", 0.6f, 
             () => 
             {
-                daggerEffect.transform.position = user.transform.position;
+                daggerEffect.transform.position = user.transform.position + 
+                    UnitPlat.topDistance + new Vector3(0, 1.5f);
                 daggerEffect.SetActive(false);
 
                 daggerEffect.transform.DOMove(target.transform.position, moveTime).OnComplete(

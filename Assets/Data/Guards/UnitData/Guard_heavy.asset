@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
+  m_Name: Guard_heavy
+  m_EditorClassIdentifier: 
+  cardName: 
+  HP: 0
+  Speed: 0
+  cost: 0
+  Faction: 1
+  UnitSprite: {fileID: 0}
+  Skills:
+  - {fileID: 11400000, guid: 6f4bf90652e59874ca67c2b40417eb89, type: 2}
+  spCost: 0
+  SpKillData: {fileID: 0}
+  DeadAnimationTime: 1
+  UnitDeadData: {fileID: 11400000, guid: 03d1a460c8fec3c4a81883390a091e76, type: 2}

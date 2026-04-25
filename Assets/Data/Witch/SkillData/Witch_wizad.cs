@@ -136,7 +136,7 @@ public class Witch_wizad : UnitSkillDataSo
                 hitEffects[1].GetComponent<PlayableDirector>().Play();
             });
 
-        TimerManager.instance.StartTimer(name + "smallFlashEffect_1", 0.6f + 0.1f + (float)director.duration,
+        TimerManager.instance.StartTimer(name + "smallFlashEffect_1", 0.6f + 0.1f + (float)director.duration * 2,
             () =>
             {
                 smallFlashEffect[1].transform.position = third.transform.position;

@@ -4,11 +4,11 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Playables;
 
-[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/" + nameof(Goblin_wizard))]
+[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/Goblin/" + nameof(Goblin_wizard))]
 public class Goblin_wizard : UnitSkillDataSo
 {
-    [SerializeField] private GameObject explsionPrefab;
-    [SerializeField] private GameObject explsionHitPrefab;
+    [SerializeField] private GameObject wizardPrefab;
+    [SerializeField] private GameObject wizardHitPrefab;
     [SerializeField] private GameObject flashAttackPrefab;
     [SerializeField] private GameObject flahsHitPrefab;
 
@@ -16,8 +16,8 @@ public class Goblin_wizard : UnitSkillDataSo
     [SerializeField] private UnitDataSo unitData;
     [SerializeField] private float hitStartRate;
 
-    private GameObject explsionEffect;
-    private List<GameObject> explsionHitEffects;
+    private GameObject wizardEffect;
+    private List<GameObject> wizardHitEffects;
     private GameObject flashEffect;
     private GameObject flashHiteffect;
     private UnitPlat m_user;
@@ -26,15 +26,15 @@ public class Goblin_wizard : UnitSkillDataSo
     {
         base.GameStartInit();
 
-        explsionEffect = Instantiate(explsionPrefab, Vector3.zero, Quaternion.identity);
-        explsionEffect.SetActive(false);
+        wizardEffect = Instantiate(wizardPrefab, Vector3.zero, Quaternion.identity);
+        wizardEffect.SetActive(false);
 
-        explsionHitEffects = new List<GameObject>();
+        wizardHitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
         {
-            GameObject effect = Instantiate(explsionHitPrefab, Vector3.zero, Quaternion.identity);
+            GameObject effect = Instantiate(wizardHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
-            explsionHitEffects.Add(effect);
+            wizardHitEffects.Add(effect);
         }
 
         flashEffect = Instantiate(flashHiteffect, Vector3.zero, Quaternion.identity);
@@ -147,13 +147,13 @@ public class Goblin_wizard : UnitSkillDataSo
             }
         }
 
-        PlayableDirector director = explsionEffect.GetComponent<PlayableDirector>();
+        PlayableDirector director = wizardEffect.GetComponent<PlayableDirector>();
         TimerManager.instance.StartTimer(name + "ExplsionEffect", 0.6f, 
             () => 
             {
                 wizard.DamageTextJump("Ä§·¨¹¥»÷", Color.white);
-                explsionEffect.transform.position = spawnPostion;
-                explsionEffect.SetActive(true);
+                wizardEffect.transform.position = spawnPostion;
+                wizardEffect.SetActive(true);
 
                 director.Play();
             });
@@ -172,15 +172,15 @@ public class Goblin_wizard : UnitSkillDataSo
                             () => 
                             {
                                 unit.unit.HP -= Damage;
-                                if (explsionHitEffects[index].activeSelf)
+                                if (wizardHitEffects[index].activeSelf)
                                 {
-                                    explsionHitEffects[index].SetActive(false);
+                                    wizardHitEffects[index].SetActive(false);
                                 }
                                 else
                                 {
-                                    explsionHitEffects[index].transform.position = unit.transform.position;
-                                    explsionHitEffects[index].SetActive(true);
-                                    explsionHitEffects[index].GetComponent<PlayableDirector>().Play();
+                                    wizardHitEffects[index].transform.position = unit.transform.position;
+                                    wizardHitEffects[index].SetActive(true);
+                                    wizardHitEffects[index].GetComponent<PlayableDirector>().Play();
                                 }
                             });
                     }
@@ -191,10 +191,10 @@ public class Goblin_wizard : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "EffectClose",0.6f + (float)director.duration, 
             () => 
             {
-                explsionEffect.SetActive(false);
-                for (int i = 0; i < explsionHitEffects.Count; i++)
+                wizardEffect.SetActive(false);
+                for (int i = 0; i < wizardHitEffects.Count; i++)
                 {
-                    explsionHitEffects[i].SetActive(true);
+                    wizardHitEffects[i].SetActive(true);
                 }
 
                 GameManager.instance.GlobalLightControll(1f, 0.5f);

@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Playables;
 
-[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/" + nameof(Guards_core))]
+[CreateAssetMenu(fileName = "newUnitData", menuName = "Data/Skill Data/Guards/" + nameof(Guards_core))]
 public class Guards_core : UnitSkillDataSo
 {
     [SerializeField] private GameObject attackPrefab;
@@ -118,7 +118,7 @@ public class Guards_core : UnitSkillDataSo
             user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
             PlayableDirector director = recoveryEffect.GetComponent<PlayableDirector>();
-            TimerManager.instance.StartTimer(name + "AttackEffect", 0.6f,
+            TimerManager.instance.StartTimer(name + "RecoveryEffect", 0.6f,
                 () =>
                 {
                     recoveryEffect.transform.position = user.transform.position;
