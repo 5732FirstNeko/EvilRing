@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using DG.Tweening;
 using PriorityQueue;
@@ -35,23 +34,15 @@ public class BattleSystem : MonoBehaviour
     [Header("UnitPlayMoveTime")]
     [SerializeField] private float unitPlatMoveTime;
 
-    /// <summary>
-    /// All State use Value
-    /// </summary>
     public UnitPlatQueue FriendlyUnitPlatsQueue { get; private set; }
 
-    /// <summary>
-    /// All State use Value
-    /// </summary>
     public UnitPlatQueue HostilityUnitPlatsQueue { get; private set; }
 
     public Func<float> OnGameStart;
     public Func<int,float> OnRoundStart;
     public Func<int,float> OnRound;
     public Func<int,float> OnRoundEnd;
-
     public Action<UnitPlat> OnUnitplatDequeue;
-
     public Action OnGameEnd;
 
     private PriorityQueue<UnitPlat> battleQueue;

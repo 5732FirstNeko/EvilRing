@@ -58,20 +58,14 @@ public class FactorySystem : MonoBehaviour
     public List<UnitDataSo> GuardsCards;
     public List<UnitDataSo> NecroCards;
     public List<UnitDataSo> ElementCards;
+    public List<UnitDataSo> DaimonCards;
     public List<UnitDataSo> FinalBoss;
 
     public List<ItemDataSO> items;
 
     public HostilityWaveDataSo GetHostitlyWaveDataByGhost(int ghostCount)
     {
-        foreach (var waveData in hostilityWaveDataList)
-        {
-            if (ghostCount * 0.9f <= waveData.ghostCost && waveData.ghostCost <= ghostCount * 1.1f)
-            {
-                return waveData;
-            }
-        }
-        return null;
+        return hostilityWaveDataList[GameManager.instance.currentLevel];
     }
 
     public UnitDataSo GetFriendlyUnitData()

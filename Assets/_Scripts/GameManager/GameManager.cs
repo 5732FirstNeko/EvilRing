@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
@@ -35,6 +34,8 @@ public class GameManager : MonoBehaviour
 
     public Collider2D BackGroundCollider;
     [SerializeField] private Material unlitmaterial;
+
+    public int currentLevel = 0;
 
     public bool isHaveDrag 
     {
@@ -122,6 +123,7 @@ public class GameManager : MonoBehaviour
 
         if (iswin)
         {
+            currentLevel++;
             UnitCardSystem.instance.RecoverDefaultHostitlyUnitSprite();
             UIManager.instance.HostitlyUIRefreshAnimation();
             TimerManager.instance.StartTimer("HostitlyCardRefresh", 5f, () =>
@@ -154,13 +156,6 @@ public class GameManager : MonoBehaviour
                 new Vector3(BattleSystem.instance.hostilityUnitSiteFlag[i].transform.position.x,
                 UnitCardSystem.instance.hostitlyUnitPlats[i].transform.position.y, 0);
         }
-    }
-
-    public GameObject GameObjectInit(GameObject gameObject)
-    {
-        GameObject game = Instantiate(gameObject, Vector3.zero, Quaternion.identity);
-        game.SetActive(false);
-        return game;
     }
 
     public void GlobalLightControll(float insentity, float time)
