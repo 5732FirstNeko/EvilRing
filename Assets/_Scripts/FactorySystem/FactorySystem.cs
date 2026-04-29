@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class FactorySystem : MonoBehaviour
@@ -43,6 +44,8 @@ public class FactorySystem : MonoBehaviour
     public int cardLevel = 0;
     private int freshlowCardCount;
     [SerializeField] private int freshCardCount = 20;
+
+    public int itemLevel;
 
     public List<UnitDataSo> LycorisCards;
     public List<UnitDataSo> wizardCards;
@@ -119,12 +122,40 @@ public class FactorySystem : MonoBehaviour
 
     public ItemDataSO GetRandomItem()
     {
+        int midValue = 0;
+        switch (itemLevel)
+        {
+            case 0:
+                midValue = 20;
+                break;
+            case 1:
+                midValue = 40;
+                break;
+            case 2:
+                midValue = 60;
+                break;
+            case 3:
+                midValue = 80;
+                break;
+            case 4:
+                midValue = 100;
+                break;
+
+        }
+
+        int value = Random.Range(0,101);
+
+        if (midValue <= value)
+        {
+            return null;
+        }
+
         int index = Random.Range(0, items.Count);
 
         return items[index];
     }
 
-    public void UnLockCardToList(ICollection<UnitDataSo> cards, bool islowCard = false)
+    public void UnLockCardToList(ICollection<UnitDataSo> cards, bool islowCard = true)
     {
         foreach (var unit in cards)
         {

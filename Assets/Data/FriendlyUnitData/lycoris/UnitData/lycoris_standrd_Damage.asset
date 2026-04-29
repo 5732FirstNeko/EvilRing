@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: 
   HP: 50
   Speed: 4
-  cost: 10
+  cost: 1
   Faction: 0
   UnitSprite: {fileID: 21300000, guid: e1dbbedf236544b4e896349340d41fd1, type: 3}
   Skills:

@@ -50,11 +50,6 @@ public class HierarchicalTreeNode : MonoBehaviour, IPointerClickHandler
         HierarchicalTreeSystem.instance.HierarchicalTrees.Add(this);
     }
 
-    public void GlobalAction(ICollection<UnitPlat> unitPlats)
-    {
-        OnGlobalAction?.Invoke(unitPlats);
-    }
-
     public void UnLockAction()
     {
         if (InventoryManager.instance.ghost >= ghostCost &&

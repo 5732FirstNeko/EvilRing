@@ -165,7 +165,7 @@ public class BattleSystem : MonoBehaviour
     public void UnitDead(UnitPlat unitPlat)
     {
         unitPlat.isDead = true;
-        unitPlat.iconSpriteRender.DOColor(Color.cyan, 1f).SetEase(Ease.OutQuart);
+        unitPlat.iconSpriteRender.DOColor(new Color(0.5f, 0.5f, 0.5f, 1f), 1f).SetEase(Ease.OutQuart);
         if (battleQueue.Contains(unitPlat))
         {
             battleQueue.Remove(unitPlat);
@@ -232,7 +232,6 @@ public class BattleSystem : MonoBehaviour
         OnRoundStart = null;
         OnRound = null;
         OnRoundEnd = null;
-        OnGameStartSkills = null;
         OnGameEnd = null;
 
         battleIEnumerator = null;
@@ -334,7 +333,7 @@ public class BattleSystem : MonoBehaviour
         {
             foreach (var skill in hostitlyPlats[i].unitData.Skills)
             {
-                skill.GameStartInit();
+                skill?.GameStartInit();
             }
             if (hostitlyPlats[i].unitData.SpKillData != null)
             {
@@ -346,7 +345,7 @@ public class BattleSystem : MonoBehaviour
         {
             foreach (var skill in friendlyPlats[i].unitData.Skills)
             {
-                skill.GameStartInit();
+                skill?.GameStartInit();
             }
             friendlyPlats[i].unitData.UnitDeadData?.PrefabInit();
         }
@@ -362,8 +361,8 @@ public class BattleSystem : MonoBehaviour
         float ongameStarttime = OnGameStart?.Invoke() ?? 0;
         yield return new WaitForSeconds(ongameStarttime);
 
-        yield return HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
         yield return HPCheck(HostilityUnitPlatsQueue.GetAllUnitPlat());
+        yield return HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
 
         Debug.Log(friendlyDeadCount);
         Debug.Log(hostilityDeadCount);
@@ -619,6 +618,7 @@ public class BattleSystem : MonoBehaviour
                     OnGameEnd?.Invoke();
                     if (hostilityDeadCount >= unitPlatQueueCount)
                     {
+                        Debug.Log("lose");
                         StopAllCoroutines();
                         BattleEnd();
                         GameManager.instance.GameBattleEnd(false);

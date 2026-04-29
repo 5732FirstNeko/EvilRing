@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Swordman_Slash
   m_EditorClassIdentifier: 
+  cardName: 
   HP: 0
   Speed: 0
-  cost: 0
+  cost: 1
   Faction: 0
   UnitSprite: {fileID: 0}
   Skills:

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efb416dc918ca44daa9ee9e1cfaec34, type: 3}
+  m_Name: CardNode_1
+  m_EditorClassIdentifier: 
+  ghostCost: 1
+  goldCost: 15
+  sprite: {fileID: 0}
+  GlobalActionTriggerTiming: 0
+  TargetFaction: 0
+  Range: 
+  descriptions: "\u89E3\u9501\u66F4\u591A\u5361\u724C"
+  unlockCards:
+  - {fileID: 11400000, guid: fe6d08bc606b47242bfc3c6fd21f4648, type: 2}
+  - {fileID: 11400000, guid: 49a2431d7a33ecd4bbd25a5804f5bf59, type: 2}
+  - {fileID: 11400000, guid: 6f819e8d779e6604c9e948c69ddcf4a5, type: 2}
+  - {fileID: 11400000, guid: 44177476b55ded848b9c20e37411b008, type: 2}

@@ -58,18 +58,6 @@ public class HierarchicalTreeSystem : MonoBehaviour
         
     }
 
-    public void HierarchicalTreeNodeGlobalAction()
-    {
-        foreach (var node in HierarchicalTrees)
-        {
-            if (node.isLocked) continue;
-
-            ICollection<UnitPlat> unitPlats = 
-                BattleSystem.instance.GetActionPlats(node.TargetFaction, node.Range);
-            node.GlobalAction(unitPlats);
-        }
-    }
-
     public void HierarchicalTreeLockStateUpdate()
     {
         foreach (var node in HierarchicalTrees)

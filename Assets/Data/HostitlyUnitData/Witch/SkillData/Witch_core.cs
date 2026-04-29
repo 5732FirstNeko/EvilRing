@@ -24,7 +24,7 @@ public class Witch_core : UnitSkillDataSo
         destoryEffect = Instantiate(destoryPrefab, Vector3.zero, Quaternion.identity);
         destoryEffect.SetActive(false);
 
-        hitEffect = Instantiate(hitEffect, Vector3.zero, Quaternion.identity);
+        hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
     }
 

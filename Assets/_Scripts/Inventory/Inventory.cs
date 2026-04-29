@@ -120,7 +120,8 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
 
             Action(unitPlat);
         }
-        else if (itemData.itemType == ItemBuffType.Global)
+        else if (itemData.itemType == ItemBuffType.Global && 
+            (eventData.pointerEnter == null || unitSiteFlag != null))
         {
             transform.DOKill();
             InventoryManager.instance.RemoveInventryFromList(this);

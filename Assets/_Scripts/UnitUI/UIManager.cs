@@ -24,6 +24,8 @@ public class UIManager : MonoBehaviour
 
     public Button battleButton;
     #region UnitCardUIValue
+    [SerializeField] private GameObject canves;
+
     [Header("UnitCardSystem")]
     public RectTransform friendlyUnitDataUIRightRect;
     public RectTransform friendlyUnitDataUILeftRect;
@@ -466,6 +468,16 @@ public class UIManager : MonoBehaviour
         battleButton.DOKill();
         battleButton.transform.DOScale(Vector3.zero, 0.25f);
         battleButton.gameObject.SetActive(false);
+    }
+
+    public void CloseAllUI()
+    {
+        canves.SetActive(false);
+    }
+
+    public void ShowAllUI()
+    {
+        canves.SetActive(true);
     }
     #endregion
 }

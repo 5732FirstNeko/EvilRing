@@ -22,4 +22,4 @@ MonoBehaviour:
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 0
-  UnitDeadData: {fileID: 0}
+  UnitDeadData: {fileID: 11400000, guid: a7f2f83206618864cac0cccbcfebb253, type: 2}

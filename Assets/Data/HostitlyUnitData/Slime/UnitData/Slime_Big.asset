@@ -16,7 +16,7 @@ MonoBehaviour:
   HP: 0
   Speed: 0
   cost: 0
-  Faction: 0
+  Faction: 1
   UnitSprite: {fileID: 0}
   Skills:
   - {fileID: 11400000, guid: 4a0131e8d0c307f47b00b190267e35ed, type: 2}
