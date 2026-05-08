@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class StartSceneManager : MonoBehaviour
 {
@@ -10,12 +11,28 @@ public class StartSceneManager : MonoBehaviour
     [SerializeField] private GameObject canves;
     [SerializeField] private GameObject thanksObject;
 
+    [SerializeField] private Button startGameButton;
+    [SerializeField] private Button exitGameButton;
+    [SerializeField] private Button thanksButton;
+    [SerializeField] private Button thanksCloseButton;
+
     [SerializeField] private GameObject sceneChangeObject;
-    [SerializeField] private AudioClip gameSceneBGM;
+    [SerializeField] private AudioClip startSceneBGM;
+
+    [SerializeField] private GameObject startMenu;
 
     private void Awake()
     {
         canves.SetActive(true);
+        startGameButton.onClick.AddListener(StartGame);
+        exitGameButton.onClick.AddListener(ExitGame);
+        thanksButton.onClick.AddListener(Thanks);
+        thanksCloseButton.onClick.AddListener(Thanks);
+    }
+
+    private void Start()
+    {
+        AudioManager.instance.PlayBGM(startSceneBGM);
     }
 
     public void StartGame()
@@ -31,33 +48,21 @@ public class StartSceneManager : MonoBehaviour
 
     private IEnumerator LoadSceneCoroutine(string sceneName, float waitTime)
     {
-        // 1. 等待过渡时间（可以在这里加黑屏/淡入淡出动画）
-        AudioManager.instance.PauseBGM();
-        yield return new WaitForSeconds(waitTime);
-
+        yield return new WaitForSecondsRealtime(waitTime);
         sceneChangeObject.SetActive(true);
-        // 2. 异步加载场景（不会卡顿游戏）
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        AudioManager.instance.StopBGM();
 
-        // 3. 禁止加载完成后自动切换（可选，想控制切换时机用）
-        //asyncLoad.allowSceneActivation = false;
+        yield return new WaitForSecondsRealtime(waitTime);
+        sceneChangeObject.SetActive(false);
 
-        // 4. 等待场景加载完成
-        while (!asyncLoad.isDone)
-        {
-            // 可以在这里打印加载进度：asyncLoad.progress
-            yield return null;
-        }
+        startMenu.SetActive(false);
+        AudioManager.instance.PlayBGM(GameManager.instance.standrdAudio);
 
-        AudioManager.instance.PlayBGM(gameSceneBGM);
-
-        // 5. 加载完成后自动切换场景
-        //asyncLoad.allowSceneActivation = true;
+        DialogueSystem.instance.GameStartDialogue();
     }
 
     public void ExitGame()
     {
-        GameSaveAndLoadSystem.SaveGame(out string error);
         Application.Quit();
     }
 

@@ -33,7 +33,15 @@ public class Element_ice : UnitSkillDataSo
 
             iceAttackEffect.Add(attack);
             iceHitEffect.Add(hit);
+            BattleSystem.instance.destoryEffect.Add(attack);
+            BattleSystem.instance.destoryEffect.Add(hit);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        iceAttackEffect = null;
+        iceHitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -85,7 +93,7 @@ public class Element_ice : UnitSkillDataSo
 
 
                                 unit.UnitPlatHurtAnimation();
-                                unit.unit.HP -= Damage;
+                                unit.unit.HP -= 8;
                                 if (user.costumvalue_first == 1)
                                 {
                                     unit.DamageTextJump("¼õËÙ", Color.white);

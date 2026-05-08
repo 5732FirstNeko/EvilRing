@@ -19,6 +19,5 @@ MonoBehaviour:
   Range: 
   UnitBuffs: []
   description: 
-  buffPrefab: {fileID: 0}
-  particalPrefab: {fileID: 0}
+  buffPrefab: {fileID: 3394731503409271532, guid: 99e62fc4fb2df284abcbef5c2658c56b, type: 3}
   skillListIndex: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KnightSkill_darkredattack
   m_EditorClassIdentifier: 
   SkillTime: 0
-  Damage: 0
+  Damage: 8
   TriggerTiming: 3
   SkillTarget: 1
   Range: 0000000001000000

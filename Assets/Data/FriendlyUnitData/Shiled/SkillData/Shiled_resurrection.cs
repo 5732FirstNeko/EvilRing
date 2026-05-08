@@ -22,9 +22,17 @@ public class Shiled_resurrection : UnitSkillDataSo
 
         recoveryEffect = Instantiate(recoveryPrefab, Vector3.zero, Quaternion.identity);
         recoveryEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(recoveryEffect);
 
         resurrectionEffect = Instantiate(resurrectionPrefab, Vector3.zero, Quaternion.identity);
         resurrectionEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(resurrectionEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        recoveryEffect = null;
+        resurrectionEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -50,7 +58,7 @@ public class Shiled_resurrection : UnitSkillDataSo
         {
             foreach (var unit in unitPlats)
             {
-                if (FactorySystem.instance.shiledCards[0] == unit.unitData)
+                if (FactorySystem.instance.shiledCards[0] == unit.unitData && !unit.isDead)
                 {
                     target = unit;
                 }
@@ -62,7 +70,7 @@ public class Shiled_resurrection : UnitSkillDataSo
             foreach (var unit in unitPlats)
             {
                 if (unit.unitData != null &&
-                    unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+                    unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead)
                 {
                     target = unit;
                 }
@@ -110,7 +118,7 @@ public class Shiled_resurrection : UnitSkillDataSo
                 {
                     recoveryEffect.transform.position = target.transform.position + UnitPlat.bottomDistance;
                     recoveryEffect.SetActive(true);
-                    target.unit.HP += Damage;
+                    target.unit.HP += 5;
                     target.UnitPlatRecoveryAnimation();
 
                     director.Play();

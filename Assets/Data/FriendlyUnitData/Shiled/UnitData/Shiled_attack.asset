@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Shiled_attack
   m_EditorClassIdentifier: 
-  HP: 0
+  cardName: 
+  HP: 30
   Speed: 7
-  cost: 0
+  cost: 5
   Faction: 0
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 7d23da0490884734782d72b0e6e5a888, type: 3}
   Skills:
   - {fileID: 11400000, guid: 4dc027f7739ad0e4c8ff749d44f428d5, type: 2}
+  description: "\u5438\u6536\u961F\u53CB\u7684\u751F\u547D\u503C\uFF0C\u5BF9\u654C\u4EBA\u9020\u6210\u5438\u6536\u751F\u547D\u503C\u7684\u4F24\u5BB3"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

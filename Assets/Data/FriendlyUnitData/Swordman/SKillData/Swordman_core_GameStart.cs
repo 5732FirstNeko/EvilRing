@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -22,15 +23,23 @@ public class Swordman_core_GameStart : UnitSkillDataSo
             GameObject effectround = Instantiate(flySwordRoundPrefab, Vector3.zero, Quaternion.identity);
             effectround.SetActive(false);
             flySwordRoundEffects.AddLast(effectround);
+            BattleSystem.instance.destoryEffect.Add(effectround);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        flySwordRoundEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
-        if (user.unit.OnHPChange != null) return;
+        if (user.costumvlue_third > 0) return;
 
         user.unit.OnHPChange += OnHpChange;
         user.OnFirstValueChange += RecoverFlySword;
+
+        user.costumvlue_third = 1;
     }
 
     private void OnHpChange(int Hp, UnitPlat user)
@@ -86,7 +95,9 @@ public class Swordman_core_GameStart : UnitSkillDataSo
 
     public void RecoverFlySword(int value)
     {
-        if (value >= 0) return;
+        if (value > 0) return;
+
+        if (flySwordRoundEffects == null) return;
 
         foreach (var sword in flySwordRoundEffects)
         {

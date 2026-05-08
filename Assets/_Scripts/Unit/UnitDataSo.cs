@@ -13,6 +13,9 @@ public class UnitDataSo : ScriptableObject
     public Faction Faction;
     public Sprite UnitSprite;
     public List<UnitSkillDataSo> Skills = new List<UnitSkillDataSo>();
+
+    [TextArea] public string description;
+
     public int spCost;
     public UnitSkillDataSo SpKillData;
 

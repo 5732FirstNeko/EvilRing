@@ -24,9 +24,17 @@ public class Wizard_auxiliary : UnitSkillDataSo
 
         magicCollectPathEffect = Instantiate(magicColllectPathPrefab, Vector3.zero, Quaternion.identity);
         magicCollectPathEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(magicCollectPathEffect);
 
         magicCollectEffect = Instantiate(magicCollectPrefab, Vector3.zero, Quaternion.identity);
         magicCollectEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(magicCollectEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        magicCollectEffect = null;
+        magicCollectPathEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -41,7 +49,7 @@ public class Wizard_auxiliary : UnitSkillDataSo
             }
         }
 
-        if (target == null)
+        if (target == null || target.isDead)
         {
             user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
             return;
@@ -49,8 +57,6 @@ public class Wizard_auxiliary : UnitSkillDataSo
 
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
-
-        Debug.Log(target.name);
 
         magicCollectPathEffect.transform.position = user.transform.position + UnitPlat.topDistance;
         magicCollectPathEffect.SetActive(true);
@@ -60,6 +66,7 @@ public class Wizard_auxiliary : UnitSkillDataSo
             magicCollectPathEffect.transform.position - curveOffest,
             target.transform.position,
         };
+
         PlayableDirector director = magicCollectEffect.GetComponent<PlayableDirector>();
         magicCollectPathEffect.transform.DOPath(cubicPath, 2f, PathType.CatmullRom).SetOptions(false).SetDelay(0.6f).
             OnComplete(() => 

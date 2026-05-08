@@ -21,6 +21,7 @@ public class Daimon_ritual : UnitSkillDataSo
         base.GameStartInit();
         sacrificeEffect = Instantiate(sacrificePrefab, Vector3.zero, Quaternion.identity);
         sacrificeEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(sacrificeEffect);
 
         hitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -28,7 +29,15 @@ public class Daimon_ritual : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        sacrificeEffect = null;
+
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -108,7 +117,7 @@ public class Daimon_ritual : UnitSkillDataSo
                 continue;
             }
 
-            if (target.unit.HP > unit.unit.HP && !unit.isDead &&
+            if (target != null && target.unit.HP > unit.unit.HP && !unit.isDead &&
                 unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
             {
                 target = unit;
@@ -165,7 +174,7 @@ public class Daimon_ritual : UnitSkillDataSo
                         hitEffects[index].SetActive(true);
                         hitEffects[index].GetComponent<PlayableDirector>().Play();
 
-                        unit.unit.HP -= Damage;
+                        unit.unit.HP -= 15;
                         unit.UnitPlatHurtAnimation();
 
                         i++;
@@ -211,5 +220,14 @@ public class Daimon_ritual : UnitSkillDataSo
                     }
                 }
             });
+
+        TimerManager.instance.StartTimer(name + "EffectClose", 0.6f + 1.1f, 
+            () => 
+            {
+                GameManager.instance.GlobalLightControll(0.5f, 0.5f);
+                user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
+            });
+
+        user.unit.unitSkills[0].SkillTime = 0.6f + 1.1f + 0.6f;
     }
 }

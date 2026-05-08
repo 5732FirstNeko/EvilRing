@@ -31,7 +31,15 @@ public class Element_flash : UnitSkillDataSo
 
             flashAttackEffects.Add(attackEffect);
             flashHitEffects.Add(hitEffect);
+            BattleSystem.instance.destoryEffect.Add(attackEffect);
+            BattleSystem.instance.destoryEffect.Add(hitEffect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        flashAttackEffects = null;
+        flashHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -98,7 +106,7 @@ public class Element_flash : UnitSkillDataSo
                 flashHitEffects[0].SetActive(true);
                 flashHitEffects[0].GetComponent<PlayableDirector>().Play();
 
-                first.unit.HP -= Damage;
+                first.unit.HP -= 10;
                 first.UnitPlatHurtAnimation();
 
                 if (second == null) return;
@@ -107,7 +115,7 @@ public class Element_flash : UnitSkillDataSo
                 flashHitEffects[1].SetActive(true);
                 flashHitEffects[1].GetComponent<PlayableDirector>().Play();
 
-                second.unit.HP -= Damage;
+                second.unit.HP -= 10;
                 second.UnitPlatHurtAnimation();
             });
 

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 
   itemIcon: {fileID: 0}
-  itemDescription: 
-  itemType: 2
+  itemDescription: "\u672C\u56DE\u5408\u6253\u51FA\u7684\u7B2C1\u6B21\u653B\u51FB\uFF0C\u6548\u679C\u4F1A\u91CD\u590D\u4E00\u6B21"
+  itemType: 0

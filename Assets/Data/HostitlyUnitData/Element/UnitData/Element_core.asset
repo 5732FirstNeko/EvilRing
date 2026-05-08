@@ -12,14 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Element_core
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u5143\u7D20\u6838\u5FC3"
+  HP: 25
+  Speed: 2
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 93c2ba4ad2186fe488b661a61ac1863b, type: 3}
   Skills:
   - {fileID: 11400000, guid: 0dff3b95e1f2bae41b1016a03635a052, type: 2}
+  description: "\u5171\u9E23\uFF1A\u6BCF\u56DE\u5408\u5F00\u59CB\u65F6\u89E6\u53D1\uFF0C\u968F\u673A\u6FC0\u6D3B\u4E00\u79CD\u5143\u7D20\u5171\u9E23\uFF08\u706B\u7130
+    / \u51B0\u971C / \u96F7\u7535\uFF09\uFF0C\u6301\u7EED 1 \u56DE\u5408S\u5143\u7D20\u5145\u80FD\uFF1A\u4EC0\u4E48\u90FD\u4E0D\u53D1\u751F\uFF0C\u6211\u65B9\u6240\u6709\u5143\u7D20\u4F7F
+    sp+1"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

@@ -20,7 +20,15 @@ public class DaimonDead_believer : UnitDeadDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void PrefabDestory()
+    {
+        base.PrefabDestory();
+
+        hitEffects = null;
     }
 
     public override void DeadAction(UnitPlat user)

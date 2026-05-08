@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Witch_pot
   m_EditorClassIdentifier: 
   cardName: "\u5927\u9505"
-  HP: 0
+  HP: 100
   Speed: 0
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 97349228ee6ad624c910c1da020d7245, type: 3}
   Skills:
   - {fileID: 11400000, guid: ab716c07ede55a642b710364dc1e6277, type: 2}
+  description: 
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

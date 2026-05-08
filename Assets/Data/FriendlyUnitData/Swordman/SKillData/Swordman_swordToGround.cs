@@ -23,9 +23,11 @@ public class Swordman_swordToGround : UnitSkillDataSo
 
         swordToGroundEffect = Instantiate(swordToGroundPrefab,Vector3.zero,Quaternion.identity);
         swordToGroundEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(swordToGroundEffect);
 
         magicStaffEffect = Instantiate(magicStaffPrefab, Vector3.zero, Quaternion.identity);
         magicStaffEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(magicStaffEffect);
 
         swordHitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -33,7 +35,16 @@ public class Swordman_swordToGround : UnitSkillDataSo
             GameObject effect = Instantiate(swordHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             swordHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        swordToGroundEffect = null;
+        magicStaffEffect = null;
+
+        swordHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -107,6 +118,11 @@ public class Swordman_swordToGround : UnitSkillDataSo
                 int i = 0;
                 foreach (var unit in unitPlats)
                 {
+                    if (unit.isDead || unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
                     int index = i;
                     unit.UnitPlatHurtAnimation(1, 0.2f,
                         () =>
@@ -114,7 +130,7 @@ public class Swordman_swordToGround : UnitSkillDataSo
                             swordHitEffects[index].transform.position = unit.transform.position;
                             swordHitEffects[index].SetActive(true);
                             swordHitEffects[index].GetComponent<PlayableDirector>().Play();
-                            unit.unit.HP -= Damage * damage;
+                            unit.unit.HP -= 10 + damage;
                         });
                     i++;
                 }

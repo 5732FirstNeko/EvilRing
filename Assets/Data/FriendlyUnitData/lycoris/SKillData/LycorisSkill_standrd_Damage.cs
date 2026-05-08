@@ -24,9 +24,11 @@ public class LycorisSkill_standrd_Damage : UnitSkillDataSo
 
         attackEffect = Instantiate(attackprefab, Vector3.zero, Quaternion.identity);
         attackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackEffect);
 
         lycorisInstantiteEffect = Instantiate(lycorisInstantitePrefab, Vector3.zero, Quaternion.identity);
         lycorisInstantiteEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(lycorisInstantiteEffect);
 
         hostitlyHitEffects = new List<GameObject>();
         for (int i = 0; i < BattleSystem.unitPlatQueueCount; i++)
@@ -34,7 +36,15 @@ public class LycorisSkill_standrd_Damage : UnitSkillDataSo
             GameObject effect = Instantiate(hostitlyHitprefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hostitlyHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        attackEffect = null;
+        lycorisInstantiteEffect = null;
+        hostitlyHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -69,7 +79,7 @@ public class LycorisSkill_standrd_Damage : UnitSkillDataSo
                     break;
                 }
             }
-            if (target == null || !target.isDead) continue;
+            if (target == null || target.isDead) continue;
 
             lastUnit = target;
 
@@ -84,7 +94,7 @@ public class LycorisSkill_standrd_Damage : UnitSkillDataSo
                 () =>
                 {
                     target.UnitPlatHurtAnimation();
-                    target.unit.HP -= Damage;
+                    target.unit.HP -= 5;
                     hostitlyHitEffects[index].transform.position = target.transform.position;
                     hostitlyHitEffects[index].SetActive(true);
                     hostitlyHitEffects[index].GetComponent<PlayableDirector>().Play();
@@ -95,10 +105,10 @@ public class LycorisSkill_standrd_Damage : UnitSkillDataSo
         {
             attackEffect.transform.position = user.transform.position;
             attackEffect.SetActive(true);
-            attackEffect.transform.DOMoveX(lastUnit.transform.position.x - 2, skilltime * 0.2f);
+            attackEffect.transform.DOMoveX(-10f, skilltime * 0.2f);
         });
 
-        TimerManager.instance.StartTimer(name + "closeEffect", skilltime + 0.5f + 2f,
+        TimerManager.instance.StartTimer(name + "closeEffect", skilltime + 0.5f + 1.5f,
             () => 
             {
                 attackEffect.SetActive(false);
@@ -111,6 +121,6 @@ public class LycorisSkill_standrd_Damage : UnitSkillDataSo
                 user.transform.DOScale(UnitPlat.originScale, 0.5f);
             });
 
-        user.unit.unitSkills[skillListIndex].SkillTime = skilltime + 0.5f + 1.5f + 2f;
+        user.unit.unitSkills[skillListIndex].SkillTime = skilltime + 0.5f + 1.5f + 1.5f;
     }
 }

@@ -7,20 +7,7 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance;
-    public static UIManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(UIManager).Name);
-                Instance = Object.AddComponent<UIManager>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static UIManager instance { get; private set; }
 
     public Button battleButton;
     #region UnitCardUIValue
@@ -72,7 +59,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text goldCost;
     [SerializeField] private Text ghostCost;
     [SerializeField] private Text hierarchicalTreeNodeDescriptions;
-    [SerializeField] private Button hierarchicalUnLockButton;
+    [SerializeField] public Button hierarchicalUnLockButton;
 
     [SerializeField] private RectTransform ghostnonenougth;
     private float HierarchTreeNodeUIHeight;
@@ -93,15 +80,7 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
 
         friendlyUnitInstance.gameObject.SetActive(false);
     }
@@ -148,22 +127,15 @@ public class UIManager : MonoBehaviour
 
             UIDisPlayFunction(friendlyUnitDataUIRightRect, UnitDataUIHeight);
 
-            friendlyCostTextRight.text = InventoryManager.Instance.gold >= unitData.cost ?
+            friendlyCostTextRight.text = InventoryManager.instance.gold >= unitData.cost ?
                 new StringBuilder( "黄金花费 : " + "<color=white>" + unitData.cost + "</color>").ToString() : 
                 new StringBuilder( "黄金花费 : " + "<color=red>" + unitData.cost + "</color>").ToString();
             friendlySpeedTextRight.text = "速度 : " + unitData.Speed;
             friendlyNameTextRight.text = unitData.cardName;
             friendlyHPTextRight.text = "生命值 : " + (int)unitData.HP;
-            for (int i = 0; i < unitData.Skills.Count; i++)
-            {
-                if (i + 1 >= friendlySkillTextsRight.Count)
-                {
-                    break;
-                }
 
-                friendlySkillTextsRight[i].gameObject.SetActive(true);
-                friendlySkillTextsRight[i].text = unitData.Skills[i].description;
-            }
+            friendlySkillTextsRight[0].gameObject.SetActive(true);
+            friendlySkillTextsRight[0].text = unitData.description;
         }
         else if(site == UnitSite.third || site == UnitSite.fourth)
         {
@@ -172,22 +144,14 @@ public class UIManager : MonoBehaviour
 
             UIDisPlayFunction(friendlyUnitDataUILeftRect, UnitDataUIHeight);
 
-            friendlyCostTextLeft.text = InventoryManager.Instance.gold >= unitData.cost ?
+            friendlyCostTextLeft.text = InventoryManager.instance.gold >= unitData.cost ?
                 new StringBuilder("黄金花费 : " + "<color=white>" + unitData.cost + "</color>").ToString() :
                 new StringBuilder("黄金花费 : " + "<color=red>" + unitData.cost + "</color>").ToString();
             friendlySpeedTextLeft.text = "速度 : " + unitData.Speed;
             friendlyNameTextLeft.text = unitData.cardName;
             friendlyHPTextLeft.text = "生命值 : " + (int)unitData.HP;
-            for (int i = 0; i < unitData.Skills.Count; i++)
-            {
-                if (i + 1 >= friendlySkillTextsRight.Count)
-                {
-                    break;
-                }
-
-                friendlySkillTextsLeft[i].gameObject.SetActive(true);
-                friendlySkillTextsLeft[i].text = unitData.Skills[i].description;
-            }
+            friendlySkillTextsRight[0].gameObject.SetActive(true);
+            friendlySkillTextsRight[0].text = unitData.description;
         }
     }
 
@@ -197,22 +161,14 @@ public class UIManager : MonoBehaviour
 
         UIDisPlayFunction(friendlyUnitDataUIRightRect, UnitDataUIHeight);
 
-        friendlyCostTextRight.text = InventoryManager.Instance.gold >= unitData.cost ?
+        friendlyCostTextRight.text = InventoryManager.instance.gold >= unitData.cost ?
                 new StringBuilder("黄金花费 : " + "<color=white>" + unitData.cost + "</color>").ToString() :
                 new StringBuilder("黄金花费 : " + "<color=red>" + unitData.cost + "</color>").ToString();
         friendlySpeedTextRight.text = "速度 : " + unitData.Speed;
         friendlyNameTextRight.text = unitData.cardName;
         friendlyHPTextRight.text = "生命值 : " + (int)unitData.HP;
-        for (int i = 0; i < unitData.Skills.Count; i++)
-        {
-            if (i + 1 >= friendlySkillTextsRight.Count)
-            {
-                break;
-            }
-
-            friendlySkillTextsRight[i].gameObject.SetActive(true);
-            friendlySkillTextsRight[i].text = unitData.Skills[i].description;
-        }
+        friendlySkillTextsRight[0].gameObject.SetActive(true);
+        friendlySkillTextsRight[0].text = unitData.description;
     }
 
     public void FriendlyUnitDataUnDisplay()
@@ -243,11 +199,8 @@ public class UIManager : MonoBehaviour
             hostitlySpeedTextLeft.text = "速度 : " + unitData.Speed;
             hostitlyNameTextLeft.text = unitData.cardName;
             hostitlyHPTextLeft.text = "生命值 : " + (int)unitData.HP;
-            for (int i = 0; i < unitData.Skills.Count; i++)
-            {
-                hostitlySkillTextsLeft[i].gameObject.SetActive(true);
-                hostitlySkillTextsLeft[i].text = unitData.Skills[i].description;
-            }
+            hostitlySkillTextsLeft[0].gameObject.SetActive(true);
+            hostitlySkillTextsLeft[0].text = unitData.description;
         }
         else if (site == UnitSite.third || site == UnitSite.fourth)
         {
@@ -258,11 +211,8 @@ public class UIManager : MonoBehaviour
             hostitlySpeedTextRight.text = "速度 : " + unitData.Speed;
             hostitlyNameTextRight.text = unitData.cardName;
             hostitlyHPTextRight.text = "生命值 : " + (int)unitData.HP;
-            for (int i = 0; i < unitData.Skills.Count; i++)
-            {
-                hostitlySkillTextsRight[i].gameObject.SetActive(true);
-                hostitlySkillTextsRight[i].text = unitData.Skills[i].description;
-            }
+            hostitlySkillTextsRight[0].gameObject.SetActive(true);
+            hostitlySkillTextsRight[0].text = unitData.description;
         }
     }
 
@@ -274,11 +224,8 @@ public class UIManager : MonoBehaviour
         hostitlySpeedTextLeft.text = "速度 : " + unitData.Speed;
         hostitlyNameTextLeft.text = unitData.cardName;
         hostitlyHPTextLeft.text = "生命值 : " + (int)unitData.HP;
-        for (int i = 0; i < unitData.Skills.Count; i++)
-        {
-            hostitlySkillTextsLeft[i].gameObject.SetActive(true);
-            hostitlySkillTextsLeft[i].text = unitData.Skills[i].description;
-        }
+        hostitlySkillTextsLeft[0].gameObject.SetActive(true);
+        hostitlySkillTextsLeft[0].text = unitData.description;
     }
 
     public void HostitlyUnitDataUnDisplay()
@@ -374,6 +321,8 @@ public class UIManager : MonoBehaviour
 
         hierarchicalTreeObject.SetActive(!hierarchicalTreeObject.activeSelf);
         battleButton.gameObject.SetActive(!battleButton.gameObject.activeSelf);
+        UnitCardSystem.instance.refreshButton.gameObject.
+            SetActive(!UnitCardSystem.instance.refreshButton.gameObject.activeSelf);
     }
 
     public void HierarchicalTreeNodeUIDisplay(HierarchicalTreeNode node)
@@ -383,15 +332,32 @@ public class UIManager : MonoBehaviour
         if (node.isLocked)
         {
             hierarchicalUnLockButton.onClick.AddListener(node.UnLockAction);
-            hierarchicalUnLockButton.gameObject.SetActive(true);
+
+            bool canUnLock = true;
+            foreach (var n in node.preconditionNodes)
+            {
+                if (n.isLocked)
+                {
+                    canUnLock = false;
+                    break;
+                }
+            }
+            if (canUnLock)
+            {
+                hierarchicalUnLockButton.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            hierarchicalUnLockButton.gameObject.SetActive(false);
         }
 
-        goldCost.text = InventoryManager.Instance.gold >= node.goldCost ? 
-            new StringBuilder("gold : " + "<color=green>" + node.goldCost + "</color>").ToString() :
-            new StringBuilder("gold : " + "<color=red>" + node.goldCost + "</color>").ToString();
-        ghostCost.text = InventoryManager.Instance.ghost >= node.ghostCost ?
-            new StringBuilder("ghost : " + "<color=green>" + node.ghostCost + "</color>").ToString() :
-            new StringBuilder("ghost : " + "<color=red>" + node.ghostCost + "</color>").ToString();
+        goldCost.text = InventoryManager.instance.gold >= node.goldCost ? 
+            new StringBuilder("黄金花费 : " + "<color=green>" + node.goldCost + "</color>").ToString() :
+            new StringBuilder("黄金花费 : " + "<color=red>" + node.goldCost + "</color>").ToString();
+        ghostCost.text = InventoryManager.instance.ghost >= node.ghostCost ?
+            new StringBuilder("灵魂花费 : " + "<color=green>" + node.ghostCost + "</color>").ToString() :
+            new StringBuilder("灵魂花费 : " + "<color=red>" + node.ghostCost + "</color>").ToString();
         hierarchicalTreeNodeIcon.sprite = node.hierarchicalTreeNodeData.sprite;
         hierarchicalTreeNodeDescriptions.text = node.hierarchicalTreeNodeData.descriptions;
 
@@ -445,12 +411,14 @@ public class UIManager : MonoBehaviour
     #region otherFunction
     private void UIDisPlayFunction(RectTransform UIRectTransfrom, float height)
     {
+        UIRectTransfrom.DOKill();
         UIRectTransfrom.DOScale(Vector3.one, 0.25f);
         UIRectTransfrom.DOAnchorPosY(height, 0.25f);
     }
 
     private void UIUnDisPlayFunction(RectTransform UIRectTransfrom)
     {
+        UIRectTransfrom.DOKill();
         UIRectTransfrom.DOScale(Vector3.zero, 0.25f);
         UIRectTransfrom.DOAnchorPosY(0, 0.25f).OnComplete(
             () =>{ UIRectTransfrom.gameObject.SetActive(false); });

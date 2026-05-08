@@ -23,7 +23,13 @@ public class Warlock_core : UnitSkillDataSo
             GameObject effect = Instantiate(numberUpBuffPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             numberUpBuffEffect.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        numberUpBuffEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)

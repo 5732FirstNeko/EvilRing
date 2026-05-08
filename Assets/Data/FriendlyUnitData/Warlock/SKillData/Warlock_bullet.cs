@@ -18,6 +18,7 @@ public class Warlock_bullet : UnitSkillDataSo
     private List<GameObject> bulletEffects;
     private List<GameObject> bullethitEffects;
 
+    private Dictionary<UnitPlat, int> damageCountMap;
     public override void GameStartInit()
     {
         base.GameStartInit();
@@ -29,6 +30,7 @@ public class Warlock_bullet : UnitSkillDataSo
             effect.transform.localScale = Vector3.zero;
             effect.SetActive(false);
             bulletEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         bullethitEffects = new List<GameObject>();
@@ -37,12 +39,27 @@ public class Warlock_bullet : UnitSkillDataSo
             GameObject effect = Instantiate(bullethitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             bullethitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+
+        damageCountMap = new Dictionary<UnitPlat, int>();
+    }
+
+    public override void GameEndAction()
+    {
+        bulletEffects = null;
+
+        bullethitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
-        if (user.costumvalue_first <= 0 || unitPlats.Count <= 0)
+        if (user.costumvalue_first <= 0)
+        {
+            user.costumvalue_first = 2;
+        }
+
+        if (unitPlats.Count <= 0)
         {
             user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
             return;
@@ -51,7 +68,7 @@ public class Warlock_bullet : UnitSkillDataSo
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
-        if (user.costumvalue_first > 8)
+        if (user.costumvalue_first > bulletEffects.Count)
         {
             for (int i = 0; i < user.costumvalue_first - 8; i++)
             {
@@ -67,6 +84,12 @@ public class Warlock_bullet : UnitSkillDataSo
         {
             foreach (var unit in unitPlats)
             {
+                if (unit.isDead ||
+                    unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                {
+                    continue;
+                }
+
                 int index = i;
 
                 if (i % 2 == 0)
@@ -110,11 +133,16 @@ public class Warlock_bullet : UnitSkillDataSo
 
         }
 
-        Dictionary<UnitPlat, int> damageCountMap = new Dictionary<UnitPlat, int>();
+        damageCountMap.Clear();
         for (int i = 0; i < user.costumvalue_first;)
         {
             foreach (var unit in unitPlats)
             {
+                if (unit.isDead || unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                {
+                    continue;
+                }
+
                 if (damageCountMap.ContainsKey(unit))
                 {
                     damageCountMap[unit]++;
@@ -132,25 +160,55 @@ public class Warlock_bullet : UnitSkillDataSo
             }
         }
 
-        TimerManager.instance.StartTimer(name + "firebullethitanimation", 1f + 0.6f,
+        TimerManager.instance.StartTimer($"firebullethitanimation_{user.GetInstanceID()}", 1f + 0.6f,
             () =>
             {
-                for (int i = 0; i < bulletEffects.Count; i++)
+                if (bulletEffects == null || unitPlats == null || damageCountMap == null) return;
+
+                foreach (var bullet in bulletEffects)
                 {
-                    int j = i;
-                    bulletEffects[j].SetActive(false);
+                    if (bullet != null) 
+                    {
+                        bullet.SetActive(false); 
+                        bullet.transform.DOKill(); 
+                    }
                 }
 
-                int index = 0;
                 foreach (var unit in unitPlats)
                 {
-                    unit.unit.HP -= Damage * damageCountMap[unit];
-                    unit.UnitPlatHurtAnimation();
+                    if (unit == null || 
+                        unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+                    
+                    if (damageCountMap.TryGetValue(unit, out int damage))
+                    {
+                        unit.unit.HP -= 8 * damage;
+                        unit.UnitPlatHurtAnimation();
+                    }
+                }
 
-                    bullethitEffects[index].transform.position = unit.transform.position;
-                    bullethitEffects[index].SetActive(true);
-                    bullethitEffects[index].GetComponent<PlayableDirector>().Play();
-                    index++;
+                int hitIndex = 0;
+                foreach (var unit in unitPlats)
+                {
+                    if (hitIndex > bullethitEffects.Count ||
+                        hitIndex >= user.costumvalue_first)
+                    {
+                        break; 
+                    }
+
+                    if (unit.isDead || 
+                        unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
+                    var eff = bullethitEffects[hitIndex];
+                    eff.transform.position = unit.transform.position;
+                    eff.SetActive(true);
+                    eff.GetComponent<PlayableDirector>()?.Play();
+                    hitIndex++;
                 }
             });
 
@@ -168,7 +226,7 @@ public class Warlock_bullet : UnitSkillDataSo
                 user.transform.DOScale(UnitPlat.originScale, 0.5f);
             });
 
-        user.costumvalue_first = 0;
+        user.costumvalue_first = 2;
         user.unit.unitSkills[skillListIndex].SkillTime = 1f + 0.6f + 0.3f + 0.6f;
     }
 }

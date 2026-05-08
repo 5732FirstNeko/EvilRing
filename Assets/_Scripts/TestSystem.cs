@@ -8,35 +8,23 @@ public class TestSystem : MonoBehaviour
     [SerializeField] private List<UnitPlat> friendlyUnits = new List<UnitPlat>();
     [SerializeField] private List<UnitPlat> hostitlyUnits = new List<UnitPlat>();
 
-    [SerializeField] private UnitSkillDataSo unitskill;
-
     [SerializeField] private ItemDataSO ItemDataSO;
 
-    
+    [SerializeField] private HierarchicalTreeNodeDataSo HierarchicalTreeNodeDataSO;
+
+    [SerializeField] private UnitDataSo dataSo;
 
     private void Start()
     {
         InventoryManager.instance.AddInventoryToList(ItemDataSO);
 
-        //foreach (var friendly in friendlyUnits)
-        //{
-        //    friendly.UnitPlatInit(friendly.unitData, friendly.site);
-        //    friendly.unit.HP -= Mathf.RoundToInt(0.75f * friendly.unit.MaxHP);
-        //}
-
-        //foreach (var friendly in hostitlyUnits)
-        //{
-        //    friendly.UnitPlatInit(friendly.unitData, friendly.site);
-        //    friendly.unit.HP -= Mathf.RoundToInt(0.75f * friendly.unit.MaxHP);
-        //}
-
-        //unitskill.GameStartInit();
-        //friendlyUnits[0].costumvalue_first = 8;
     }
 
     public void UnitSkillTest()
     {
-        unitskill.Action(hostitlyUnits, friendlyUnits[0]);
+        UnitCardSystem.instance.friendlyUnitRefreshArea[0].unitData = dataSo;
+        UnitCardSystem.instance.friendlyUnitRefreshArea[0].Image.sprite = dataSo.UnitSprite;
+        UnitCardSystem.instance.friendlyUnitRefreshArea[0].isLock = false;
     }
 }
 #endif

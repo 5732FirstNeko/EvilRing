@@ -19,9 +19,19 @@ public class NecroDead_SkeletalArc : UnitDeadDataSo
 
         arrowAttackEffect = Instantiate(arrowAttackPrefab, Vector3.zero, Quaternion.identity);
         arrowAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(arrowAttackEffect);
 
         arrowHitEffect = Instantiate(arrowHitPrefab, Vector3.zero, Quaternion.identity);
         arrowHitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(arrowHitEffect);
+    }
+
+    public override void PrefabDestory()
+    {
+        base.PrefabDestory();
+
+        arrowAttackEffect = null;
+        arrowHitEffect = null;
     }
 
     public override void DeadAction(UnitPlat user)

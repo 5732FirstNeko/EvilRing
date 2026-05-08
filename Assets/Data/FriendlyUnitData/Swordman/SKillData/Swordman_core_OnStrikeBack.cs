@@ -27,6 +27,7 @@ public class Swordman_core_OnStrikeBack : UnitSkillDataSo
             effect.transform.localScale = Vector3.zero;
             effect.SetActive(false);
             flySwordEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         swordhitEffects = new List<GameObject>();
@@ -35,11 +36,20 @@ public class Swordman_core_OnStrikeBack : UnitSkillDataSo
             GameObject effect = Instantiate(swordhitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             swordhitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        flySwordEffects = null;
+
+        swordhitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        unitPlats = BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat();
         if (user.costumvalue_first <= 0 || unitPlats.Count <= 0)
         {
             user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
@@ -80,6 +90,12 @@ public class Swordman_core_OnStrikeBack : UnitSkillDataSo
                 {
                     foreach (var unit in unitPlats)
                     {
+                        if (unit.isDead || 
+                            unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                        {
+                            continue;
+                        }
+
                         int index = i;
                         Vector3 dir = unit.transform.position -
                         flySwordEffects[i].transform.position;
@@ -140,7 +156,25 @@ public class Swordman_core_OnStrikeBack : UnitSkillDataSo
                 int index = 0;
                 foreach (var unit in unitPlats)
                 {
-                    unit.unit.HP -= Damage * damageCountMap[unit];
+                    if (unit.isDead || 
+                        unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
+                    if (!damageCountMap.ContainsKey(unit))
+                    {
+                        continue;
+                    }
+
+                    int count = 0;
+                    damageCountMap.TryGetValue(unit, out count);
+                    if (count == 0)
+                    {
+                        continue;
+                    }
+
+                    unit.unit.HP -= 10 * count;
                     unit.UnitPlatHurtAnimation();
 
                     swordhitEffects[index].transform.position = unit.transform.position;
@@ -153,6 +187,8 @@ public class Swordman_core_OnStrikeBack : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "swordEffectRecover", 2.8f + 0.5f * 0.25f + 0.5f,
             () =>
             {
+                user.costumvalue_first = 0;
+
                 foreach (var hitEffect in swordhitEffects)
                 {
                     hitEffect.SetActive(false);
@@ -161,7 +197,6 @@ public class Swordman_core_OnStrikeBack : UnitSkillDataSo
                 GameManager.instance.GlobalLightControll(1f, 0.5f);
             });
 
-        user.costumvalue_first = 0;
         user.unit.unitSkills[skillListIndex].SkillTime = 2.7f + 0.5f * 0.25f + 1f;
     }
 }

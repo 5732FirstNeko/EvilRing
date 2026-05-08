@@ -31,13 +31,24 @@ public class Wizard_Shield : UnitSkillDataSo
             GameObject effect = Instantiate(shiledPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             shiledEffect.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         standrdMagicAttackEffect = Instantiate(standrdMagicPrefab, Vector3.zero, Quaternion.identity);
         standrdMagicAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(standrdMagicAttackEffect);
 
         standrdHitEffect = Instantiate(standrdhitPrefab, Vector3.zero, Quaternion.identity);
         standrdHitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(standrdHitEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        shiledEffect = null;
+
+        standrdMagicAttackEffect = null;
+        standrdHitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -94,7 +105,7 @@ public class Wizard_Shield : UnitSkillDataSo
                 OnComplete(() =>
                 {
                     target.UnitPlatHurtAnimation();
-                    target.unit.HP -= Damage;
+                    target.unit.HP -= 12;
 
                     standrdHitEffect.transform.position = target.transform.position;
                     standrdHitEffect.SetActive(true);

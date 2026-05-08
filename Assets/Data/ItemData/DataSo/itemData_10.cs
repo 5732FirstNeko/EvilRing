@@ -10,7 +10,7 @@ public class itemData_10 : ItemDataSO
 
     public float OnAction()
     {
-        foreach (var unit in BattleSystem.Instance.
+        foreach (var unit in BattleSystem.instance.
             HostilityUnitPlatsQueue.GetAllUnitPlat())
         {
             foreach (var skill in unit.unit.unitSkills)
@@ -22,7 +22,7 @@ public class itemData_10 : ItemDataSO
             }
         }
 
-        foreach (var unit in BattleSystem.Instance.
+        foreach (var unit in BattleSystem.instance.
             FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
             foreach (var skill in unit.unit.unitSkills)

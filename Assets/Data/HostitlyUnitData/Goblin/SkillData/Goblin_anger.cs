@@ -25,6 +25,7 @@ public class Goblin_anger : UnitSkillDataSo
             GameObject effect = Instantiate(attackPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             attackEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
         
         hitEffects = new List<GameObject>();
@@ -33,7 +34,15 @@ public class Goblin_anger : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        attackEffects = null;
+
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -57,10 +66,16 @@ public class Goblin_anger : UnitSkillDataSo
                 {
                     foreach (var unit in unitPlats)
                     {
+                        if (unit.isDead || 
+                            unit.unitData == FactorySystem.instance.EmptyFriendlyUnitData)
+                        {
+                            continue;
+                        }
+
                         int index = i;
                         attackEffects[index].transform.position = user.transform.position;
                         attackEffects[index].SetActive(true);
-                        attackEffects[index].transform.DOMove(unit.transform.position, 2f).SetEase(Ease.InQuart).
+                        attackEffects[index].transform.DOMove(unit.transform.position, 0.3f).SetEase(Ease.Linear).
                             OnComplete(() =>
                             {
                                 hitEffects[index].transform.position = unit.transform.position;
@@ -68,7 +83,7 @@ public class Goblin_anger : UnitSkillDataSo
                                 hitEffects[index].GetComponent<PlayableDirector>().Play();
 
                                 unit.UnitPlatHurtAnimation();
-                                unit.unit.HP -= Damage;
+                                unit.unit.HP -= 8;
                             });
 
                         i++;
@@ -80,7 +95,7 @@ public class Goblin_anger : UnitSkillDataSo
                 }
             });
 
-        TimerManager.instance.StartTimer(name + "EffectClose",0.6f + 0.5f + 2f + 0.1f, 
+        TimerManager.instance.StartTimer(name + "EffectClose",0.6f + 0.5f + 0.3f + 0.1f, 
             () => 
             {
                 for (int i = 0; i < 4; i++)
@@ -94,6 +109,6 @@ public class Goblin_anger : UnitSkillDataSo
             });
 
 
-        user.unit.unitSkills[skillListIndex].SkillTime = 0.6f + 0.5f + 2f + 0.1f + 0.5f + 0.1f;
+        user.unit.unitSkills[skillListIndex].SkillTime = 0.6f + 0.5f + 0.3f + 0.1f + 0.5f + 0.1f;
     }
 }

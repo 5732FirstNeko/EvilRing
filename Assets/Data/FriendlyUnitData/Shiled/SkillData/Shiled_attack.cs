@@ -25,10 +25,18 @@ public class Shiled_attack : UnitSkillDataSo
             GameObject effect = Instantiate(hitprefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hiteffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         attackEffect = Instantiate(attackprefab, Vector3.zero, Quaternion.identity);
         attackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        hiteffects = null;
+        attackEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -45,7 +53,9 @@ public class Shiled_attack : UnitSkillDataSo
             foreach (var unit in 
                 BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
             {
-                if (FactorySystem.instance.shiledCards[0] == unit.unitData)
+                if (FactorySystem.instance.shiledCards[0] == unit.unitData &&
+                    unit.unitData != null && !unit.isDead &&
+                    unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
                 {
                     target = unit;
                 }
@@ -57,7 +67,7 @@ public class Shiled_attack : UnitSkillDataSo
             foreach (var unit in 
                 BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
             {
-                if (unit.unitData != null &&
+                if (unit.unitData != null && !unit.isDead &&
                     unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
                 {
                     target = unit;
@@ -81,7 +91,7 @@ public class Shiled_attack : UnitSkillDataSo
                 hiteffects[0].transform.position = target.transform.position;
                 hiteffects[0].SetActive(true);
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 10;
                 target.UnitPlatHurtAnimation();
                 director.Play();
             });
@@ -89,7 +99,7 @@ public class Shiled_attack : UnitSkillDataSo
         UnitPlat enemy = null;
         foreach (var unit in unitPlats)
         {
-            if (unit.unitData != null &&
+            if (unit.unitData != null && !unit.isDead &&
                 unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
             {
                 enemy = unit;
@@ -119,7 +129,7 @@ public class Shiled_attack : UnitSkillDataSo
                             }
                         }
 
-                        enemy.unit.HP -= Damage;
+                        enemy.unit.HP -= 10;
                         enemy.UnitPlatHurtAnimation();
 
                         effect.transform.position = enemy.transform.position;

@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Necro_skeletalArc
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u9AB7\u9AC5\u5F13\u624B"
+  HP: 18
+  Speed: 7
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: d9f92aef85ebe0c4296eeecc379e5779, type: 3}
   Skills:
   - {fileID: 11400000, guid: 5b96703987a34204dba6a5d04be3a000, type: 2}
+  description: "\u4EA1\u8BED\uFF1A\u81EA\u8EAB\u6B7B\u4EA1\u65F6\u89E6\u53D1\uFF0C\u5BF9\u654C\u65B9\u968F\u673A
+    1 \u4E2A\u5355\u4F4D\u9020\u6210 10 \u70B9\u4F24\u5BB3\uFF08\u4EA1\u7075\u81EA\u7206\uFF09\r\n\u9AA8\u7BAD\u5C04\u51FB\uFF1A\u76EE\u6807\u654C\u65B9\u968F\u673A
+    2 \u4E2A\u5355\u4F4D\uFF0C\u6BCF\u76EE\u6807\u9020\u6210 6 \u70B9\u4F24\u5BB3\r\n\u7CBE\u51C6\u5C04\u51FB\uFF1A\u76EE\u6807\u654C\u65B9
+    HP \u6700\u4F4E\u7684\u5355\u4F4D\uFF0C\u9020\u6210 12 \u70B9\u4F24\u5BB3"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

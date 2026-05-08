@@ -28,12 +28,15 @@ public class Wizard_core : UnitSkillDataSo
 
         explsionEffect = Instantiate(explsionPrefab, Vector3.zero, Quaternion.identity);
         explsionEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(explsionEffect);
 
         standrdMagicAttackEffect = Instantiate(standrdMagicPrefab, Vector3.zero, Quaternion.identity);
         standrdMagicAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(standrdMagicAttackEffect);
 
         standrdHitEffect = Instantiate(standrdhitPrefab, Vector3.zero, Quaternion.identity);
         standrdHitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(standrdHitEffect);
 
         explsionHitList = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -41,7 +44,17 @@ public class Wizard_core : UnitSkillDataSo
             GameObject effect = Instantiate(standrdhitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             explsionHitList.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(explsionEffect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        explsionEffect = null;
+        standrdMagicAttackEffect = null;
+        standrdHitEffect = null;
+
+        explsionHitList = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -52,6 +65,7 @@ public class Wizard_core : UnitSkillDataSo
             return;
         }
 
+        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
         if (user.costumvalue_first >= explsionEnergy)
@@ -67,7 +81,7 @@ public class Wizard_core : UnitSkillDataSo
             int i = 0;
             foreach (var tar in unitPlats)
             {
-                if (i >= index)
+                if (i >= index && !tar.isDead && tar.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
                 {
                     unitPlat = tar;
                     break;
@@ -85,24 +99,21 @@ public class Wizard_core : UnitSkillDataSo
             }
             user.costumvalue_first++;
         }
-
-        int wizardCount = 0;
-        foreach (var unit in
-            BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
-        {
-            foreach (var data in FactorySystem.instance.wizardCards)
-            {
-                if (unit.unitData == data)
-                {
-                    wizardCount++;
-                    break;
-                }
-            }
-        }
     }
 
     private void StandrdAttack(UnitPlat unitPlat,UnitPlat user)
     {
+        if (unitPlat == null)
+        {
+            TimerManager.instance.StartTimer(name + "UnitScale", 0.6f, 
+                () =>
+                {
+                    GameManager.instance.GlobalLightControll(1f, 0.5f);
+                    user.transform.DOScale(UnitPlat.originScale, 0.5f);
+                    user.unit.unitSkills[skillListIndex].SkillTime = 1.2f;
+                });
+        }
+
         standrdMagicAttackEffect.transform.position = user.transform.position;
         standrdMagicAttackEffect.SetActive(true);
 
@@ -114,7 +125,7 @@ public class Wizard_core : UnitSkillDataSo
             OnComplete(() => 
             {
                 unitPlat.UnitPlatHurtAnimation();
-                unitPlat.unit.HP -= Damage;
+                unitPlat.unit.HP -= 12;
 
                 standrdHitEffect.transform.position = unitPlat.transform.position;
                 standrdHitEffect.SetActive(true);
@@ -129,8 +140,14 @@ public class Wizard_core : UnitSkillDataSo
                 standrdMagicAttackEffect.transform.position = user.transform.position;
             });
 
-        user.unit.unitSkills[skillListIndex].SkillTime = movetime + 1f;
-        user.transform.DOScale(UnitPlat.originScale, 0.5f).SetDelay(movetime + 1f);
+        TimerManager.instance.StartTimer(name + "UnitScale", movetime + 1f, 
+            () => 
+            {
+                GameManager.instance.GlobalLightControll(1f, 0.5f);
+                user.transform.DOScale(UnitPlat.originScale, 0.5f);
+            });
+
+        user.unit.unitSkills[skillListIndex].SkillTime = movetime + 1f + 0.6f;
     }
 
     private void Explsion(ICollection<UnitPlat> unitPlats,UnitPlat user)
@@ -154,8 +171,13 @@ public class Wizard_core : UnitSkillDataSo
                 int i = 0;
                 foreach (var unit in unitPlats)
                 {
+                    if (unit.isDead || unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
                     int index = i;
-                    unit.unit.HP -= Mathf.RoundToInt(Damage * 5f);
+                    unit.unit.HP -= 20;
                     unit.UnitPlatHurtAnimation(6, 0.1f, () => 
                     {
                         explsionHitList[index].transform.position = unit.transform.position;
@@ -184,6 +206,22 @@ public class Wizard_core : UnitSkillDataSo
                 }
                 GameManager.instance.GlobalLightControll(1f, 0.5f);
             });
+
+        user.costumvalue_first -= 9;
+        int wizardCount = 0;
+        foreach (var unit in
+            BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
+        {
+            foreach (var data in FactorySystem.instance.wizardCards)
+            {
+                if (unit.unitData == data)
+                {
+                    wizardCount++;
+                    break;
+                }
+            }
+        }
+        user.costumvalue_first += wizardCount;
 
         user.unit.unitSkills[skillListIndex].SkillTime = (float)director.duration + 0.5f;
 

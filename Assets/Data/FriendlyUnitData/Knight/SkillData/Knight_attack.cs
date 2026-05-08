@@ -21,6 +21,7 @@ public class Knight_attack : UnitSkillDataSo
 
         slashEffect = Instantiate(slashPrefab, Vector3.zero, Quaternion.identity);
         slashEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(slashEffect);
 
         slashHitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -28,7 +29,16 @@ public class Knight_attack : UnitSkillDataSo
             GameObject effect = Instantiate(slashHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             slashHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        slashEffect = null;
+        Destroy(slashEffect);
+
+        slashHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -65,6 +75,12 @@ public class Knight_attack : UnitSkillDataSo
                 int i = 0;
                 foreach (var unit in unitPlats)
                 {
+                    if (unit.isDead || 
+                        unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
                     int index = i;
                     slashHitEffects[i].transform.position = unit.transform.position;
                     slashHitEffects[i].SetActive(true);

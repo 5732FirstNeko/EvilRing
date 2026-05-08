@@ -12,14 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Daimon_believer
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u72C2\u70ED\u4FE1\u5F92"
+  HP: 15
+  Speed: 8
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: b21483c91e4bd34478eacaa6f0dee87e, type: 3}
   Skills:
   - {fileID: 11400000, guid: a8204bcac0eaf22438213eb4595af99a, type: 2}
+  description: "\u4EA1\u8BED\uFF1A\u81EA\u8EAB\u88AB\u732E\u796D\u65F6\u89E6\u53D1\uFF0C\u5BF9\u654C\u65B9\u5168\u4F53\u9020\u6210
+    10 \u70B9\u4F24\u5BB3\r\n\u75AF\u72C2\u51B2\u51FB\uFF1A\u76EE\u6807\u654C\u65B9\u968F\u673A
+    1 \u4E2A\u5355\u4F4D\uFF0C\u9020\u6210 12 \u70B9\u4F24\u5BB3\uFF0C\u81EA\u8EAB\u53D7\u5230
+    6 \u70B9\u4F24\u5BB3\r\n\u820D\u8EAB\u653B\u51FB\uFF1A\u76EE\u6807\u654C\u65B9\u968F\u673A
+    1 \u4E2A\u5355\u4F4D\uFF0C\u9020\u6210 15 \u70B9\u4F24\u5BB3\uFF0C\u81EA\u8EAB
+    HP \u53D8\u4E3A 1"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

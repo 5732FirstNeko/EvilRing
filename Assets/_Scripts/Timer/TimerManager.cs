@@ -7,20 +7,7 @@ using UnityEngine.UIElements;
 //半山腰太挤，你总得去山顶看看//
 public class TimerManager : MonoBehaviour
 {
-    private static TimerManager Instance;
-    public static TimerManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(TimerManager).Name);
-                Instance = Object.AddComponent<TimerManager>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static TimerManager instance { get; private set; }
 
     #region TimerValue
     private Dictionary<string, Timer> timers = new Dictionary<string, Timer>();
@@ -33,15 +20,7 @@ public class TimerManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
     }
 
     private void Start()

@@ -23,17 +23,28 @@ public class Knight_guqin : UnitSkillDataSo
 
         hosAttackEffect = Instantiate(hosAttackPrefab, Vector3.zero, Quaternion.identity);
         hosAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hosAttackEffect);
 
         friAttackEffect = Instantiate(friAttackPrefab, Vector3.zero, Quaternion.identity);
         friAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(friAttackEffect);
 
         hitEffects = new List<GameObject>();
         for (int i = 0; i < 5; i++)
         {
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
+            BattleSystem.instance.destoryEffect.Add(effect);
             hitEffects.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        hosAttackEffect = null;
+        friAttackEffect = null;
+
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -43,7 +54,7 @@ public class Knight_guqin : UnitSkillDataSo
         UnitPlat friTarget = null;
         for (int i = 0; i < friunits.Count; i++)
         {
-            if (friunits[i].unitData != null &&
+            if (friunits[i].unitData != null && !friunits[i].isDead &&
                 friunits[i] != user && FactorySystem.instance.knightCards.Contains(friunits[i].unitData) &&
                 friunits[i].costumvalue_first > 0)
             {
@@ -52,14 +63,16 @@ public class Knight_guqin : UnitSkillDataSo
             }
         }
 
+        unitPlats = BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat();
         UnitPlat hosTarget = null;
         if (friTarget == null)
         {
             foreach (var unit in unitPlats)
             {
-                if (unit.unitData != null && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+                if (unit.unitData != null && !unit.isDead && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
                 {
                     hosTarget = unit;
+                    break;
                 }
             }
         }
@@ -114,6 +127,7 @@ public class Knight_guqin : UnitSkillDataSo
 
                         director.Play();
 
+                        target.DamageTextJump("´«³ÐÔö¼Ó", Color.white);
                         target.unit.HP = 1;
                         target.costumvalue_first += 2;
                         target.UnitPlatHurtAnimation();
@@ -140,7 +154,7 @@ public class Knight_guqin : UnitSkillDataSo
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
-        PlayableDirector director = null;
+        PlayableDirector director = hitEffects[0].GetComponent<PlayableDirector>();
         TimerManager.instance.StartTimer(name + "friAttackEffect", 0.6f,
             () =>
             {
@@ -163,12 +177,10 @@ public class Knight_guqin : UnitSkillDataSo
 
                         hitEffect.transform.position = target.transform.position;
                         hitEffect.SetActive(true);
-                        director = hitEffect.GetComponent<PlayableDirector>();
-
-                        director.Play();
+                        hitEffect.GetComponent<PlayableDirector>().Play();
 
                         target.UnitPlatHurtAnimation();
-                        target.unit.HP -= Mathf.RoundToInt(Damage * (1 + 0.5f * user.costumvalue_first));
+                        target.unit.HP -= 12;
                     });
             });
 

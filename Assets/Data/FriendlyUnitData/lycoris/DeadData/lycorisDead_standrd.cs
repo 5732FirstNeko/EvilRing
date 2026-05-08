@@ -15,19 +15,41 @@ public class lycorisDead_standrd : UnitDeadDataSo
 
         effect = Instantiate(effectprefab, Vector3.zero, Quaternion.identity);
         effect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(effect);
+    }
+
+    public override void PrefabDestory()
+    {
+        base.PrefabDestory();
+
+        effect = null;
     }
 
     public override void DeadAction(UnitPlat user)
     {
         StandrdDead(user);
+        user.isDead = false;
 
-        if (!user.isDead && user.costumvalue_first >= 1) return;
+        if (user.costumvalue_first >= 1)
+        {
+            return;
+        }
 
-        BattleSystem.instance.UnitResurrection(user);
-
-        effect.transform.position = user.transform.position + UnitPlat.bottomDistance;
-        effect.SetActive(true);
-        effect.GetComponentInChildren<ParticleSystem>().Play(true);
         user.costumvalue_first++;
+
+        TimerManager.instance.StartTimer(name + user.name + "ResurrectionEffect", 1f, 
+            () => 
+            {
+                effect.transform.position = user.transform.position + UnitPlat.bottomDistance;
+                effect.SetActive(true);
+                effect.GetComponentInChildren<ParticleSystem>().Play(true);
+            });
+
+        TimerManager.instance.StartTimer(name + user.name + "Resurrection", 3f, 
+            () => 
+            {
+                effect.SetActive(false);
+                BattleSystem.instance.UnitResurrection(user);
+            });
     }
 }

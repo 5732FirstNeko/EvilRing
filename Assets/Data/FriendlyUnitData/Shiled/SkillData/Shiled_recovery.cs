@@ -19,6 +19,12 @@ public class Shiled_recovery : UnitSkillDataSo
 
         recoveryEffect = Instantiate(recoveryPrefab, Vector3.zero, Quaternion.identity);
         recoveryEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(recoveryEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        recoveryEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -33,7 +39,7 @@ public class Shiled_recovery : UnitSkillDataSo
         bool isfriCard = false;
         foreach (var unit in unitPlats)
         {
-            if (FactorySystem.instance.shiledCards[0] == unit.unitData)
+            if (FactorySystem.instance.shiledCards[0] == unit.unitData && !unit.isDead)
             {
                 unitPlat = unit;
                 isfriCard = true;
@@ -45,7 +51,7 @@ public class Shiled_recovery : UnitSkillDataSo
         {
             foreach (var unit in unitPlats)
             {
-                if (FactorySystem.instance.shiledCards.Contains(unit.unitData))
+                if (FactorySystem.instance.shiledCards.Contains(unit.unitData) && !unit.isDead)
                 {
                     unitPlat = unit;
                     isfriCard = true;
@@ -58,7 +64,7 @@ public class Shiled_recovery : UnitSkillDataSo
         {
             foreach (var unit in unitPlats)
             {
-                if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+                if (!unit.isDead && unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
                 {
                     unitPlat = unit;
                     break;
@@ -81,7 +87,7 @@ public class Shiled_recovery : UnitSkillDataSo
             {
                 recoveryEffect.transform.position = unitPlat.transform.position + UnitPlat.bottomDistance;
                 recoveryEffect.SetActive(true);
-                unitPlat.unit.HP += isfriCard ? 5 * Damage : Damage;
+                unitPlat.unit.HP += isfriCard ? 5 * 7 : 7;
                 unitPlat.UnitPlatRecoveryAnimation();
 
                 director.Play();

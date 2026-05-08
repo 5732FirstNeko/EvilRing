@@ -22,9 +22,17 @@ public class Thief_standrd : UnitSkillDataSo
 
         daggerEffect = Instantiate(daggerPrefab, Vector3.zero, Quaternion.identity);
         daggerEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(daggerEffect);
 
         hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        daggerEffect = null;
+        hitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)

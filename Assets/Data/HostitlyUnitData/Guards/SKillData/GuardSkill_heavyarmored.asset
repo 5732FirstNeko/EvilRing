@@ -21,4 +21,4 @@ MonoBehaviour:
   description: 
   attackHitPrefab: {fileID: 5678834818006547596, guid: 3ce4ec7b29a002c4c93313a4793303b7, type: 3}
   skillListIndex: 0
-  userDataSo: {fileID: 0}
+  userDataSo: {fileID: 11400000, guid: 4aba7779def53fe44a08b200bbda9b1c, type: 2}

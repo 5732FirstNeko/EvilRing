@@ -22,14 +22,23 @@ public class FinalBoss_tentacle : UnitSkillDataSo
 
         tentacleEffect = Instantiate(tentaclePrefab, Vector3.zero, Quaternion.identity);
         tentacleEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(tentacleEffect);
 
         hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        tentacleEffect = null;
+        hitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
         UnitPlat target = null;
+
         foreach (var tar in unitPlats)
         {
             if (!tar.isDead && tar.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
@@ -45,6 +54,8 @@ public class FinalBoss_tentacle : UnitSkillDataSo
             return;
         }
 
+        Vector3 userPosition = user.transform.position;
+
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
@@ -57,7 +68,7 @@ public class FinalBoss_tentacle : UnitSkillDataSo
                 Vector3[] path = new Vector3[]
                 {
                     user.transform.position,
-                    user.transform.position +=
+                    userPosition +=
                         new Vector3(-offest.x, offest.y, offest.z),
                     target.transform.position,
                 };
@@ -71,7 +82,7 @@ public class FinalBoss_tentacle : UnitSkillDataSo
                         hitEffect.SetActive(true);
                         hitEffect.GetComponent<PlayableDirector>().Play();
 
-                        target.unit.HP -= Damage;
+                        target.unit.HP -= 8;
                         target.UnitPlatHurtAnimation();
                     });
             });
@@ -79,6 +90,7 @@ public class FinalBoss_tentacle : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "EffectClose", 0.6f + 1.6f, 
             () => 
             {
+                tentacleEffect.transform.position = user.transform.position;
                 hitEffect.SetActive(false);
 
                 GameManager.instance.GlobalLightControll(1f, 0.5f);

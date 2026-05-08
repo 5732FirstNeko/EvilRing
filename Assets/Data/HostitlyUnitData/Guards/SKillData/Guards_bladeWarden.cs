@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -26,9 +27,11 @@ public class Guards_bladeWarden : UnitSkillDataSo
 
         doubleEdgedEffect = Instantiate(doubleEdgedPrefab, Vector3.zero, Quaternion.identity);
         doubleEdgedEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(doubleEdgedEffect);
 
         attackEffect = Instantiate(attackPrefab, Vector3.zero, Quaternion.identity);
         attackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackEffect);
 
         hitEffects = new List<GameObject>();
         for (int i = 0; i < 3; i++)
@@ -36,19 +39,38 @@ public class Guards_bladeWarden : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
-        UnitPlat user = null;
-        foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
-        {
-            if (unit.unitData == user)
+        BattleSystem.instance.OnGameStart +=
+            () =>
             {
-                user = unit;
-            }
-        }
+                UnitPlat user = null;
+                foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
+                {
+                    if (unit.unitData == userData)
+                    {
+                        user = unit;
+                    }
+                }
 
-        user.unit.OnHPChange += HPChangeAction;
-        BattleSystem.instance.OnRoundStart += StateChange;
+                if (user == null)
+                {
+                    throw new Exception("[GuardsError] user is no Find, Check Card is in Factory");
+                }
+
+                user.unit.OnHPChange += HPChangeAction;
+                BattleSystem.instance.OnRoundStart += StateChange;
+                return 0;
+            };
+    }
+
+    public override void GameEndAction()
+    {
+        doubleEdgedEffect = null;
+        attackEffect = null;
+
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -65,7 +87,7 @@ public class Guards_bladeWarden : UnitSkillDataSo
     #region Attack
     private void Attack(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
-        int index = Random.Range(0, 101);
+        int index = UnityEngine.Random.Range(0, 101);
 
         if (index <= 75)
         {
@@ -115,7 +137,7 @@ public class Guards_bladeWarden : UnitSkillDataSo
                         hitEffects[index].SetActive(false);
                         hitEffects[index].GetComponent<PlayableDirector>().Play();
 
-                        attackTarget[index].unit.HP -= Damage;
+                        attackTarget[index].unit.HP -= 10;
                         attackTarget[index].UnitPlatHurtAnimation();
                     }
                 });
@@ -183,7 +205,7 @@ public class Guards_bladeWarden : UnitSkillDataSo
                     hitEffects[0].SetActive(true);
                     hitDirector.Play();
 
-                    target.unit.HP -= Damage;
+                    target.unit.HP -= 15;
                     target.UnitPlatHurtAnimation();
                 });
 

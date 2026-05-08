@@ -24,3 +24,4 @@ MonoBehaviour:
   flashPrefab: {fileID: 2927323577754467999, guid: 6e26aa9c81467904b8dc1e77c596cf88, type: 3}
   offest: {x: 0.5, y: 1.25, z: 0}
   tentacleData: {fileID: 11400000, guid: 22bd84a70e8431c4799b48abd32f337b, type: 2}
+  finalBossData: {fileID: 11400000, guid: 41ee1e81b07238e42bc1468c2408cadd, type: 2}

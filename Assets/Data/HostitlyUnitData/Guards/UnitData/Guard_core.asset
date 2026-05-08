@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Guard_core
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u6838\u5FC3\u5B88\u536B"
+  HP: 40
+  Speed: 4
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: c5814b1776bfff44e95304a1911e8305, type: 3}
   Skills:
   - {fileID: 11400000, guid: 448f68f77e6ee2d49a01bb3eeaa4b79f, type: 2}
+  description: "\u6838\u5FC3\u51B2\u51FB\uFF1A\u76EE\u6807\u5BF9\u9762\u573A\u4E0A\u5168\u4F53\u654C\u4EBA\uFF0C\u6BCF\u76EE\u6807\u9020\u6210
+    8 \u70B9\u4F24\u5BB3\r\n\u5E94\u6025\u4FEE\u590D\uFF1A\u76EE\u6807\u6211\u65B9Hp\u6700\u4F4E\u7684\u602A\u7269\uFF0C\u56DE\u590D
+    15 \u70B9hp\uFF0C\u82E5\u8BE5\u602A\u7269\u5904\u4E8E\u9632\u5FA1\u5F62\u6001\uFF0C\u989D\u5916\u56DE\u590D
+    10 \u70B9hp"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

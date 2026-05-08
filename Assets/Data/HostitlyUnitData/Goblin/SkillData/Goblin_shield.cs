@@ -21,17 +21,25 @@ public class Goblin_shield : UnitSkillDataSo
 
         shiledAttackEffect = Instantiate(shiledAttackPrefab, Vector3.zero, Quaternion.identity);
         shiledAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(shiledAttackEffect);
 
         hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
     }
 
+    public override void GameEndAction()
+    {
+        shiledAttackEffect= null;
+        hitEffect= null;
+    }
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        unitPlats = BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat();
         UnitPlat target = null;
         foreach (var unit in unitPlats)
         {
-            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead)
             {
                 target = unit;
                 break;
@@ -61,7 +69,7 @@ public class Goblin_shield : UnitSkillDataSo
                 hitEffect.SetActive(true);
                 attackDirector.Play();
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 6;
                 target.UnitPlatHurtAnimation();
             });
 

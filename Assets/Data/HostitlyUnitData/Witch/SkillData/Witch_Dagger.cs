@@ -23,21 +23,27 @@ public class Witch_Dagger : UnitSkillDataSo
 
         arrowEffect = Instantiate(arrowPrefab, Vector3.zero, Quaternion.identity);
         arrowEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(arrowEffect);
 
         hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        arrowEffect = null;
+        hitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        unitPlats = BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat();
         if (unitPlats.Count <= 0)
         {
             user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
             return;
         }
-
-        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
-        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
         int index = UnityEngine.Random.Range(0, 101);
         if (index <= 25)
@@ -52,11 +58,17 @@ public class Witch_Dagger : UnitSkillDataSo
 
     private void wizardAttack(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
-        if (user.unit.spCount < 2)
+        user.costumvlue_third += 2;
+        if (user.costumvlue_third < 3)
         {
-            user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
+            Dodge(unitPlats, user);
             return;
         }
+
+        user.costumvlue_third = 0;
+        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
+        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
+        user.iconSpriteRender.material = GameManager.UnlitMaterial;
 
         UnitPlat target = null;
 
@@ -93,7 +105,7 @@ public class Witch_Dagger : UnitSkillDataSo
                 hitEffect.SetActive(true);
                 hitEffect.GetComponent<PlayableDirector>().Play();
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 15;
                 target.UnitPlatHurtAnimation();
             });
 
@@ -103,6 +115,7 @@ public class Witch_Dagger : UnitSkillDataSo
                 user.unit.spCount -= 2;
                 hitEffect.SetActive(false);
 
+                user.iconSpriteRender.material = GameManager.litMaterial;
                 GameManager.instance.GlobalLightControll(1f, 0.5f);
                 user.transform.DOScale(UnitPlat.originScale, 0.5f);
             });
@@ -112,24 +125,19 @@ public class Witch_Dagger : UnitSkillDataSo
 
     private void Dodge(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
+        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
+
+        user.iconSpriteRender.material = GameManager.UnlitMaterial;
+
         user.DamageTextJump("…¡±‹Ã·…˝", Color.black);
-
-        Func<int, UnitPlat, int> dodgeActionDelegate = DodgeAction;
-        foreach (var method in user.unit.OnDefend.GetInvocationList())
-        {
-            if (method.Target == dodgeActionDelegate.Target &&
-                dodgeActionDelegate.GetInvocationList().Length == 1 &&
-                method.Method == dodgeActionDelegate.Method)
-            {
-                user.unit.OnDefend -= DodgeAction;
-            }
-        }
-
+        user.unit.OnDefend = null;
         user.unit.OnDefend += DodgeAction;
 
         TimerManager.instance.StartTimer(name + "ScaleRecovery", 1.1f,
             () =>
             {
+                user.iconSpriteRender.material = GameManager.litMaterial;
                 GameManager.instance.GlobalLightControll(1f, 0.5f);
                 user.transform.DOScale(UnitPlat.originScale, 0.5f);
             });

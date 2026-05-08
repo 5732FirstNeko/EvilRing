@@ -24,6 +24,7 @@ public class Witch_wizad : UnitSkillDataSo
 
         flashEffect = Instantiate(flashPrefab, Vector3.zero, Quaternion.identity);
         flashEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(flashEffect);
 
         smallFlashEffect = new List<GameObject>();
         for (int i = 0; i < 2; i++)
@@ -32,6 +33,7 @@ public class Witch_wizad : UnitSkillDataSo
             effect.transform.GetChild(0).transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
             effect.SetActive(false);
             smallFlashEffect.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         hitEffects = new List<GameObject>();
@@ -40,19 +42,27 @@ public class Witch_wizad : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        flashEffect = null;
+
+        smallFlashEffect = null;
+
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        unitPlats = BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat();
         if (unitPlats.Count <= 0)
         {
             user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
             return;
         }
-
-        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
-        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
         int index = UnityEngine.Random.Range(0, 101);
         if (index <= 25)
@@ -67,11 +77,19 @@ public class Witch_wizad : UnitSkillDataSo
 
     private void wizardAttack(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
-        if (user.unit.spCount < 2)
+        user.costumvlue_third++;
+        if (user.costumvlue_third < 3)
         {
-            user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
+            Dodge(unitPlats, user);
             return;
         }
+
+        user.costumvlue_third = 0;
+
+        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
+        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
+
+        user.iconSpriteRender.material = GameManager.UnlitMaterial;
 
         UnitPlat first = null;
         UnitPlat second = null;
@@ -80,17 +98,17 @@ public class Witch_wizad : UnitSkillDataSo
         foreach (var unit in unitPlats)
         {
             if (first == null &&
-                unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 first = unit;
             }
             else if (first != null &&
-                unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 second = unit;
             }
             else if (first != null && second != null &&
-                unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 third = unit;
             }
@@ -113,7 +131,7 @@ public class Witch_wizad : UnitSkillDataSo
                 flashEffect.transform.position = first.transform.position;
                 flashEffect.SetActive(true);
 
-                first.unit.HP -= Damage;
+                first.unit.HP -= 12;
                 first.UnitPlatHurtAnimation();
                 hitEffects[0].transform.position = first.transform.position;
                 hitEffects[0].SetActive(true);
@@ -128,7 +146,7 @@ public class Witch_wizad : UnitSkillDataSo
                 smallFlashEffect[0].transform.position = second.transform.position;
                 smallFlashEffect[0].SetActive(true);
                 smallFlashEffect[0].GetComponent<PlayableDirector>().Play();
-                second.unit.HP -= Mathf.RoundToInt(Damage * 0.9f);
+                second.unit.HP -= Mathf.RoundToInt(12 * 0.5f);
                 second.UnitPlatHurtAnimation();
 
                 hitEffects[1].transform.position = second.transform.position;
@@ -142,7 +160,7 @@ public class Witch_wizad : UnitSkillDataSo
                 smallFlashEffect[1].transform.position = third.transform.position;
                 smallFlashEffect[1].SetActive(true);
                 smallFlashEffect[1].GetComponent<PlayableDirector>().Play();
-                third.unit.HP -= Mathf.RoundToInt(Damage * 0.9f);
+                third.unit.HP -= Mathf.RoundToInt(12 * 0.5f);
                 third.UnitPlatHurtAnimation();
 
                 hitEffects[2].transform.position = third.transform.position;
@@ -164,6 +182,7 @@ public class Witch_wizad : UnitSkillDataSo
                     hitEffects[i].SetActive(false);
                 }
 
+                user.iconSpriteRender.material = GameManager.litMaterial;
                 GameManager.instance.GlobalLightControll(1f, 0.5f);
                 user.transform.DOScale(UnitPlat.originScale, 0.5f);
             });
@@ -173,29 +192,23 @@ public class Witch_wizad : UnitSkillDataSo
 
     private void Dodge(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
+        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
+
+        user.iconSpriteRender.material = GameManager.UnlitMaterial;
+
         user.DamageTextJump("…¡±‹Ã·…˝", Color.black);
-
-        Func<int, UnitPlat, int> dodgeActionDelegate = DodgeAction;
-        foreach (var method in user.unit.OnDefend.GetInvocationList())
-        {
-            if (method.Target == dodgeActionDelegate.Target && 
-                dodgeActionDelegate.GetInvocationList().Length == 1 &&
-                method.Method == dodgeActionDelegate.Method)
-            {
-                user.unit.OnDefend -= DodgeAction;
-            }
-        }
-
+        user.unit.unitSkills[skillListIndex].SkillTime = 1.2f;
+        user.unit.OnDefend = null;
         user.unit.OnDefend += DodgeAction;
 
-        TimerManager.instance.StartTimer(name + "ScaleRecovery", 1.1f, 
-            () => 
-            {
-                GameManager.instance.GlobalLightControll(1f, 0.5f);
-                user.transform.DOScale(UnitPlat.originScale, 0.5f);
-            });
-
-        user.unit.unitSkills[skillListIndex].SkillTime = 1.7f;
+        TimerManager.instance.StartTimer(name + "Scale", 0.6f,
+                () =>
+                {
+                    user.iconSpriteRender.material = GameManager.litMaterial;
+                    GameManager.instance.GlobalLightControll(1f, 0.5f);
+                    user.transform.DOScale(UnitPlat.originScale, 0.5f);
+                });
     }
 
     private int DodgeAction(int hpchange, UnitPlat user)

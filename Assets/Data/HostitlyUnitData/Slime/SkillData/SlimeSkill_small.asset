@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SlimeSkill_small
   m_EditorClassIdentifier: 
   SkillTime: 0
-  Damage: 0
+  Damage: 5
   TriggerTiming: 3
   SkillTarget: 1
   Range: 00000000010000000200000003000000

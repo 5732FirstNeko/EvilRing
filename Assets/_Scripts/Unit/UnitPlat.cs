@@ -20,11 +20,11 @@ public class UnitPlat : MonoBehaviour
     [SerializeField] private GameObject recoveryprefab;
 
     private GameObject recoveryEffect;
-    public bool isDead 
+    public bool isDead
     {
-        get => _isDead; 
-        set 
-        { 
+        get => _isDead;
+        set
+        {
             _isDead = value;
             if (_isDead)
             {
@@ -40,7 +40,7 @@ public class UnitPlat : MonoBehaviour
     public int costumvalue_first
     {
         get => _costumvalue_first;
-        set 
+        set
         {
             _costumvalue_first = value;
             OnFirstValueChange?.Invoke(value);
@@ -76,10 +76,42 @@ public class UnitPlat : MonoBehaviour
         unit.OnHPChange += OnHPChangeAction;
         OnFirstValueChange = null;
 
+        if (unitData == FactorySystem.instance.EmptyFriendlyUnitData ||
+            unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+        {
+            return;
+        }
+
         GameObject hpBar = transform.Find("HPBar").gameObject;
         hpBar.SetActive(true);
         Text HPtext = hpBar.GetComponentInChildren<Text>();
         HPtext.text = unit.HP.ToString();
+
+        iconSpriteRender.color = Color.white;
+    }
+
+    public void UnitRessurrection(UnitDataSo unitData, UnitSite site)
+    {
+        unit = new Unit(unitData, this);
+        isDead = false;
+        this.unitData = unitData;
+        this.site = site;
+
+        unit.OnHPChange += OnHPChangeAction;
+        OnFirstValueChange = null;
+
+        if (unitData == FactorySystem.instance.EmptyFriendlyUnitData ||
+            unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+        {
+            return;
+        }
+
+        GameObject hpBar = transform.Find("HPBar").gameObject;
+        hpBar.SetActive(true);
+        Text HPtext = hpBar.GetComponentInChildren<Text>();
+        HPtext.text = unit.HP.ToString();
+
+        iconSpriteRender.color = Color.white;
     }
 
     public void UnitPlatClear()
@@ -99,6 +131,26 @@ public class UnitPlat : MonoBehaviour
 
         unit.OnHPChange = null;
         OnFirstValueChange = null;
+
+        iconSpriteRender.material = GameManager.UnlitMaterial;
+        iconSpriteRender.color = Color.white;
+
+        GameObject hpBar = transform.Find("HPBar").gameObject;
+        hpBar.SetActive(false);
+    }
+
+    public void HPBarUnDisPlay()
+    {
+        GameObject hpBar = transform.Find("HPBar").gameObject;
+        hpBar.SetActive(false);
+    }
+
+    public void HpBarDisPlay()
+    {
+        GameObject hpBar = transform.Find("HPBar").gameObject;
+        hpBar.SetActive(true);
+        Text HPtext = hpBar.GetComponentInChildren<Text>();
+        HPtext.text = unit.HP.ToString();
     }
 
     public void OnHPChangeAction(int HPChange, UnitPlat user)

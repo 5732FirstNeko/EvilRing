@@ -5,20 +5,7 @@ using UnityEngine;
 
 public class HierarchicalTreeSystem : MonoBehaviour
 {
-    public static HierarchicalTreeSystem Instance;
-    public static HierarchicalTreeSystem instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(HierarchicalTreeSystem).Name);
-                Instance = Object.AddComponent<HierarchicalTreeSystem>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static HierarchicalTreeSystem instance { get; private set; }
 
     public List<HierarchicalTreeNode> HierarchicalTrees = new List<HierarchicalTreeNode>();
 
@@ -42,15 +29,7 @@ public class HierarchicalTreeSystem : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
     }
 
     private void Start()

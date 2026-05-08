@@ -10,20 +10,7 @@ public class BattleSystem : MonoBehaviour
 {
     public static int unitPlatQueueCount = 4;
 
-    public static BattleSystem Instance;
-    public static BattleSystem instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(BattleSystem).Name);
-                Instance = Object.AddComponent<BattleSystem>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static BattleSystem instance { get; private set; }
 
     [Header("Friendly")]
     public List<UnitSiteFlag> friendlyUnitSiteFlag;
@@ -63,17 +50,11 @@ public class BattleSystem : MonoBehaviour
 
     public int currentRound = -1;
 
+    public List<GameObject> destoryEffect;
+
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
     }
 
     private void Start()
@@ -98,8 +79,6 @@ public class BattleSystem : MonoBehaviour
 
     public void UnitSiteChange(Faction faction, UnitSite fromSite, UnitSite toSite)
     {
-        //TODO : UnitMove Animation make
-
         switch (faction)
         {
             case Faction.Friendly:
@@ -125,9 +104,10 @@ public class BattleSystem : MonoBehaviour
 
     public void UnitResurrection(UnitPlat unitPlat)
     {
+        unitPlat.UnitRessurrection(unitPlat.unitData, unitPlat.site);
         unitPlat.isDead = false;
         unitPlat.iconSpriteRender.DOColor(Color.white, 1f).SetEase(Ease.OutQuart);
-        unitPlat.unit.HP = Mathf.RoundToInt(unitPlat.unit.HP * 0.5f);
+        unitPlat.unit.HP = Mathf.RoundToInt(unitPlat.unit.MaxHP * 0.5f);
         battleQueue.Enqueue(unitPlat, unitPlat.unit.speed);
 
         switch (unitPlat.unit.faction)
@@ -166,6 +146,7 @@ public class BattleSystem : MonoBehaviour
     {
         unitPlat.isDead = true;
         unitPlat.iconSpriteRender.DOColor(new Color(0.5f, 0.5f, 0.5f, 1f), 1f).SetEase(Ease.OutQuart);
+
         if (battleQueue.Contains(unitPlat))
         {
             battleQueue.Remove(unitPlat);
@@ -202,11 +183,17 @@ public class BattleSystem : MonoBehaviour
         }
 
         unitPlat.unit.DeadAction();
+        //unitPlat.UnitPlatClear();
     }
 
     public void UnitReEnqueue(UnitPlat unitPlat)
     {
         battleQueue.Enqueue(unitPlat,unitPlat.unit.speed);
+
+        foreach (var unit in battleQueue)
+        {
+            Debug.LogError(unit.name);
+        }
     }
 
     public void UnitRemoveQueue(UnitPlat unitPlat)
@@ -218,13 +205,34 @@ public class BattleSystem : MonoBehaviour
     public void BattleEnd()
     {
         UnitBuffMap.Clear();
-        foreach (var unitplat in FriendlyUnitPlatsQueue.GetAllUnitPlat())
+
+        for (int i = destoryEffect.Count - 1; i >= 0; i--)
         {
-            unitplat.UnitPlatClear();
+            Destroy(destoryEffect[i]);
         }
-        foreach (var unitplat in HostilityUnitPlatsQueue.GetAllUnitPlat())
+
+        if (friendlyDeadCount <= 4)
         {
-            unitplat.UnitPlatClear();
+            foreach (var unitplat in FriendlyUnitPlatsQueue.GetAllUnitPlat())
+            {
+                foreach (var skill in unitplat.unitData.Skills)
+                {
+                    skill.GameEndAction();
+                }
+                unitplat.unitData.SpKillData?.GameEndAction();
+                unitplat.unitData.UnitDeadData.PrefabDestory();
+                unitplat.UnitPlatClear();
+            }
+            foreach (var unitplat in HostilityUnitPlatsQueue.GetAllUnitPlat())
+            {
+                foreach (var skill in unitplat.unitData.Skills)
+                {
+                    skill.GameEndAction();
+                }
+                unitplat.unitData.SpKillData?.GameEndAction();
+                unitplat.unitData.UnitDeadData.PrefabDestory();
+                unitplat.UnitPlatClear();
+            }
         }
 
         currentRound = -1;
@@ -284,6 +292,11 @@ public class BattleSystem : MonoBehaviour
 
         foreach (var plat in FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
+            if (plat.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+            {
+                plat.HpBarDisPlay();
+            }
+
             foreach (var skill in plat.unit.unitSkills)
             {
                 if (skill.TriggerTiming == TriggerTiming.OnGameStart)
@@ -307,6 +320,11 @@ public class BattleSystem : MonoBehaviour
         }
         foreach (var plat in HostilityUnitPlatsQueue.GetAllUnitPlat())
         {
+            if (plat.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+            {
+                plat.HpBarDisPlay();
+            }
+
             foreach (var skill in plat.unit.unitSkills)
             {
                 if (skill.TriggerTiming == TriggerTiming.OnGameStart)
@@ -376,7 +394,7 @@ public class BattleSystem : MonoBehaviour
             battleQueue.Enqueue(plat, plat.unit.speed);
         }
 
-        yield return LevelStartBattle();
+        yield return GameStartBattle();
         yield return AllBuffAction(TriggerTiming.OnGameStart);
 
         Debug.Log(battleQueue.Count);
@@ -403,13 +421,23 @@ public class BattleSystem : MonoBehaviour
                     yield break;
                 }
 
+                Dictionary<UnitPlat, Vector3> unitOrginPosition = new Dictionary<UnitPlat, Vector3>();
+                foreach (var unit in FriendlyUnitPlatsQueue.GetAllUnitPlat())
+                {
+                    unitOrginPosition.Add(unit, unit.transform.position);
+                }
+
+                foreach (var unit in HostilityUnitPlatsQueue.GetAllUnitPlat())
+                {
+                    unitOrginPosition.Add(unit, unit.transform.position);
+                }
+
                 foreach (var unit in OnStrikeBackMap.Keys)
                 {
                     OnStrikeBackMap[unit] = unit.HP;
                 }
 
                 UnitPlat unitPlat = battleQueue.Dequeue();
-                Material litMaterial = unitPlat.iconSpriteRender.material;
                 unitPlat.iconSpriteRender.material = GameManager.UnlitMaterial;
                 if (!unitPlat.isDead)
                 {
@@ -419,8 +447,9 @@ public class BattleSystem : MonoBehaviour
                         ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
                         OnRoundSkill.Action(targetPlats);
 
-                        Debug.Log(unitPlat.name);
-                        Debug.Log(unitPlat.unit.faction + " " + unitPlat.site + " Attack ");
+
+                        Debug.Log("------Round-" + currentRound + "---");
+                        Debug.Log(unitPlat.name + unitPlat.unit.faction + " " + unitPlat.site + " Attack ");
                         foreach (var tar in targetPlats)
                         {
                             Debug.Log(tar.unit.faction + " " + tar.site);
@@ -435,10 +464,9 @@ public class BattleSystem : MonoBehaviour
                         yield return new WaitForSeconds(OnRoundSkill.SkillTime);
                     }
                     yield return AllBuffAction(TriggerTiming.OnRound);
-                    unitPlat.iconSpriteRender.material = litMaterial;
+                    unitPlat.iconSpriteRender.material = GameManager.litMaterial;
                     dequeueList.AddLast(unitPlat);
                     OnUnitplatDequeue?.Invoke(unitPlat);
-                    Debug.Log(hostilityDeadCount);
                 }
 
                 yield return HPCheck(FriendlyUnitPlatsQueue.GetAllUnitPlat());
@@ -446,6 +474,11 @@ public class BattleSystem : MonoBehaviour
 
                 yield return StrikeBackBattle();
                 yield return AllBuffAction(TriggerTiming.OnStrikeBack);
+
+                foreach (var (unit, pos) in unitOrginPosition)
+                {
+                    unit.transform.position = pos;
+                }
             }
 
             yield return RoundEndBattle();
@@ -496,7 +529,7 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    private IEnumerator LevelStartBattle()
+    private IEnumerator GameStartBattle()
     {
         foreach (var (gameStartSkill, unit) in OnGameStartSkills)
         {
@@ -593,14 +626,25 @@ public class BattleSystem : MonoBehaviour
         float maxDeadTime = 0;
         foreach (var plat in unitPlats)
         {
+            Debug.Log(plat.unitData.name + " " + plat.unit.HP);
+            Debug.Log("FriEndlyDead " + friendlyDeadCount);
+            Debug.Log("HostitlyDead " + hostilityDeadCount);
+
             if (plat.isDead) continue;
 
             if (plat.unit.HP <= 0)
             {
+                Debug.Log(plat.unitData.name + " " + plat.unit.HP + " Dead");
+
                 UnitDead(plat);
+                yield return new WaitForSecondsRealtime(plat.unit.DeadAnimationTime);
+                Debug.Log("FriEndlyDead " + friendlyDeadCount);
+                Debug.Log("HostitlyDead " + hostilityDeadCount);
 
                 if (hostilityDeadCount >= unitPlatQueueCount)
                 {
+                    Debug.Log("HostitlyDead " + hostilityDeadCount);
+                    Debug.Log("win first!");
                     //TODO : Game Win Logic
                     OnGameEnd?.Invoke();
                     if (hostilityDeadCount >= unitPlatQueueCount)
@@ -609,19 +653,22 @@ public class BattleSystem : MonoBehaviour
                         StopAllCoroutines();
                         BattleEnd();
                         GameManager.instance.GameBattleEnd(true);
+                        yield break;
                     }
                 }
 
                 if (friendlyDeadCount >= unitPlatQueueCount)
                 {
+                    Debug.Log("FriEndlyDead " + friendlyDeadCount);
+                    Debug.Log("lose first!");
                     //TODO : Game Lose Logic
                     OnGameEnd?.Invoke();
-                    if (hostilityDeadCount >= unitPlatQueueCount)
+                    if (friendlyDeadCount >= unitPlatQueueCount)
                     {
                         Debug.Log("lose");
                         StopAllCoroutines();
-                        BattleEnd();
                         GameManager.instance.GameBattleEnd(false);
+                        yield break;
                     }
                 }
 
@@ -633,6 +680,7 @@ public class BattleSystem : MonoBehaviour
         }
 
         yield return maxDeadTime;
+
     }
 
     private void AddBuffToUnitPlat(UnitBuff buff, ICollection<UnitPlat> plats)

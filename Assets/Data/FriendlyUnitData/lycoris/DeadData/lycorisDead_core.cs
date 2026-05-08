@@ -14,6 +14,14 @@ public class lycorisDead_core : UnitDeadDataSo
 
         effect = Instantiate(ResurrectionEffect, Vector3.zero, Quaternion.identity);
         effect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(effect);
+    }
+
+    public override void PrefabDestory()
+    {
+        base.PrefabDestory();
+
+        effect = null;
     }
 
     public override void DeadAction(UnitPlat user)
@@ -24,7 +32,8 @@ public class lycorisDead_core : UnitDeadDataSo
         foreach (var unit in
             BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
-            if (unit != user && unit.isDead)
+            if (unit != user && unit.isDead && 
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 recervePlat = unit;
             }
@@ -32,7 +41,7 @@ public class lycorisDead_core : UnitDeadDataSo
 
         if (recervePlat == null) return;
 
-        TimerManager.instance.StartTimer(name + "REsurrection", 1.3f, 
+        TimerManager.instance.StartTimer(name + "Resurrection", 1.3f, 
             () => 
             {
                 BattleSystem.instance.UnitResurrection(recervePlat);

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -8,12 +10,19 @@ public class Goblin_shield_sp : UnitSkillDataSo
 {
     [SerializeField] private int skillListIndex;
 
+    private Func<int, UnitPlat, int> defendFunction;
+
+    public override void GameEndAction()
+    {
+        
+    }
+
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
         UnitPlat target = null;
         foreach (var unit in unitPlats)
         {
-            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData && unit != user)
+            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData && unit != user && !unit.isDead)
             {
                 target = unit;
                 break;
@@ -31,16 +40,22 @@ public class Goblin_shield_sp : UnitSkillDataSo
             {
                 target.DamageTextJump("ÉËº¦×ªÒÆ", Color.white);
 
-                target.unit.OnDefend += 
-                (hpchange, u) => 
+                
+                defendFunction = (hpchange, u) =>
                 {
                     if (hpchange < 0)
                     {
                         user.unit.HP += hpchange;
                     }
 
-                    return OnDefendAction(hpchange, u);
+                    u.DamageTextJump("·ÀÓù", Color.white);
+
+                    target.unit.OnDefend -= defendFunction;
+                    return hpchange >= 0 ? hpchange : -hpchange;
                 };
+
+                target.unit.OnDefend -= defendFunction;
+                target.unit.OnDefend += defendFunction;
             });
 
         TimerManager.instance.StartTimer(name + "ShiledEffectClose",0.6f + 1f + 0.1f, 
@@ -51,17 +66,5 @@ public class Goblin_shield_sp : UnitSkillDataSo
             });
 
         user.unit.unitSkills[skillListIndex].SkillTime = 0.6f + 1f + 0.1f + 0.5f + 0.1f;
-    }
-
-    private int OnDefendAction(int hpchange, UnitPlat user)
-    {
-        if (hpchange >= 0)
-        {
-            return hpchange;
-        }
-
-        user.DamageTextJump("·ÀÓù", Color.white);
-
-        return -hpchange;
     }
 }

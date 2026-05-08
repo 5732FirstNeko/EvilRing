@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ThiefSkill_boss
   m_EditorClassIdentifier: 
   SkillTime: 0
-  Damage: 0
+  Damage: 13
   TriggerTiming: 3
   SkillTarget: 1
   Range: 00000000010000000200000003000000
@@ -22,3 +22,4 @@ MonoBehaviour:
   daggerPrefab: {fileID: 8326128187646857615, guid: f0669a64553b9a640b40ef7c0d9628c6, type: 3}
   hitPrefab: {fileID: 1536340600430396621, guid: 6a57cb3c76c9dae49898dd6fb37aa39e, type: 3}
   skilllistIndex: 0
+  Thief_bossCard: {fileID: 11400000, guid: f23684a9c9af3ae4ebb178b759d1baf0, type: 2}

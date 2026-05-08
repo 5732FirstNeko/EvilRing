@@ -13,8 +13,9 @@ public class Unit
         set
         {
             int hpchange = value - _hp;
-            value = OnDefend?.Invoke(hpchange, user) ?? 0 + value;
-            hpchange = value - _hp;
+            hpchange = OnDefend?.Invoke(hpchange, user) ?? hpchange;
+            value = hpchange + _hp;
+            
             if (value >= MaxHP)
             {
                 _hp = MaxHP;
@@ -27,6 +28,7 @@ public class Unit
             {
                 _hp = value;
             }
+
             OnHPChange?.Invoke(hpchange, user);
         }
     }
@@ -58,12 +60,12 @@ public class Unit
 
     public UnitSkill UnitSkillChoice()
     {
-        if (faction == Faction.Hostility && spCount >= spCost)
+        if (SPSkill != null && faction == Faction.Hostility && spCount >= spCost)
         {
-            spCost = 0;
+            spCount = 0;
             return SPSkill;
         }
-        spCost++;
+        spCount++;
 
         List<UnitSkill> usedSkills = new List<UnitSkill>();
         foreach (var skill in unitSkills)

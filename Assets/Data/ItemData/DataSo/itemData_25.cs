@@ -18,7 +18,7 @@ public class itemData_25 : ItemDataSO
                 BattleSystem.instance.UnitRemoveQueue(unit);
             }
         }
-        else if (round >= 1)
+        else if (round == 1)
         {
             foreach (var unit in
             BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())

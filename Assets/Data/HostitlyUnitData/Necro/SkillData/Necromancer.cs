@@ -27,15 +27,27 @@ public class Necromancer : UnitSkillDataSo
 
         resurrectionEffect = Instantiate(resurrectionPrefab, Vector3.zero, Quaternion.identity);
         resurrectionEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(resurrectionEffect);
 
         curseAttackEffect = Instantiate(curseAttackPrefab, Vector3.zero, Quaternion.identity);
         curseAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(curseAttackEffect);
 
         hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
 
         shiledEffect = Instantiate(shiledPrefab, Vector3.zero, Quaternion.identity);
         shiledEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(shiledEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        resurrectionEffect = null;
+        curseAttackEffect = null;
+        hitEffect = null;
+        shiledEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -160,7 +172,7 @@ public class Necromancer : UnitSkillDataSo
 
                 user.DamageTextJump("×çÖä", new Color(0.5f, 0, 0.5f));
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 8;
                 target.UnitPlatHurtAnimation();
 
                 target.unit.OnHPChange += CurseAction;

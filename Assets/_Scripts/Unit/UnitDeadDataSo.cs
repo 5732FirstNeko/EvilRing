@@ -9,6 +9,8 @@ public abstract class UnitDeadDataSo : ScriptableObject
 
     public virtual void PrefabInit() { }
 
+    public virtual void PrefabDestory() { }
+
     public abstract void DeadAction(UnitPlat user);
 
     protected void StandrdDead(UnitPlat user)

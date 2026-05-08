@@ -17,13 +17,13 @@ public class UnitDamageText : MonoBehaviour
     [SerializeField] private AnimationCurve heightCurve;
     [SerializeField] private AnimationCurve fadeCurve;
 
-    private Vector3 startLocalPos;
+    private Vector3 startPosition;
     private int startFontSize;
 
     private void Awake()
     {
         textMesh = GetComponent<TextMesh>();
-        startLocalPos = transform.position;
+        startPosition = transform.position;
         startFontSize = textMesh.fontSize;
     }
 
@@ -31,7 +31,7 @@ public class UnitDamageText : MonoBehaviour
     {
         transform.DOKill();
 
-        transform.localPosition = startLocalPos;
+        transform.localPosition = startPosition;
         textMesh.fontSize = startFontSize;
         textMesh.color = isRecovery ? recoveryFontColor : hurtFontColor;
         textMesh.text = Mathf.Abs(damage).ToString();
@@ -47,9 +47,9 @@ public class UnitDamageText : MonoBehaviour
         progressTweener.OnUpdate(() =>
         {
             transform.position = new Vector3(
-                startLocalPos.x,
-                startLocalPos.y + heightCurve.Evaluate(animProgress) * maxMoveHeight,
-                startLocalPos.z
+                startPosition.x,
+                startPosition.y + heightCurve.Evaluate(animProgress) * maxMoveHeight,
+                startPosition.z
             );
 
             textMesh.fontSize = Mathf.RoundToInt(fontSizeCurve.Evaluate(animProgress) * maxfontSize);
@@ -64,7 +64,7 @@ public class UnitDamageText : MonoBehaviour
     {
         transform.DOKill();
 
-        transform.localPosition = startLocalPos;
+        transform.position = startPosition;
         textMesh.fontSize = startFontSize;
         textMesh.color = color;
         textMesh.text = text;

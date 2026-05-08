@@ -21,7 +21,13 @@ public class Daimon_believer : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -67,14 +73,14 @@ public class Daimon_believer : UnitSkillDataSo
                 hitEffects[0].SetActive(true);
                 hitEffects[0].GetComponent<PlayableDirector>().Play();
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 12;
                 target.UnitPlatHurtAnimation();
 
                 hitEffects[1].transform.position = target.transform.position;
                 hitEffects[1].SetActive(true);
                 hitEffects[1].GetComponent<PlayableDirector>().Play();
 
-                user.unit.HP -= Damage;
+                user.unit.HP -= 12;
                 user.UnitPlatHurtAnimation();
             });
 
@@ -122,7 +128,7 @@ public class Daimon_believer : UnitSkillDataSo
                 hitEffects[0].SetActive(true);
                 hitEffects[0].GetComponent<PlayableDirector>().Play();
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 15;
                 target.UnitPlatHurtAnimation();
 
                 hitEffects[1].transform.position = target.transform.position;

@@ -7,13 +7,29 @@ public class itemData_0 : ItemDataSO
 {
     public override void Action()
     {
-        BattleSystem.instance.OnUnitplatDequeue += OnAction;
+        BattleSystem.instance.OnRoundStart += OnAction;
     }
 
-    private void OnAction(UnitPlat unitPlat)
+    private float OnAction(int round)
     {
-        if (unitPlat.unit.faction != Faction.Friendly) return;
-        BattleSystem.instance.UnitReEnqueue(unitPlat);
-        BattleSystem.instance.OnUnitplatDequeue -= OnAction;
+        if (round > 0)
+        {
+            BattleSystem.instance.OnRoundStart -= OnAction;
+            return 0;
+        }
+
+        UnitPlat target = null;
+        foreach (var unit in BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
+        {
+            if (!target.isDead && target.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+            {
+                target = unit;
+                break;
+            }
+        }
+
+        BattleSystem.instance.UnitReEnqueue(target);
+        BattleSystem.instance.OnRoundStart -= OnAction;
+        return 0;
     }
 }

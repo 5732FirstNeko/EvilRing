@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Wizard_Recovery
   m_EditorClassIdentifier: 
+  cardName: 
   HP: 25
   Speed: 5
-  cost: 15
+  cost: 10
   Faction: 0
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: a8b026068357849418da6718bc136258, type: 3}
   Skills:
   - {fileID: 11400000, guid: bca83e917e3c6d74eaecc23e89b324a7, type: 2}
+  description: "\u4E3A\u5168\u4F53\u961F\u53CB\u6062\u590D\u751F\u547D\u503C"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

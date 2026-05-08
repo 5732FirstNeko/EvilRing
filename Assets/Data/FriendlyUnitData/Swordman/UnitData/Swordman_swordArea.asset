@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Swordman_swordArea
   m_EditorClassIdentifier: 
-  HP: 0
+  cardName: 
+  HP: 20
   Speed: 5
-  cost: 0
+  cost: 10
   Faction: 0
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: e24697c38b4729d4ea3ddb380672f103, type: 3}
   Skills:
   - {fileID: 11400000, guid: 1d0c296838a266c4085e36361151b12a, type: 2}
+  description: "\u5438\u6536\u961F\u4F0D\u4E2D\u6700\u5927\u751F\u547D\u503C\u5355\u4F4D\u7684\u4E00\u5B9A\u751F\u547D\u503C\uFF0C\u5728\u654C\u65B9\u4F4D\u7F6E\u751F\u6210\u4E00\u4E2A\u5251\u9635\uFF0C\u5BF9\u654C\u4EBA\u9020\u6210\u4E00\u5B9A\u4F24\u5BB3"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

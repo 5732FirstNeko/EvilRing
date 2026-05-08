@@ -22,9 +22,17 @@ public class Daimon_assassin : UnitSkillDataSo
 
         attackEffect = Instantiate(attackPrefab, Vector3.zero, Quaternion.identity);
         attackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackEffect);
 
         hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        attackEffect = null;
+        hitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -44,17 +52,17 @@ public class Daimon_assassin : UnitSkillDataSo
     private void Attack(UnitPlat user)
     {
         UnitPlat target = null;
-        foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
+        foreach (var unit in BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
             if (target == null && !unit.isDead &&
-                unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 target = unit;
                 continue;
             }
 
-            if (target.unit.HP > unit.unit.HP && !unit.isDead &&
-                unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+            if (target != null && target.unit.HP > unit.unit.HP && !unit.isDead &&
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 target = unit;
             }
@@ -83,9 +91,13 @@ public class Daimon_assassin : UnitSkillDataSo
             0.6f + (float)attackDirector.duration * hitEffectRate, 
             () => 
             {
-                hitEffect.transform.position = target.transform.position;
+                hitEffect.transform.position = user.transform.position;
                 hitEffect.SetActive(true);
+                hitEffect.transform.DOMove(target.transform.position, 0.3f);
                 hitDirector.Play();
+
+                target.UnitPlatHurtAnimation();
+                target.unit.HP -= 18;
             });
 
         TimerManager.instance.StartTimer(name + "EffectClose",

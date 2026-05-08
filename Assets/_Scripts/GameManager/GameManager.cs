@@ -1,4 +1,4 @@
-using System.Collections;
+锘縰sing System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -8,22 +8,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-    public static GameManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(GameManager).Name);
-                Instance = Object.AddComponent<GameManager>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static GameManager instance { get; private set; }
 
     public static Material UnlitMaterial;
+    public static Material litMaterial;
 
     public static Color purple = new Color(0.5f, 0f, 0.5f, 1f);
 
@@ -35,17 +23,17 @@ public class GameManager : MonoBehaviour
 
     public Collider2D BackGroundCollider;
     [SerializeField] private Material unlitmaterial;
+    [SerializeField] private Material litmaterial;
 
-    [SerializeField] private string startSceneName;
+    [SerializeField] public string startSceneName;
 
     public int currentLevel = 0;
 
     [SerializeField] private GameObject sceneChangeObject;
 
-    [SerializeField] private AudioClip standrdAudio;
+    [SerializeField] public AudioClip standrdAudio;
     [SerializeField] private AudioClip battleAudio;
     [SerializeField] private AudioClip finalBossAudio;
-    [SerializeField] private AudioClip startSceneAudio;
 
     public bool isHaveDrag 
     {
@@ -54,21 +42,16 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
 
         UnlitMaterial = unlitmaterial;
+        litMaterial = litmaterial;
     }
 
     private void Start()
     {
+
+
         otherLightIntensity = new float[otherlights.Count];
         for (int i = 0; i < otherlights.Count; i++)
         {
@@ -80,7 +63,7 @@ public class GameManager : MonoBehaviour
             GameBattleInit();
         });
 
-        DialogueSystem.instance.GameStartDialogue();
+
     }
 
     #region BattleFunction
@@ -171,13 +154,8 @@ public class GameManager : MonoBehaviour
         else
         {
             DialogueSystem.instance.GameLoseDialogue();
-        }
 
-        TimerManager.instance.StartTimer(name + "DialogueEnd", 6f, 
-            () => 
-            {
-                StartLoadScene(startSceneName);
-            });
+        }
     }
 
     public void UnitPlatPositionReset()
@@ -224,7 +202,7 @@ public class GameManager : MonoBehaviour
         #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            
+            SceneManager.LoadSceneAsync(1, LoadSceneMode.Single);
         }
         #endif
     }
@@ -245,6 +223,9 @@ public class GameManager : MonoBehaviour
         }
         return path;
     }
+
+    #region SceneLoad
+
     public void StartLoadScene(string sceneName, float waitTime = 0.5f)
     {
         StartCoroutine(LoadSceneCoroutine(sceneName, waitTime));
@@ -252,26 +233,28 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator LoadSceneCoroutine(string sceneName, float waitTime)
     {
-        // 1. 等待过渡时间（可以在这里加黑屏/淡入淡出动画）
-        yield return new WaitForSeconds(waitTime);
-
         sceneChangeObject.SetActive(true);
-        // 2. 异步加载场景（不会卡顿游戏）
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        yield return new WaitForSecondsRealtime(waitTime);
+        DOTween.KillAll();
+        Time.timeScale = 1f;
 
-        // 3. 禁止加载完成后自动切换（可选，想控制切换时机用）
-        //asyncLoad.allowSceneActivation = false;
+        AsyncOperation async = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
 
-        // 4. 等待场景加载完成
-        while (!asyncLoad.isDone)
+        while (!async.isDone)
         {
-            // 可以在这里打印加载进度：asyncLoad.progress
             yield return null;
         }
+    }
+    #endregion
 
-        AudioManager.instance.PlayBGM(startSceneAudio);
+    public static void LookAtTarget(Transform self, Vector3 targetPos, Vector3 customForward)
+    {
+        if (self == null) return;
+        customForward.Normalize();
+        Vector3 dir = targetPos - self.position;
+        if (dir.magnitude < 0.01f) return; 
 
-        // 5. 加载完成后自动切换场景
-        //asyncLoad.allowSceneActivation = true;
+        float angle = Vector2.SignedAngle(customForward, dir);
+        self.rotation = Quaternion.Euler(0, 0, angle);
     }
 }

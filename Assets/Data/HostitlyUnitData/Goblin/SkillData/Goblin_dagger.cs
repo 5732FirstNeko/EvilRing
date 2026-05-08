@@ -22,9 +22,17 @@ public class Goblin_dagger : UnitSkillDataSo
 
         daggerEffect = Instantiate(daggerPrefab, Vector3.zero, Quaternion.identity);
         daggerEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(daggerEffect);
 
         hitEffect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        daggerEffect = null;
+        hitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -39,14 +47,14 @@ public class Goblin_dagger : UnitSkillDataSo
         foreach (var unit in unitPlats)
         {
             if (target == null &&
-                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead)
             {
                 target = unit;
                 continue;
             }
 
-            if (target.unit.HP > target.unit.HP &&
-                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+            if (target != null && target.unit.HP > unit.unit.HP &&
+                unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead)
             {
                 target = unit;
             }
@@ -79,7 +87,7 @@ public class Goblin_dagger : UnitSkillDataSo
                 hitEffect.SetActive(true);
                 hitEffect.GetComponent<PlayableDirector>().Play();
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 7;
                 target.UnitPlatHurtAnimation();
             });
 

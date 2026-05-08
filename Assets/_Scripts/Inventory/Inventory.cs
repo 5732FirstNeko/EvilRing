@@ -70,6 +70,11 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (GameManager.GameState.Game == GameManager.instance.gameState)
+        {
+            return;
+        }
+
         UIManager.instance.InventoryDataUIUnDisplay();
         InventoryManager.instance.currentSelectInventory = this;
         InventoryManager.instance.isHaveDrag = true;
@@ -82,6 +87,11 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (GameManager.GameState.Game == GameManager.instance.gameState)
+        {
+            return;
+        }
+
         InventoryManager.instance.InventoryInstance.gameObject.SetActive(false);
         InventoryManager.instance.isHaveDrag = false;
 
@@ -91,10 +101,12 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-        UnitSiteFlag unitSiteFlag = hit.collider.GetComponent<UnitSiteFlag>();
+        UnitSiteFlag unitSiteFlag = hit.collider?.GetComponent<UnitSiteFlag>();
 
         if (itemData.itemType == ItemBuffType.HostitlyUnit &&
-            unitSiteFlag != null && unitSiteFlag.faction == Faction.Hostility)
+            unitSiteFlag != null && unitSiteFlag.faction == Faction.Hostility &&
+            UnitCardSystem.instance.GetCurrentUnitPlatByUnitSite(Faction.Hostility, unitSiteFlag.site).
+            unitData != null)
         {
             UnitPlat unitPlat = UnitCardSystem.instance.GetHostitlyUnitPlats()
                 [BattleSystem.GetIndexByUnitSite(unitSiteFlag.site)];
@@ -108,7 +120,9 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
             Action(unitPlat);
         }
         else if (itemData.itemType == ItemBuffType.FriendlyUnit &&
-            unitSiteFlag != null && unitSiteFlag.faction == Faction.Friendly)
+            unitSiteFlag != null && unitSiteFlag.faction == Faction.Friendly &&
+            UnitCardSystem.instance.GetCurrentUnitPlatByUnitSite(Faction.Friendly, unitSiteFlag.site).
+            unitData != null)
         {
             UnitPlat unitPlat = UnitCardSystem.instance.GetCurrentFriendlyUnitPlats()
                 [BattleSystem.GetIndexByUnitSite(unitSiteFlag.site)];
@@ -120,8 +134,7 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
 
             Action(unitPlat);
         }
-        else if (itemData.itemType == ItemBuffType.Global && 
-            (eventData.pointerEnter == null || unitSiteFlag != null))
+        else if (itemData.itemType == ItemBuffType.Global)
         {
             transform.DOKill();
             InventoryManager.instance.RemoveInventryFromList(this);
@@ -133,6 +146,11 @@ public class Inventory : MonoBehaviour, IPointerClickHandler,
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (GameManager.GameState.Game == GameManager.instance.gameState)
+        {
+            return;
+        }
+
         InventoryManager.instance.InventoryInstance.transform.position = Input.mousePosition;
     }
 

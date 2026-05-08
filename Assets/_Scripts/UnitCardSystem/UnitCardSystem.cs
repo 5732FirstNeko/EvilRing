@@ -7,20 +7,7 @@ using UnityEngine.UI;
 
 public class UnitCardSystem : MonoBehaviour
 {
-    public static UnitCardSystem Instance;
-    public static UnitCardSystem instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(UnitCardSystem).Name);
-                Instance = Object.AddComponent<UnitCardSystem>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static UnitCardSystem instance { get; private set; }
 
     [SerializeField] private Sprite defaultCardSprite;
     [Header("Friendly")]
@@ -28,6 +15,9 @@ public class UnitCardSystem : MonoBehaviour
     public List<FriendlyUnitUI> friendlyUnitRefreshArea;
 
     public int friendlyCardCount { get => friendlyUnitRefreshArea.Count; }
+
+    [SerializeField] private int refreshGoldCost;
+    [SerializeField] public Button refreshButton;
 
     [Header("Hostitly")]
     public HostilityWaveDataSo hostilityWaveData;
@@ -60,25 +50,22 @@ public class UnitCardSystem : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
+    }
+
+    private void Start()
+    {
+        refreshButton.onClick.AddListener(RefreshCards);
     }
 
     public void AddUnitToFriendlyList(UnitDataSo unitData, UnitSite site)
     {
-        if (InventoryManager.Instance.gold > unitData.cost)
+        if (InventoryManager.instance.gold > unitData.cost)
         {
             int index = BattleSystem.GetIndexByUnitSite(site);
             UnitPlat unitPlat = friendlyUnitPlats[index];
             unitPlat.UnitPlatInit(unitData, site);
-            InventoryManager.Instance.gold -= unitData.cost;
+            InventoryManager.instance.gold -= unitData.cost;
 
             friendlyUnitPlats[index].unitData = unitData;
 
@@ -266,7 +253,7 @@ public class UnitCardSystem : MonoBehaviour
 
     public void RefreshHostitlyUnit()
     {
-        hostilityWaveData = FactorySystem.instance.GetHostitlyWaveDataByGhost(InventoryManager.Instance.ghostTotal);
+        hostilityWaveData = FactorySystem.instance.GetHostitlyWaveDataByGhost(InventoryManager.instance.ghostTotal);
 
         ghostCount.text = "Áé»êÊý : " + hostilityWaveData.ghostCost;
         for (int i = 0; i < hostitlyUnitRefreshArea.Count; i++)
@@ -328,5 +315,31 @@ public class UnitCardSystem : MonoBehaviour
         }
 
         return reslutes;
+    }
+
+    public UnitPlat GetCurrentUnitPlatByUnitSite(Faction faction, UnitSite site)
+    {
+        switch (faction)
+        {
+            case Faction.Friendly:
+                int index_fri = BattleSystem.GetIndexByUnitSite(site);
+                return friendlyUnitPlats[index_fri];
+            case Faction.Hostility:
+                int index_hos = BattleSystem.GetIndexByUnitSite(site);
+                return hostitlyUnitPlats[index_hos];
+        }
+
+        return null;
+    }
+
+    public void RefreshCards()
+    {
+        if (InventoryManager.instance.gold < refreshGoldCost)
+        {
+            return;
+        }
+
+        InventoryManager.instance.gold -= refreshGoldCost;
+        RefreshAllFriendlyUnit();
     }
 }

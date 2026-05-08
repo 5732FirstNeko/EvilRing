@@ -17,6 +17,11 @@ public class Element_core : UnitSkillDataSo
         BattleSystem.instance.OnRoundStart += OnRoundAction;
     }
 
+    public override void GameEndAction()
+    {
+        BattleSystem.instance.OnRoundStart -= OnRoundAction;
+    }
+
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);

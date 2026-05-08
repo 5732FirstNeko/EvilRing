@@ -24,9 +24,11 @@ public class Guards_core : UnitSkillDataSo
 
         attackEffect = Instantiate(attackPrefab, Vector3.zero, Quaternion.identity);
         attackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackEffect);
 
         recoveryEffect = Instantiate(recoveryPrefab, Vector3.zero, Quaternion.identity);
         recoveryEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(recoveryEffect);
 
         hitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -34,7 +36,16 @@ public class Guards_core : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        attackEffect = null;
+        recoveryEffect = null;
+
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -80,7 +91,7 @@ public class Guards_core : UnitSkillDataSo
                         hitEffects[j].SetActive(true);
                         hitEffects[j].GetComponent<PlayableDirector>().Play();
 
-                        unit.unit.HP -= Damage;
+                        unit.unit.HP -= 8;
                         unit.UnitPlatHurtAnimation();
 
                         i++;
@@ -139,7 +150,7 @@ public class Guards_core : UnitSkillDataSo
 
                         unit.UnitPlatRecoveryAnimation();
                         unit.unit.HP += 
-                            FactorySystem.instance.GuardsCards.Contains(unit.unitData) ? Damage : Damage * 2;
+                            FactorySystem.instance.GuardsCards.Contains(unit.unitData) ? 15 : 25;
                     }
                 });
 

@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: FinalBoss
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u90AA\u795E"
+  HP: 120
+  Speed: 3
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 568bbc938617ec34b9ce1aa30372141b, type: 3}
   Skills:
   - {fileID: 11400000, guid: 9bcfc37aa8139174fbf0d2e3a598f01f, type: 2}
+  description: "\uFF1F\uFF1F\uFF1F"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

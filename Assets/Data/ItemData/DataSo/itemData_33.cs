@@ -16,7 +16,7 @@ public class itemData_33 : ItemDataSO
         for (int i = 0; i < unitplats.Count; i++)
         {
             if (unitplats[i].unitData != null &&
-                unitplats[i].unitData != FactorySystem.Instance.EmptyFriendlyUnitData)
+                unitplats[i].unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 count++;
             }
@@ -25,7 +25,7 @@ public class itemData_33 : ItemDataSO
         for (int i = 0; i < unitplats.Count; i++)
         {
             if (unitplats[i].unitData != null &&
-                unitplats[i].unitData != FactorySystem.Instance.EmptyFriendlyUnitData)
+                unitplats[i].unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 unitplats[i].unit.MaxHP += Mathf.RoundToInt(unitplats[i].unit.MaxHP * 0.1f * count);
                 unitplats[i].unit.HP = unitplats[i].unit.MaxHP;

@@ -6,20 +6,7 @@ using UnityEngine;
 //半山腰太挤，你总得去山顶看看//
 public class ObjectPoolSystem : MonoBehaviour
 {
-    public static ObjectPoolSystem instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(ObjectPoolSystem).Name);
-                Instance = Object.AddComponent<ObjectPoolSystem>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
-    private static ObjectPoolSystem Instance;
+    public static ObjectPoolSystem instance { get; private set; }
 
     [SerializeField] private int poolSize;
 
@@ -30,15 +17,7 @@ public class ObjectPoolSystem : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
 
         DilatePool(audioPool, audioSourceElement);
     }

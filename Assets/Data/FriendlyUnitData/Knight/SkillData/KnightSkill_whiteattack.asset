@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KnightSkill_whiteattack
   m_EditorClassIdentifier: 
   SkillTime: 0
-  Damage: 0
+  Damage: 15
   TriggerTiming: 3
   SkillTarget: 1
   Range: 0000000001000000

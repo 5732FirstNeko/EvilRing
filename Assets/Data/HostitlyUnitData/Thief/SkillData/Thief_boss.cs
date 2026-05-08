@@ -11,6 +11,7 @@ public class Thief_boss : UnitSkillDataSo
     [SerializeField] private GameObject hitPrefab;
 
     [SerializeField] private int skilllistIndex;
+    [SerializeField] private UnitDataSo Thief_bossCard;
 
     private GameObject daggerEffect;
     private List<GameObject> hitEffects;
@@ -19,8 +20,11 @@ public class Thief_boss : UnitSkillDataSo
     {
         base.GameStartInit();
 
+        BattleSystem.instance.OnRoundStart += OnRoundStartAction;
+
         daggerEffect = Instantiate(daggerPrefab, Vector3.zero, Quaternion.identity);
         daggerEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(daggerEffect);
 
         hitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -28,8 +32,17 @@ public class Thief_boss : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
     }
+
+    public override void GameEndAction()
+    {
+        daggerEffect = null;
+
+        hitEffects = null;
+    }
+
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
         if (unitPlats.Count <= 0)
@@ -77,15 +90,17 @@ public class Thief_boss : UnitSkillDataSo
                 director.Play();
 
                 int i = 0;
+                int daggerCount = Mathf.FloorToInt((float)director.duration / 0.3f);
                 foreach (var unit in unitPlats)
                 {
                     if (!unit.isDead && unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
                     {
                         int index = i;
-                        unit.UnitPlatHurtAnimation(Mathf.FloorToInt((float)director.duration / 0.25f), 0, 
+                        
+                        unit.UnitPlatHurtAnimation(daggerCount, 0, 
                             () => 
                             {
-                                unit.unit.HP -= Damage / count;
+                                unit.unit.HP -= Mathf.RoundToInt(Damage / daggerCount);
                                 if (hitEffects[index].activeSelf)
                                 {
                                     hitEffects[index].SetActive(false);
@@ -153,5 +168,61 @@ public class Thief_boss : UnitSkillDataSo
 
         BattleSystem.instance.OnRoundStart -= OnRoundStart;
         return 1.1f;
+    }
+
+    private float OnRoundStartAction(int round)
+    {
+        if (round < 4)
+        {
+            return 0;
+        }
+
+        List<UnitPlat> unitplats = BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat();
+        UnitPlat user = null;
+        foreach (var unit in unitplats)
+        {
+            if (user == null && unit.unitData == Thief_bossCard)
+            {
+                user = unit;
+                break;
+            }
+        }
+
+        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
+
+        TimerManager.instance.StartTimer(name + "ThiefItem", 0.6f,
+            () =>
+            {
+                user.DamageTextJump("µÁÇÔ", Color.black);
+                if (InventoryManager.instance.itemList.Count > 0)
+                {
+                    int index = Random.Range(0, InventoryManager.instance.itemList.Count);
+                    InventoryManager.instance.RemoveInventryFromList(InventoryManager.instance.itemList[index]);
+                }
+            });
+
+        TimerManager.instance.StartTimer(name + "ThiefRun", 0.6f + 1f,
+            () =>
+            {
+                user.DamageTextJump("ÌÓÅÜ", GameManager.purple);
+            });
+
+        TimerManager.instance.StartTimer(name + "CardUpDate", 0.6f + 1f + 1.2f,
+            () =>
+            {
+                user.HPBarUnDisPlay();
+                user.UnitPlatInit(FactorySystem.instance.EmptyHostitlyUnitData, user.site);
+
+                user.iconSpriteRender.sprite = FactorySystem.instance.EmptyHostitlyUnitData.UnitSprite;
+                Vector3 originScale = user.transform.localScale;
+                user.transform.localScale = Vector3.zero;
+                user.transform.DOScale(originScale, 1.5f).OnComplete(
+                    () =>
+                    {
+                        user.transform.DOScale(UnitPlat.originScale, 0.5f);
+                    });
+            });
+
+        return 0.6f + 1f + 1.2f + 1.5f + 0.6f;
     }
 }

@@ -5,20 +5,7 @@ using UnityEngine;
 //半山腰太挤，你总得去山顶看看//
 public class CameraShakeManager : MonoBehaviour
 {
-    private static CameraShakeManager Instance;
-    public static CameraShakeManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(CameraShakeManager).Name);
-                Instance = Object.AddComponent<CameraShakeManager>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static CameraShakeManager instance { get; private set; }
 
     [Header("Camera Settings")]
     public Camera targetCamera;
@@ -54,14 +41,7 @@ public class CameraShakeManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        instance = this;
 
         if (targetCamera == null)
         {

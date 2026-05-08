@@ -6,20 +6,7 @@ using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
-    public static InventoryManager Instance;
-    public static InventoryManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(InventoryManager).Name);
-                Instance = Object.AddComponent<InventoryManager>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static InventoryManager instance { get; private set; }
 
     public int gold
     {
@@ -82,21 +69,17 @@ public class InventoryManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
     }
 
     private void Start()
     {
         globalInventoryList = new List<Inventory>();
         InventoryTargetMap = new Dictionary<Inventory, UnitPlat>();
+
+        gold = 1000;
+        ghost = 1000;
+        ghostTotal = 1000;
     }
 
     public void AddInventoryToList(ItemDataSO itemData)

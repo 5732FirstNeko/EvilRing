@@ -25,9 +25,17 @@ public class LycorisSkill_Standrd_Recovery : UnitSkillDataSo
             GameObject effect = Instantiate(effectprefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             effects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         units = new List<UnitPlat>();
+    }
+
+    public override void GameEndAction()
+    {
+        effects = null;
+
+        units.Clear();
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -35,7 +43,8 @@ public class LycorisSkill_Standrd_Recovery : UnitSkillDataSo
         units.Clear();
         foreach (var unit in unitPlats)
         {
-            if (unit.unit.HP <= Mathf.RoundToInt(0.5f * unit.unit.MaxHP) && unit != user)
+            if (!unit.isDead && unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && 
+                unit.unit.HP <= Mathf.RoundToInt(0.5f * unit.unit.MaxHP) && unit != user)
             {
                 units.Add(unit);
             }
@@ -78,9 +87,7 @@ public class LycorisSkill_Standrd_Recovery : UnitSkillDataSo
             {
                 for (int i = 0; i < units.Count; i++)
                 {
-                    Debug.Log(units[i].unit.HP);
                     units[i].unit.HP += Mathf.RoundToInt(0.5f * units[i].unit.MaxHP);
-                    Debug.Log(units[i].unit.HP);
                     units[i].UnitPlatRecoveryAnimation();
                 }
             });

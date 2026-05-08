@@ -33,7 +33,15 @@ public class Element_fire : UnitSkillDataSo
 
             fireAttackEffect.Add(attack);
             fireHitEffect.Add(hit);
+            BattleSystem.instance.destoryEffect.Add(attack);
+            BattleSystem.instance.destoryEffect.Add(hit);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        fireAttackEffect = null;
+        fireHitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -85,7 +93,7 @@ public class Element_fire : UnitSkillDataSo
 
 
                                 unit.UnitPlatHurtAnimation();
-                                unit.unit.HP -= Damage + user.costumvalue_first == 1 ? 3 : 0;
+                                unit.unit.HP -= 7 + user.costumvalue_first == 1 ? 3 : 0;
                                 if (user.costumvalue_first == 1)
                                 {
                                     unit.DamageTextJump("×ÆÉÕ", Color.white);

@@ -28,6 +28,7 @@ public class Goblin_wizard : UnitSkillDataSo
 
         wizardEffect = Instantiate(wizardPrefab, Vector3.zero, Quaternion.identity);
         wizardEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(wizardEffect);
 
         wizardHitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -35,29 +36,54 @@ public class Goblin_wizard : UnitSkillDataSo
             GameObject effect = Instantiate(wizardHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             wizardHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
-        flashEffect = Instantiate(flashHiteffect, Vector3.zero, Quaternion.identity);
+        flashEffect = Instantiate(flashAttackPrefab, Vector3.zero, Quaternion.identity);
         flashEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(flashEffect);
 
         flashHiteffect = Instantiate(flahsHitPrefab, Vector3.zero, Quaternion.identity);
         flashHiteffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(flashHiteffect);
 
         foreach (var unit in 
             BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
         {
-            if (unit.unitData == FactorySystem.Instance.GoblineCards.Contains(unit.unitData) && 
-                unit.unitData != m_user.unitData && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
-            {
-                unit.unit.OnDead += UnitDeadAction;
-            }
             if (unit.unitData == this.unitData)
             {
                 m_user = unit;
             }
         }
 
-        BattleSystem.instance.OnRoundStart += (round) => { m_user.costumvalue_first = 1; return 0; };
+        BattleSystem.instance.OnRoundStart += 
+            (round) => 
+            {
+                if (round == 0)
+                {
+                    foreach (var unit in
+                    BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
+                    {
+                        Debug.Log(FactorySystem.instance.GoblineCards == null);
+                        if (FactorySystem.instance.GoblineCards.Contains(unit.unitData) &&
+                            unit.unitData != m_user.unitData && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+                        {
+                            unit.unit.OnDead += UnitDeadAction;
+                        }
+                    }
+                }
+
+                m_user.costumvalue_first = 1; 
+                return 0; 
+            };
+    }
+
+    public override void GameEndAction()
+    {
+        wizardEffect = null;
+        wizardHitEffects = null;
+        flashEffect = null;
+        flashHiteffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -99,7 +125,7 @@ public class Goblin_wizard : UnitSkillDataSo
                 hitDirector.Play();
 
                 target.UnitPlatHurtAnimation();
-                target.unit.HP -= Damage;
+                target.unit.HP -= 8;
             });
 
         TimerManager.instance.StartTimer(name + "FlashEffectClose", 
@@ -129,7 +155,7 @@ public class Goblin_wizard : UnitSkillDataSo
             }
         }
 
-        if (wizard == null || this.m_user.costumvalue_first <= 0)
+        if (wizard == null || this.m_user.costumvalue_first <= 0 || wizard.isDead)
         {
             user.unit.DeadAnimationTime = 1;
             return;
@@ -139,11 +165,13 @@ public class Goblin_wizard : UnitSkillDataSo
         wizard.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
         Vector3 spawnPostion = Vector3.zero;
+        Dictionary<UnitPlat,Vector3> originPosition = new Dictionary<UnitPlat,Vector3>();
         foreach (var unit in BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
             if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 spawnPostion += unit.transform.position;
+                originPosition.Add(unit, unit.transform.position);
             }
         }
 
@@ -168,10 +196,10 @@ public class Goblin_wizard : UnitSkillDataSo
                     int index = i;
                     if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
                     {
-                        unit.UnitPlatHurtAnimation(frenquency, 0, 
+                        unit.UnitPlatHurtAnimation(frenquency - 2, 0, 
                             () => 
                             {
-                                unit.unit.HP -= Damage;
+                                unit.unit.HP -= 7;
                                 if (wizardHitEffects[index].activeSelf)
                                 {
                                     wizardHitEffects[index].SetActive(false);
@@ -196,6 +224,13 @@ public class Goblin_wizard : UnitSkillDataSo
                 {
                     wizardHitEffects[i].SetActive(true);
                 }
+
+                foreach (var (unit, pos) in originPosition)
+                {
+                    unit.transform.position = pos;
+                }
+                originPosition.Clear();
+                originPosition = null;
 
                 GameManager.instance.GlobalLightControll(1f, 0.5f);
                 wizard.transform.DOScale(UnitPlat.originScale, 0.5f);

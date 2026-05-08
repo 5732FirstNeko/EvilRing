@@ -20,6 +20,7 @@ public class Shiled_core : UnitSkillDataSo
 
         buffEffect = Instantiate(buffprefab, Vector3.zero, Quaternion.identity);
         buffEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(buffEffect);
 
         hitEffect = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -27,7 +28,15 @@ public class Shiled_core : UnitSkillDataSo
             GameObject effect = Instantiate(hitprefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffect.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        buffEffect = null;
+
+        hitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -59,47 +68,51 @@ public class Shiled_core : UnitSkillDataSo
         {
             if (user.unit.HP > user.unit.MaxHP)
             {
-                damage = Mathf.RoundToInt(hpChange * 5 * Damage * 0.1f);
+                damage = Mathf.RoundToInt(hpChange * 5 * 0.1f);
             }
             else
             {
-                damage = Mathf.RoundToInt(hpChange * 2 * Damage * 0.1f);
+                damage = Mathf.RoundToInt(hpChange * 2 * 0.1f);
             }
         }
         else
         {
-            damage = Damage;
+            damage = 7;
         }
 
-        buffEffect.transform.position = user.transform.position;
-        buffEffect.SetActive(true);
-        PlayableDirector director = buffEffect.GetComponent<PlayableDirector>();
-        director.Play();
-
-        float time = (float)hitEffect[0].GetComponent<PlayableDirector>().duration;
-        for (int i = 0; i < units.Count; i++)
-        {
-            if (units[i].unitData == null ||
-                units[i].unitData == FactorySystem.instance.EmptyFriendlyUnitData)
-            {
-                continue;
-            }
-
-            units[i].unit.HP -= damage;
-            hitEffect[i].transform.position = units[i].transform.position;
-            hitEffect[i].SetActive(true);
-            hitEffect[i].GetComponent<PlayableDirector>().Play();
-            units[i].UnitPlatHurtAnimation();
-        }
-
-        TimerManager.instance.StartTimer(name + "hitEffectClose" ,(float)director.duration + time + 0.1f, 
+        TimerManager.instance.StartTimer(name + "HurtEffect", 0.75f, 
             () => 
             {
-                buffEffect.SetActive(false);
-                for (int i = 0; i < hitEffect.Count; i++)
+                buffEffect.transform.position = user.transform.position;
+                buffEffect.SetActive(true);
+                PlayableDirector director = buffEffect.GetComponent<PlayableDirector>();
+                director.Play();
+
+                float time = (float)hitEffect[0].GetComponent<PlayableDirector>().duration;
+                for (int i = 0; i < units.Count; i++)
                 {
-                    hitEffect[i].SetActive(false);
+                    if (units[i].unitData == null ||
+                        units[i].unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
+                    units[i].unit.HP -= damage;
+                    hitEffect[i].transform.position = units[i].transform.position;
+                    hitEffect[i].SetActive(true);
+                    hitEffect[i].GetComponent<PlayableDirector>().Play();
+                    units[i].UnitPlatHurtAnimation();
                 }
+
+                TimerManager.instance.StartTimer(name + "hitEffectClose", (float)director.duration + time + 0.1f,
+                    () =>
+                    {
+                        buffEffect.SetActive(false);
+                        for (int i = 0; i < hitEffect.Count; i++)
+                        {
+                            hitEffect[i].SetActive(false);
+                        }
+                    });
             });
     }
 }

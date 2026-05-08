@@ -24,7 +24,13 @@ public class Slime_small : UnitSkillDataSo
             GameObject effect = Instantiate(impactHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             impactHiteffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        impactHiteffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -48,7 +54,7 @@ public class Slime_small : UnitSkillDataSo
                     {
                         Vector3 originPosition = user.transform.position;
 
-                        Tweener move = user.transform.DOMove(impactPosition, 1.5f).SetEase(Ease.Linear).OnComplete(
+                        Tweener move = user.transform.DOMove(impactPosition, 0.75f).SetEase(Ease.Linear).OnComplete(
                             () =>
                             {
                                 user.transform.DOMove(originPosition, 0.5f);
@@ -60,8 +66,8 @@ public class Slime_small : UnitSkillDataSo
                         UnitPlat fourth = null;
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
-                                unit.site == UnitSite.first)
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData &&
+                                unit.site == UnitSite.first && !unit.isDead)
                             {
                                 first = unit;
                                 break;
@@ -69,8 +75,8 @@ public class Slime_small : UnitSkillDataSo
                         }
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
-                                unit.site == UnitSite.second)
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData &&
+                                unit.site == UnitSite.second && !unit.isDead)
                             {
                                 second = unit;
                                 break;
@@ -78,8 +84,8 @@ public class Slime_small : UnitSkillDataSo
                         }
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
-                                unit.site == UnitSite.third)
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData &&
+                                unit.site == UnitSite.third && !unit.isDead)
                             {
                                 third = unit;
                                 break;
@@ -87,8 +93,8 @@ public class Slime_small : UnitSkillDataSo
                         }
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
-                                unit.site == UnitSite.fourth)
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData &&
+                                unit.site == UnitSite.fourth && !unit.isDead)
                             {
                                 fourth = unit;
                                 break;

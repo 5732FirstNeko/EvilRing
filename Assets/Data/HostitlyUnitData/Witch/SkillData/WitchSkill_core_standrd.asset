@@ -22,3 +22,5 @@ MonoBehaviour:
   potPrefab: {fileID: 4433661830034442417, guid: 78a8ad0d7e4f6264a803be3d226932c3, type: 3}
   skillListIndex: 0
   potCard: {fileID: 11400000, guid: d5f0d6b6d3fe9584d84e04062900a4af, type: 2}
+  destoryPrefab: {fileID: 3084829496920324562, guid: 6363af9adb2f5304cb294fab417667fc, type: 3}
+  hitPrefab: {fileID: 1405229123078902876, guid: ad7b2a8ebe70f7d45b280d8b5222741c, type: 3}

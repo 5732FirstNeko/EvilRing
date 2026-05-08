@@ -16,7 +16,7 @@ public class itemData_34 : ItemDataSO
         for (int i = 0; i < unitplats.Count; i++)
         {
             if (unitplats[i].unitData != null ||
-                unitplats[i].unitData != FactorySystem.Instance.EmptyFriendlyUnitData)
+                unitplats[i].unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 count++;
             }

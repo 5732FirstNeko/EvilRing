@@ -25,6 +25,7 @@ public class Necro_SkeletalArc : UnitSkillDataSo
             GameObject effect = Instantiate(arrowAttackPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             arrowAttcakEffect.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         arrowHitEffects = new List<GameObject>();
@@ -33,7 +34,15 @@ public class Necro_SkeletalArc : UnitSkillDataSo
             GameObject effect = Instantiate(arrowHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             arrowHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        arrowAttcakEffect = null;
+
+        arrowHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -97,17 +106,21 @@ public class Necro_SkeletalArc : UnitSkillDataSo
                 arrowAttcakEffect[0].transform.rotation = Quaternion.FromToRotation(Vector3.up, startDir_first);
 
                 arrowAttcakEffect[0].transform.position = user.transform.position;
+
+                arrowAttcakEffect[0].transform.Find("Arrow").gameObject.SetActive(false);
+
                 arrowAttcakEffect[0].SetActive(true);
                 arrowAttcakEffect[0].transform.DOPath(bulletPath, 1f, PathType.CatmullRom).
                     SetEase(Ease.InQuart).SetOptions(false).SetDelay(0.5f).OnComplete(
                     () =>
                     {
+                        arrowAttcakEffect[0].transform.Find("Arrow").gameObject.SetActive(true);
                         arrowAttcakEffect[0].SetActive(false);
                         arrowHitEffects[0].transform.position = first.transform.position;
                         arrowHitEffects[0].SetActive(true);
                         arrowHitEffects[0].GetComponent<PlayableDirector>().Play();
 
-                        first.unit.HP -= Damage;
+                        first.unit.HP -= 6;
                         first.UnitPlatHurtAnimation();
                     });
 
@@ -123,18 +136,21 @@ public class Necro_SkeletalArc : UnitSkillDataSo
                 Vector3 startDir_second = bulletPath[1] - arrowAttcakEffect[1].transform.position;
                 arrowAttcakEffect[1].transform.rotation = Quaternion.FromToRotation(Vector3.up, startDir_first);
 
+                arrowAttcakEffect[1].transform.Find("Arrow").gameObject.SetActive(false);
+
                 arrowAttcakEffect[1].transform.position = user.transform.position;
                 arrowAttcakEffect[1].SetActive(true);
                 arrowAttcakEffect[1].transform.DOPath(path, 1f, PathType.CatmullRom).
                     SetEase(Ease.InQuart).SetOptions(false).SetDelay(0.5f).OnComplete(
                     () =>
                     {
+                        arrowAttcakEffect[1].transform.Find("Arrow").gameObject.SetActive(true);
                         arrowAttcakEffect[1].SetActive(false);
                         arrowHitEffects[1].transform.position = second.transform.position;
                         arrowHitEffects[1].SetActive(true);
                         arrowHitEffects[1].GetComponent<PlayableDirector>().Play();
 
-                        second.unit.HP -= Damage;
+                        second.unit.HP -= 6;
                         second.UnitPlatHurtAnimation();
                     });
             });
@@ -200,10 +216,10 @@ public class Necro_SkeletalArc : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "ArrowAttackEffetc", 0.6f,
             () =>
             {
-                Vector3 startDir_first = target.transform.position - arrowAttcakEffect[0].transform.position;
-                arrowAttcakEffect[0].transform.rotation = Quaternion.FromToRotation(Vector3.up, startDir_first);
-
                 arrowAttcakEffect[0].transform.position = user.transform.position;
+
+                GameManager.LookAtTarget(arrowAttcakEffect[0].transform, target.transform.position, Vector2.up);
+
                 arrowAttcakEffect[0].SetActive(true);
                 arrowAttcakEffect[0].transform.DOMove(target.transform.position, 1f).
                     SetEase(Ease.InQuart).SetDelay(0.5f).OnComplete(
@@ -214,7 +230,7 @@ public class Necro_SkeletalArc : UnitSkillDataSo
                         arrowHitEffects[0].SetActive(true);
                         arrowHitEffects[0].GetComponent<PlayableDirector>().Play();
 
-                        target.unit.HP -= Damage * 2;
+                        target.unit.HP -= 12;
                         target.UnitPlatHurtAnimation();
                     });
             });

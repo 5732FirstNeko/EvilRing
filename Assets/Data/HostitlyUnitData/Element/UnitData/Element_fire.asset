@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Element_fire
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u706B\u7130\u4F7F"
+  HP: 22
+  Speed: 6
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: b9c1568628d9ef74792b3e1b880d499b, type: 3}
   Skills:
   - {fileID: 11400000, guid: 27128a179776b084f921c7da194768d8, type: 2}
+  description: "\u5171\u9E23\uFF1A\u706B\u7130\u5171\u9E23\u6FC0\u6D3B\u65F6\u89E6\u53D1\uFF0C\u6240\u6709\u653B\u51FB\u9644\u52A0
+    \"\u707C\u70E7\" \u6548\u679C\uFF08\u6BCF\u56DE\u5408\u9020\u6210 3 \u70B9\u4F24\u5BB3\uFF0C\u6301\u7EED
+    2 \u56DE\u5408\uFF09\r\n\u706B\u7403\u672F\uFF1A\u76EE\u6807\u654C\u65B9\u5168\u4F53\uFF0C\u6BCF\u76EE\u6807\u9020\u6210
+    7 \u70B9\u4F24\u5BB3\uFF0C\u6D88\u8017 2 \u70B9 sp\r\n\u706B\u7130\u62A4\u76FE\uFF1A\u76EE\u6807\u81EA\u8EAB\uFF0C\u53CD\u5F39\u53D7\u5230\u7684\u4F24\u5BB3\uFF0C\u6301\u7EED
+    1 \u56DE\u5408\uFF0C\u65E0 sp \u6D88\u8017"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

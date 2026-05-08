@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SlimeSkill_mucus_impact_mid
   m_EditorClassIdentifier: 
   SkillTime: 0
-  Damage: 0
+  Damage: 5
   TriggerTiming: 3
   SkillTarget: 1
   Range: 00000000010000000200000003000000
@@ -25,3 +25,4 @@ MonoBehaviour:
   mucusSpeed: 8
   skillListIndex: 0
   impactPosition: {x: 6, y: -0.5, z: 0}
+  slimeCard: {fileID: 11400000, guid: 9c256a6b25d80ab4d8b7a0842f08b7c3, type: 2}

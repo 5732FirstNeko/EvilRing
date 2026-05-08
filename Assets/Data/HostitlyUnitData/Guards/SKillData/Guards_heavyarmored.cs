@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -20,12 +21,41 @@ public class Guards_heavyarmored : UnitSkillDataSo
 
         attackHitEffect = Instantiate(attackHitPrefab, Vector3.zero, Quaternion.identity);
         attackHitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackHitEffect);
 
+        BattleSystem.instance.OnGameStart += () =>
+        {
+            UnitPlat user = null;
+            foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
+            {
+                if (unit.unitData == userDataSo)
+                {
+                    user = unit;
+                    break;
+                    
+                }
+            }
+
+            if (user == null)
+            {
+                throw new Exception("[GuardsError] user is no Find, Check Card is in Factory");
+            }
+
+            user.unit.OnHPChange += OnHPChangeAction;
+            return 0;
+        };
+
+        
+    }
+
+    public override void GameEndAction()
+    {
+        attackHitEffect = null;
         foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
         {
             if (unit.unitData == userDataSo)
             {
-                unit.unit.OnHPChange += OnHPChangeAction;
+                unit.unit.OnHPChange -= OnHPChangeAction;
             }
         }
     }
@@ -62,7 +92,7 @@ public class Guards_heavyarmored : UnitSkillDataSo
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
-        int index = Random.Range(0, 101);
+        int index = UnityEngine.Random.Range(0, 101);
 
         if (index <= 75)
         {
@@ -119,7 +149,7 @@ public class Guards_heavyarmored : UnitSkillDataSo
     #region Attack
     private void Attack(UnitPlat user)
     {
-        int index = Random.Range(0, 101);
+        int index = UnityEngine.Random.Range(0, 101);
 
         if (index <= 75)
         {
@@ -161,7 +191,7 @@ public class Guards_heavyarmored : UnitSkillDataSo
                 director.Play();
 
                 target.UnitPlatHurtAnimation();
-                target.unit.HP -= Damage;
+                target.unit.HP -= 12;
             });
 
         TimerManager.instance.StartTimer(name + "EffectClose", 0.6f + (float)director.duration + 0.1f,
@@ -211,6 +241,9 @@ public class Guards_heavyarmored : UnitSkillDataSo
             {
                 target.DamageTextJump("ÆÆ¼×", Color.blue);
                 target.unit.OnDefend = null;
+
+                target.UnitPlatHurtAnimation();
+                target.unit.HP -= 18;
             });
 
         TimerManager.instance.StartTimer(name + "ArmorPiercingClose",0.6f + 1.1f, 

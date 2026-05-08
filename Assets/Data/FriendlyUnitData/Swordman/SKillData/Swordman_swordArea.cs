@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -23,9 +24,11 @@ public class Swordman_swordArea : UnitSkillDataSo
 
         swordAreaEffect = Instantiate(swordAreaPrefab, Vector3.zero, Quaternion.identity);
         swordAreaEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(swordAreaEffect);
 
         magicStaffEffect = Instantiate(magicStaffPrefab, Vector3.zero, Quaternion.identity);
         magicStaffEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(magicStaffEffect);
 
         swordHitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -33,7 +36,16 @@ public class Swordman_swordArea : UnitSkillDataSo
             GameObject effect = Instantiate(swordHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             swordHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        swordAreaEffect = null;
+        magicStaffEffect = null;
+
+        swordHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -65,7 +77,7 @@ public class Swordman_swordArea : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "friTargetHurt", 0.5f,
             ()=>
             {
-                friTarget.unit.HP -= 15;
+                friTarget.unit.HP -= Mathf.RoundToInt(friTarget.unit.MaxHP * 0.5f);
                 friTarget.UnitPlatHurtAnimation();
 
                 magicStaffEffect.transform.position = friTarget.transform.position;
@@ -98,6 +110,12 @@ public class Swordman_swordArea : UnitSkillDataSo
                 int i = 0;
                 foreach (var unit in unitPlats)
                 {
+                    if (unit.isDead || 
+                        unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
                     int index = i;
                     unit.UnitPlatHurtAnimation(7, 0,
                         () =>
@@ -112,7 +130,7 @@ public class Swordman_swordArea : UnitSkillDataSo
                             {
                                 swordHitEffects[index].SetActive(false);
                             }
-                            unit.unit.HP -= Damage * 6;
+                            unit.unit.HP -= 3 * 6;
                         });
                     i++;
                 }

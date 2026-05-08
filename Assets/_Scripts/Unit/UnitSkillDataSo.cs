@@ -18,6 +18,8 @@ public abstract class UnitSkillDataSo : ScriptableObject
 
     public virtual void GameStartInit() { }
 
+    public abstract void GameEndAction();
+
     public abstract void Action(ICollection<UnitPlat> unitPlats, UnitPlat user);
 
     public static void DamageHurt(ICollection<UnitPlat> unitPlats, int hurt)

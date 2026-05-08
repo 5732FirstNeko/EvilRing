@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Goblin_anger
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u6124\u6012\u54E5\u5E03\u6797"
+  HP: 30
+  Speed: 7
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 348813580e1cdca4bba01aae2b62ce10, type: 3}
   Skills:
   - {fileID: 11400000, guid: 1c3a51584cef1854d903b446a2e04cbc, type: 2}
+  description: "\u649E\u51FB\uFF1A\u6253\u51FB\u5BF9\u9762\u573A\u4E0A\u968F\u673A\u654C\u4EBAn\u6B21\uFF0C\u9020\u6210
+    5 \u70B9\u4F24\u5BB3\uFF0Cn\u4E3A\u5DF2\u6B7B\u4EA1\u54E5\u5E03\u6797\u6570\u91CF"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

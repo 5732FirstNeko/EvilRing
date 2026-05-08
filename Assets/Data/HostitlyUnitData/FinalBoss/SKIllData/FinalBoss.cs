@@ -14,7 +14,7 @@ public class FinalBoss : UnitSkillDataSo
 
     [SerializeField] private Vector3 offest;
     [SerializeField] private UnitDataSo tentacleData;
-
+    [SerializeField] private UnitDataSo finalBossData;
 
     private List<GameObject> absorbEfffect;
     private List<GameObject> hitEffects;
@@ -30,6 +30,7 @@ public class FinalBoss : UnitSkillDataSo
             GameObject effect = Instantiate(absorbPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             absorbEfffect.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         hitEffects = new List<GameObject>();
@@ -38,6 +39,7 @@ public class FinalBoss : UnitSkillDataSo
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
         flashEffects = new List<GameObject>();
@@ -46,7 +48,57 @@ public class FinalBoss : UnitSkillDataSo
             GameObject effect = Instantiate(flashPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             flashEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+
+        BattleSystem.instance.OnGameStart += 
+            () => 
+            {
+                foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
+                {
+                    if (unit.unitData == finalBossData && unit.unit.OnDefend == null)
+                    {
+                        unit.unit.OnDefend += HPAction;
+                    }
+                }
+                return 0f; 
+            };
+    }
+
+    public override void GameEndAction()
+    {
+        absorbEfffect = null;
+
+        hitEffects = null;
+
+        flashEffects = null;
+    }
+
+    private int HPAction(int hpchange, UnitPlat user)
+    {
+        if (user == null || user.unit == null) return hpchange;
+
+        if (hpchange >= 0) return hpchange;
+
+        int currentHP = user.unit.HP;
+        int finalHP = currentHP + hpchange;
+
+        if (user.costumvalue_second == 1)
+        {
+            if (finalHP < 40)
+            {
+                return 40 - currentHP;
+            }
+        }
+        else if (user.costumvalue_second == 0)
+        {
+            if (finalHP < 80)
+            {
+                return 80 - currentHP;
+            }
+        }
+
+        return hpchange;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -254,6 +306,10 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_sp_0(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_sp_0");
+
+        Vector3 userPosition = user.transform.position;
+
         int count = 0;
         foreach (var unit in
             BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
@@ -267,7 +323,7 @@ public class FinalBoss : UnitSkillDataSo
                 Vector3[] path = new Vector3[]
                 {
                       unit.transform.position,
-                      user.transform.position +=
+                      userPosition +=
                       unit.site == UnitSite.first || unit.site == UnitSite.second ?
                         new Vector3(-offest.x, offest.y,offest.z) :
                         new Vector3(offest.x, offest.y,offest.z),
@@ -307,6 +363,7 @@ public class FinalBoss : UnitSkillDataSo
 
     private float SKill_sp_1(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_sp_1");
         foreach (var unit in
                     BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
         {
@@ -324,6 +381,7 @@ public class FinalBoss : UnitSkillDataSo
 
     private float SKill_sp_2(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_sp_2");
         user.DamageTextJump("’ŸªΩ", GameManager.purple);
 
         UnitPlat first = BattleSystem.instance.HostilityUnitPlatsQueue.
@@ -334,10 +392,12 @@ public class FinalBoss : UnitSkillDataSo
         absorbEfffect[0].transform.position = first.transform.position;
         absorbEfffect[0].SetActive(true);
 
+        Vector3 userPosition = user.transform.position;
+
         Vector3[] path = new Vector3[]
         {
             user.transform.position,
-            user.transform.position +=
+            userPosition +=
                 new Vector3(-offest.x, offest.y, offest.z),
             first.transform.position,
         };
@@ -348,6 +408,7 @@ public class FinalBoss : UnitSkillDataSo
                     absorbEfffect[0].SetActive(false);
 
                     first.UnitPlatInit(tentacleData, UnitSite.first);
+                    first.unitData.Skills[0].GameStartInit();
 
                     first.iconSpriteRender.sprite = tentacleData.UnitSprite;
                     Vector3 originScale = first.transform.localScale;
@@ -361,7 +422,7 @@ public class FinalBoss : UnitSkillDataSo
         Vector3[] path_second = new Vector3[]
         {
                     user.transform.position,
-                    user.transform.position +=
+                    userPosition +=
                         new Vector3(offest.x, offest.y, offest.z),
                     fourth.transform.position,
         };
@@ -372,6 +433,7 @@ public class FinalBoss : UnitSkillDataSo
                     absorbEfffect[1].SetActive(false);
 
                     fourth.UnitPlatInit(tentacleData, UnitSite.fourth);
+                    fourth.unitData.Skills[0].GameStartInit();
 
                     fourth.iconSpriteRender.sprite = tentacleData.UnitSprite;
                     Vector3 scale = fourth.transform.localScale;
@@ -384,12 +446,12 @@ public class FinalBoss : UnitSkillDataSo
         return 2.6f;
     }
 
+    private Func<int, float> skill_sp_3_func = null;
     private float Skill_sp_3(UnitPlat user)
     {
-        Func<int, float> func = null;
-
+        Debug.LogError("[FinalBoss Skill] skill_sp_3");
         int lastRound = BattleSystem.instance.currentRound + 8;
-        func = (round) => 
+        skill_sp_3_func = (round) => 
         {
             if (round < lastRound) return 0;
 
@@ -420,22 +482,22 @@ public class FinalBoss : UnitSkillDataSo
             return 0.35f + 1.1f;
         };
 
-        BattleSystem.instance.OnRoundStart += func;
+        BattleSystem.instance.OnRoundStart += skill_sp_3_func;
 
         user.DamageTextJump("÷’—… ±øÃø™∆Ù", GameManager.purple);
 
         return 1.1f;
     }
 
+    private Func<int, float> sp_skill_4_func = null;
     private void Skill_sp_4(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_sp_4");
         if (user.costumvalue_second >= 2)
         {
             int currentRound = BattleSystem.instance.currentRound;
 
-            Func<int, float> func = null;
-
-            func = (round) => 
+            sp_skill_4_func = (round) => 
             {
                 user.unit.OnDefend += (hpcahnge, user) =>
                 {
@@ -448,16 +510,17 @@ public class FinalBoss : UnitSkillDataSo
                     return hpcahnge;
                 };
 
-                BattleSystem.instance.OnRoundStart -= func;
+                BattleSystem.instance.OnRoundStart -= sp_skill_4_func;
                 return 0;
             };
 
-            BattleSystem.instance.OnRoundStart += func;
+            BattleSystem.instance.OnRoundStart += sp_skill_4_func;
         }
     }
 
     private float Skill_sp_5(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_sp_5");
         int count = 0;
         foreach (var unit in
             BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
@@ -466,7 +529,7 @@ public class FinalBoss : UnitSkillDataSo
                 unit.costumvlue_fourth >= 3)
             {
                 int index = count;
-                unit.unit.HP -= Damage;
+                unit.unit.HP -= 20;
                 unit.UnitPlatHurtAnimation();
 
                 hitEffects[index].transform.position = unit.transform.position;
@@ -477,7 +540,7 @@ public class FinalBoss : UnitSkillDataSo
             }
         }
 
-        user.unit.HP += Damage;
+        user.unit.HP += 20;
         user.UnitPlatRecoveryAnimation(); ;
 
         TimerManager.instance.StartTimer(name + "EffectClose", 2f,
@@ -494,6 +557,10 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_sp_6(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_sp_6");
+
+        Vector3 userPosition = user.transform.position;
+
         int count = 0;
         foreach (var unit in BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
@@ -501,7 +568,7 @@ public class FinalBoss : UnitSkillDataSo
                         unit.costumvlue_fourth >= 4)
             {
                 int index = count;
-                unit.unit.HP -= Damage;
+                unit.unit.HP -= 0;
                 unit.UnitPlatHurtAnimation();
 
                 hitEffects[index].transform.position = unit.transform.position;
@@ -514,7 +581,7 @@ public class FinalBoss : UnitSkillDataSo
                 Vector3[] path = new Vector3[]
                 {
                     unit.transform.position,
-                    user.transform.position +=
+                    userPosition +=
                         new Vector3(-offest.x, offest.y, offest.z),
                     user.transform.position,
                 };
@@ -548,6 +615,10 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_sp_7(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_sp_7");
+
+        Vector3 userPosition = user.transform.position;
+
         int count = 0;
         foreach (var unit in BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
@@ -568,7 +639,7 @@ public class FinalBoss : UnitSkillDataSo
                 Vector3[] path = new Vector3[]
                 {
                     unit.transform.position,
-                    user.transform.position +=
+                    userPosition +=
                         new Vector3(-offest.x, offest.y, offest.z),
                     user.transform.position,
                 };
@@ -606,6 +677,7 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_0(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_0");
         int count = 0;
         foreach (var unit in
             BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
@@ -617,7 +689,7 @@ public class FinalBoss : UnitSkillDataSo
                 hitEffects[index].SetActive(true);
                 hitEffects[index].GetComponent<PlayableDirector>().Play();
 
-                unit.unit.HP -= Damage;
+                unit.unit.HP -= 10;
                 unit.UnitPlatHurtAnimation();
 
                 unit.costumvlue_fourth++;
@@ -641,6 +713,10 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_1(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_1");
+
+        Vector3 userPosition = user.transform.position;
+
         UnitPlat target = null;
         foreach (var unit in BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
@@ -669,7 +745,7 @@ public class FinalBoss : UnitSkillDataSo
         Vector3[] path = new Vector3[]
         {
             target.transform.position,
-            user.transform.position +=
+            userPosition +=
                 new Vector3(-offest.x, offest.y, offest.z),
             user.transform.position,
         };
@@ -683,7 +759,7 @@ public class FinalBoss : UnitSkillDataSo
                 hitEffects[0].SetActive(true);
                 hitEffects[0].GetComponent<PlayableDirector>().Play();
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 15;
                 target.UnitPlatHurtAnimation();
 
                 target.costumvlue_fourth++;
@@ -703,6 +779,7 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_2(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_2");
         int count = 0;
         foreach (var unit in
             BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
@@ -719,7 +796,7 @@ public class FinalBoss : UnitSkillDataSo
                 hitEffects[index].SetActive(true);
                 hitEffects[index].GetComponent<PlayableDirector>().Play();
 
-                unit.unit.HP -= Damage;
+                unit.unit.HP -= 15;
                 unit.UnitPlatHurtAnimation();
 
                 unit.costumvlue_fourth++;
@@ -744,6 +821,7 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_3(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_3");
         UnitPlat target = null;
         foreach (var unit in BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
@@ -798,6 +876,7 @@ public class FinalBoss : UnitSkillDataSo
 
     private float Skill_4(UnitPlat user)
     {
+        Debug.LogError("[FinalBoss Skill] skill_4");
         int count = 0;
         foreach (var unit in
             BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
@@ -809,7 +888,7 @@ public class FinalBoss : UnitSkillDataSo
                 hitEffects[index].SetActive(true);
                 hitEffects[index].GetComponent<PlayableDirector>().Play();
 
-                unit.unit.HP -= Damage;
+                unit.unit.HP -= 20;
                 unit.UnitPlatHurtAnimation();
 
                 unit.costumvlue_fourth++;

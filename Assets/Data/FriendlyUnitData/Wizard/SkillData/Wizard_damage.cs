@@ -22,6 +22,7 @@ public class Wizard_damage : UnitSkillDataSo
 
         laserEffect = Instantiate(laserPrefab, Vector3.zero, Quaternion.identity);
         laserEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(laserEffect);
 
         laserHitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -29,11 +30,20 @@ public class Wizard_damage : UnitSkillDataSo
             GameObject effect = Instantiate(laserHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             laserHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        laserEffect = null;
+
+        laserHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        unitPlats = BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat();
         if (unitPlats.Count <= 0)
         {
             user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
@@ -48,13 +58,7 @@ public class Wizard_damage : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "DamageAnimation", 0.6f,
             () =>
             {
-                float initpos = 0f;
-                foreach (var unit in unitPlats)
-                {
-                    initpos += unit.transform.position.x;
-                }
-                initpos /= unitPlats.Count;
-                laserEffect.transform.position = new Vector3(initpos, user.transform.position.y, 0f);
+                laserEffect.transform.position = new Vector3(-5.25f, -0.5f, 0f);
                 laserEffect.SetActive(true);
                 director.Play();
             });
@@ -65,22 +69,21 @@ public class Wizard_damage : UnitSkillDataSo
                 int i = 0;
                 foreach (var unit in unitPlats)
                 {
-                    unit.unit.HP -= Damage;
+                    if (unit.isDead || 
+                        unit.unitData == FactorySystem.instance.EmptyFriendlyUnitData)
+                    {
+                        continue;
+                    }
+
+                    unit.unit.HP -= 6;
 
                     int index = i;
-                    unit.UnitPlatHurtAnimation(6, 0.1f,
+                    unit.UnitPlatHurtAnimation(1, 0.1f,
                         () =>
                         {
                             laserHitEffects[index].transform.position = unit.transform.position;
-                            if (!laserHitEffects[index].activeSelf)
-                            {
-                                laserHitEffects[index].SetActive(true);
-                                laserHitEffects[index].GetComponent<PlayableDirector>().Play();
-                            }
-                            else
-                            {
-                                laserHitEffects[index].SetActive(false);
-                            }
+                            laserHitEffects[index].SetActive(true);
+                            laserHitEffects[index].GetComponent<PlayableDirector>().Play();
                         });
                     i++;
                 }

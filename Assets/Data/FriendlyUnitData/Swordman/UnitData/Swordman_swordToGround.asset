@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Swordman_swordToGround
   m_EditorClassIdentifier: 
-  HP: 0
-  Speed: 0
-  cost: 0
+  cardName: 
+  HP: 25
+  Speed: 8
+  cost: 10
   Faction: 0
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 6c0aef4fafa2e974aa366b5bc0961207, type: 3}
   Skills:
   - {fileID: 11400000, guid: 45c7fa171c37cfe438d34c0f2d22cbe9, type: 2}
+  description: "\u5438\u6536\u961F\u4F0D\u4E2D\u6700\u5927\u751F\u547D\u503C\u5355\u4F4D\u768410%\u6700\u5927\u751F\u547D\u503C\u7684\u751F\u547D\uFF0C\u53EC\u5524\u4E00\u53EA\u98DE\u5251\u4ECE\u5929\u800C\u964D\uFF0C\u5BF92\uFF0C3\u4F4D\u7F6E\u7684\u654C\u4EBA\u9020\u6210\u4E00\u5B9A\u4F24\u5BB3"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

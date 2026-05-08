@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Necro_skieletal
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u9AB7\u9AC5\u6218\u58EB"
+  HP: 35
+  Speed: 3
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 62083978be034b143bc0a59f38d31019, type: 3}
   Skills:
   - {fileID: 11400000, guid: 4b4de1405d49ed640be94e9cc96d7d8f, type: 2}
+  description: "\u9AA8\u5203\u5288\u780D\uFF1A\u76EE\u6807\u654C\u65B9\u6700\u8FD1\u7684
+    1 \u4E2A\u5355\u4F4D\uFF0C\u9020\u6210 10 \u70B9\u4F24\u5BB3\r\n\u9AB8\u9AA8\u683C\u6321\uFF1A\u83B7\u5F97
+    \"\u683C\u6321\" \u6548\u679C\uFF08\u51CF\u514D 50% \u4F24\u5BB3\uFF0C\u6301\u7EED
+    1 \u56DE\u5408\uFF09"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

@@ -26,6 +26,10 @@ public class LycorisSkill_core_Damage : UnitSkillDataSo
         lycorisHitassest = Instantiate(LycorisHitprefab, Vector3.zero, Quaternion.identity).
             GetComponent<PlayableDirector>();
 
+        BattleSystem.instance.destoryEffect.Add(attackinstance);
+        BattleSystem.instance.destoryEffect.Add(friDeadinstance);
+        BattleSystem.instance.destoryEffect.Add(lycorisHitassest.gameObject);
+
         attackinstance.SetActive(false);
         friDeadinstance.SetActive(false);
         lycorisHitassest.gameObject.SetActive(false);
@@ -33,16 +37,29 @@ public class LycorisSkill_core_Damage : UnitSkillDataSo
         SkillTime = friDeadStateTime + hitStateTIme + 0.5f + 0.5f + 1f;
     }
 
+    public override void GameEndAction()
+    {
+        attackinstance = null;
+        friDeadinstance = null;
+        lycorisHitassest = null;
+    }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        unitPlats = BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat();
         UnitPlat target = null;
         foreach (var unit in unitPlats)
         {
-            target = unit;
+            if (!unit.isDead && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+            {
+                target = unit;
+                break;
+            }
         }
+
         if (target == null)
         {
+            //user.unit.unitSkills[0].SkillTime = 0.5f;
             return;
         }
 
@@ -123,8 +140,8 @@ public class LycorisSkill_core_Damage : UnitSkillDataSo
                     3.14f, () =>
                     {
                         target.UnitPlatHurtAnimation(1, 0.1f);
-                        target.unit.HP -= 1;
                     });
+
                 TimerManager.instance.StartTimer(user.name + "LycorisUnit_coreSkill2",
                     5.4f, () =>
                     {

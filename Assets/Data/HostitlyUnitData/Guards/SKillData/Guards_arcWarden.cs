@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -12,6 +13,7 @@ public class Guards_arcWarden : UnitSkillDataSo
 
     [SerializeField] private int skillListIndex;
     [SerializeField] private float attackEffectSpeed;
+    [SerializeField] private UnitDataSo userData;
 
     private GameObject attackEffect;
     private List<GameObject> hitEffects;
@@ -21,25 +23,43 @@ public class Guards_arcWarden : UnitSkillDataSo
 
         attackEffect = Instantiate(arrowPrefab, Vector3.zero, Quaternion.identity);
         attackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackEffect);
+
         hitEffects = new List<GameObject>();
         for (int i = 0; i < 3; i++)
         {
             GameObject effect = Instantiate(hitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             hitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
 
-        UnitPlat user = null;
-        foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
+        BattleSystem.instance.OnGameStart += () => 
         {
-            if (unit.unitData == user)
+            UnitPlat user = null;
+            foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
             {
-                user = unit;
+                if (unit.unitData == userData)
+                {
+                    user = unit;
+                }
             }
-        }
 
-        user.unit.OnHPChange += HPChangeAction;
-        BattleSystem.instance.OnRoundStart += StateChange;
+            if (user == null)
+            {
+                throw new Exception("[GuardsError] user is no Find, Check Card is in Factory");
+            }
+            user.unit.OnHPChange += HPChangeAction;
+            BattleSystem.instance.OnRoundStart += StateChange;
+            return 0;
+        };
+    }
+
+    public override void GameEndAction()
+    {
+        attackEffect = null;
+
+        hitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -58,14 +78,14 @@ public class Guards_arcWarden : UnitSkillDataSo
     {
         if (unitPlats.Count <= 0)
         {
-            user.unit.unitSkills[skillListIndex].SkillTime = 0;
+            user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
             return;
         }
 
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
         user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
 
-        int random = Random.Range(0, 101);
+        int random = UnityEngine.Random.Range(0, 101);
         if (random <= 80)
         {
             float skilltime = 0;
@@ -83,7 +103,11 @@ public class Guards_arcWarden : UnitSkillDataSo
                         break;
                     }
                 }
-                if (target == null || !target.isDead) continue;
+                if (target == null || target.isDead ||
+                    target.unitData == FactorySystem.instance.EmptyFriendlyUnitData)
+                {
+                    continue;
+                }
 
                 lastUnit = target;
 
@@ -92,24 +116,26 @@ public class Guards_arcWarden : UnitSkillDataSo
 
                 skilltime += movetime;
 
-                int index = i;
-
                 TimerManager.instance.StartTimer(name + string.Empty + i, movetime + 0.6f,
                     () =>
                     {
                         target.UnitPlatHurtAnimation();
-                        target.unit.HP -= Damage;
-                        hitEffects[index].transform.position = target.transform.position;
-                        hitEffects[index].SetActive(true);
-                        hitEffects[index].GetComponent<PlayableDirector>().Play();
+                        target.unit.HP -= 9;
+                        hitEffects[0].transform.position = target.transform.position;
+                        hitEffects[0].SetActive(true);
+                        hitEffects[0].GetComponent<PlayableDirector>().Play();
                     });
             }
 
             TimerManager.instance.StartTimer(name + "flowerInstantite", 0.6f, () =>
             {
+                UnitPlat target = lastUnit;
                 attackEffect.transform.position = user.transform.position;
+
+                GameManager.LookAtTarget(attackEffect.transform, target.transform.position, Vector2.up);
+
                 attackEffect.SetActive(true);
-                attackEffect.transform.DOMoveX(lastUnit.transform.position.x - 2, skilltime * 0.2f);
+                attackEffect.transform.DOMoveX(target.transform.position.x - 2, 0.3f);
             });
 
             TimerManager.instance.StartTimer(name + "closeEffect", skilltime + 0.6f,
@@ -117,6 +143,7 @@ public class Guards_arcWarden : UnitSkillDataSo
                 {
                     attackEffect.SetActive(false);
                     attackEffect.transform.position = user.transform.position;
+
                     foreach (var effect in hitEffects)
                     {
                         effect.SetActive(false);
@@ -131,21 +158,26 @@ public class Guards_arcWarden : UnitSkillDataSo
         {
             Sequence sequence = DOTween.Sequence();
 
-            
-
             UnitPlat target = null;
             foreach (var unit in unitPlats)
             {
-                if (target == null && !unit.isDead)
+                if (target != null && !unit.isDead && 
+                    unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
                 {
                     target = unit;
                     continue;
                 }
 
-                if(target.unit.HP > unit.unit.HP)
+                if(target != null && target.unit.HP > unit.unit.HP)
                 {
                     target = unit;
                 }
+            }
+
+            if (target == null)
+            {
+                user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
+                return;
             }
 
             float movetime = (target.transform.position.x - user.transform.position.x) / attackEffectSpeed;
@@ -155,6 +187,9 @@ public class Guards_arcWarden : UnitSkillDataSo
             TimerManager.instance.StartTimer(name + "arrowAttack", 0.6f, () =>
             {
                 attackEffect.transform.position = user.transform.position;
+
+                GameManager.LookAtTarget(attackEffect.transform, target.transform.position, Vector2.up);
+
                 attackEffect.SetActive(true);
                 attackEffect.transform.DOMoveX(target.transform.position.x, movetime).OnComplete(
                     () => 
@@ -173,7 +208,7 @@ public class Guards_arcWarden : UnitSkillDataSo
                         hitEffect.SetActive(true);
                         hitEffect.GetComponent<PlayableDirector>().Play();
 
-                        target.unit.HP -= Damage * frenquecy;
+                        target.unit.HP -= 18;
                         target.UnitPlatHurtAnimation(frenquecy);
                     });
             });
@@ -217,7 +252,7 @@ public class Guards_arcWarden : UnitSkillDataSo
         UnitPlat user = null;
         foreach (var unit in BattleSystem.instance.HostilityUnitPlatsQueue.GetAllUnitPlat())
         {
-            if (unit.unitData == user)
+            if (unit.unitData == userData)
             {
                 user = unit;
             }

@@ -22,9 +22,17 @@ public class Necro_Skeletal : UnitSkillDataSo
 
         attackEffect = Instantiate(attackPrefab, Vector3.zero, Quaternion.identity);
         attackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(attackEffect);
 
         hitEffect = Instantiate(hitprefab, Vector3.zero, Quaternion.identity);
         hitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(hitEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        attackEffect = null;
+        hitEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -83,7 +91,7 @@ public class Necro_Skeletal : UnitSkillDataSo
                 hitEffect.SetActive(false);
                 hitDirector.Play();
 
-                target.unit.HP -= Damage;
+                target.unit.HP -= 10;
                 target.UnitPlatHurtAnimation();
             });
 

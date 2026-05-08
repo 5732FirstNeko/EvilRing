@@ -19,6 +19,6 @@ MonoBehaviour:
   Range: 0200000003000000
   UnitBuffs: []
   description: 
-  laserPrefab: {fileID: 8283968461094585400, guid: 8df10721c7fe4c5478936964e51df447, type: 3}
+  laserPrefab: {fileID: 2927323577754467999, guid: 6e26aa9c81467904b8dc1e77c596cf88, type: 3}
   laserHitPrefab: {fileID: 6494932906943325404, guid: f402a66af6073754a8e292e97561e0c2, type: 3}
   skillListIndex: 0

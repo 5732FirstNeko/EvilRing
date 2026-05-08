@@ -22,4 +22,5 @@ MonoBehaviour:
   arrowPrefab: {fileID: 8676893314942065583, guid: 31ae14ba65f72d94db856ae46107031a, type: 3}
   hitPrefab: {fileID: 5678834818006547596, guid: 3ce4ec7b29a002c4c93313a4793303b7, type: 3}
   skillListIndex: 0
-  attackEffectSpeed: 8
+  attackEffectSpeed: 12
+  userData: {fileID: 11400000, guid: 44068a18082286f4a83943295f38f52d, type: 2}

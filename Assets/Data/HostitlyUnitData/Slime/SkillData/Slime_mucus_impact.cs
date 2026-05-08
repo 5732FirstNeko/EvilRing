@@ -14,6 +14,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
     [SerializeField] private float mucusSpeed;
     [SerializeField] private int skillListIndex;
     [SerializeField] private Vector3 impactPosition;
+    [SerializeField] private UnitDataSo slimeCard;
 
     private GameObject mucusAttackEffect;
     private GameObject mucusHitEffect;
@@ -24,9 +25,11 @@ public class Slime_mucus_impact : UnitSkillDataSo
 
         mucusAttackEffect = Instantiate(mucusAttackPrefab, Vector3.zero, Quaternion.identity);
         mucusAttackEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(mucusAttackEffect);
 
         mucusHitEffect = Instantiate(mucusHitPrefab, Vector3.zero, Quaternion.identity);
         mucusHitEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(mucusHitEffect);
 
         impactHiteffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -34,13 +37,103 @@ public class Slime_mucus_impact : UnitSkillDataSo
             GameObject effect = Instantiate(impactHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             impactHiteffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        mucusAttackEffect = null;
+        mucusHitEffect = null;
+        impactHiteffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
     {
+        if (user.unit.HP <= user.unit.MaxHP * 0.5f)
+        {
+            SPAttack(unitPlats, user);
+        }
+        else
+        {
+            StandrdAttack(unitPlats, user);
+        }
+    }
+
+    private void SPAttack(ICollection<UnitPlat> unitPlats, UnitPlat user)
+    {
+        if (user.unit.HP >= user.unit.MaxHP * 0.5f)
+        {
+            user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
+            BattleSystem.instance.UnitReEnqueue(user);
+            return;
+        }
+
+        UnitPlat nearPlat = null;
+        int userIndex = BattleSystem.GetIndexByUnitSite(user.site);
+        UnitSite rightSite = BattleSystem.GetUnitSiteByIndex(userIndex + 1);
+        UnitSite leftSite = BattleSystem.GetUnitSiteByIndex(userIndex - 1);
+        UnitPlat rightPlat = BattleSystem.instance.HostilityUnitPlatsQueue.GetUnitPlatByUnitSite(rightSite).plat;
+        UnitPlat leftPlat = BattleSystem.instance.HostilityUnitPlatsQueue.GetUnitPlatByUnitSite(leftSite).plat;
+        if (rightPlat != null && rightPlat.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+        {
+            nearPlat = rightPlat;
+        }
+
+        if (nearPlat == null && leftPlat != null && leftPlat.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+        {
+            nearPlat = leftPlat;
+        }
+
+        GameManager.instance.GlobalLightControll(0.5f, 0.5f);
+        user.transform.DOScale(UnitPlat.originScale * attackScale, 0.5f);
+
+        TimerManager.instance.StartTimer(name + "SlimeDivision", 0.6f,
+            () =>
+            {
+                user.UnitPlatInit(slimeCard, user.site);
+                slimeCard.Skills[skillListIndex].GameStartInit();
+                BattleSystem.instance.UnitReEnqueue(user);
+                Debug.LogError(user.isDead);
+
+                user.iconSpriteRender.sprite = slimeCard.UnitSprite;
+                user.iconSpriteRender.material = GameManager.litMaterial;
+                Vector3 originScale = user.transform.localScale;
+                user.transform.localScale = Vector3.zero;
+                user.transform.DOScale(originScale, 1.5f).OnComplete(
+                    () =>
+                    {
+                        GameManager.instance.GlobalLightControll(1f, 0.5f);
+                        user.transform.DOScale(UnitPlat.originScale, 0.5f);
+                    });
+
+                if (nearPlat == null) return;
+
+                nearPlat.iconSpriteRender.material = GameManager.litMaterial;
+                nearPlat.UnitPlatInit(slimeCard, nearPlat.site);
+                slimeCard.Skills[skillListIndex].GameStartInit();
+                BattleSystem.instance.UnitReEnqueue(nearPlat);
+                Debug.LogError(nearPlat.isDead);
+
+                nearPlat.iconSpriteRender.sprite = slimeCard.UnitSprite;
+                Vector3 nearoriginScale = nearPlat.transform.localScale;
+                nearPlat.transform.localScale = Vector3.zero;
+                nearPlat.transform.DOScale(nearoriginScale, 1.5f);
+            });
+
+        if (user.unit != null)
+        {
+            user.unit.unitSkills[skillListIndex].SkillTime = 0.6f + 1.5f + 0.5f + 0.1f;
+        }
+    }
+
+    private void StandrdAttack(ICollection<UnitPlat> unitPlats, UnitPlat user)
+    {
+        unitPlats = BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat();
+
         if (unitPlats.Count <= 0)
         {
+            Debug.LogError("Standrd Attack Exit !");
             user.unit.unitSkills[skillListIndex].SkillTime = 0.5f;
             return;
         }
@@ -67,7 +160,6 @@ public class Slime_mucus_impact : UnitSkillDataSo
         {
             ImpactAttack(unitPlats, user);
         }
-
     }
 
     private void mucusAttack(UnitPlat user, UnitPlat target)
@@ -125,7 +217,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
                         UnitPlat fourth = null;
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead &&
                                 unit.site == UnitSite.first)
                             {
                                 first = unit;
@@ -134,7 +226,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
                         }
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead &&
                                 unit.site == UnitSite.second)
                             {
                                 second = unit;
@@ -143,7 +235,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
                         }
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead &&
                                 unit.site == UnitSite.third)
                             {
                                 third = unit;
@@ -152,7 +244,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
                         }
                         foreach (var unit in unitPlats)
                         {
-                            if (unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData &&
+                            if (unit.unitData != FactorySystem.instance.EmptyFriendlyUnitData && !unit.isDead &&
                                 unit.site == UnitSite.fourth)
                             {
                                 fourth = unit;
@@ -180,7 +272,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
                                             impactHiteffects[i].SetActive(true);
                                             impactHiteffects[i].GetComponent<PlayableDirector>().Play();
 
-                                            first.unit.HP -= Damage;
+                                            first.unit.HP -= Damage + 2;
                                             first.UnitPlatHurtAnimation();
                                             index++;
                                         }

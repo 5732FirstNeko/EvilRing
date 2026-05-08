@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Thief_boss
   m_EditorClassIdentifier: 
-  cardName: 
-  HP: 0
-  Speed: 0
+  cardName: "\u76D7\u8D3C\u8001\u5927"
+  HP: 35
+  Speed: 9
   cost: 0
   Faction: 1
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: 3ee3c773c4ed4a5488635866a7a192b3, type: 3}
   Skills:
   - {fileID: 11400000, guid: e084da8a6c8ff7c4bbcb25a810bad2ca, type: 2}
+  description: "\u50AC\u7720\uFF1A\u89E6\u53D1\u6982\u738725%\uFF0C\u4F7F\u8DDD\u79BB\u6700\u8FD1\u7684\u654C\u65B9\u5361\u4E0B\u6B21\u653B\u51FB\u76EE\u6807\u8F6C\u4E3A\u5176\u81EA\u8EAB\r\n\u5315\u9996\u96E8\uFF1A\u89E6\u53D1\u6982\u738775%\uFF0C\u6253\u51FB\u5BF9\u9762\u573A\u4E0A\u5168\u90E8\u654C\u4EBA\uFF0C\u6BCF\u76EE\u6807\u9020\u62106\u70B9\u4F24\u5BB3\uFF08\u4F24\u5BB3\u4F4E\uFF09\r\n\u9003\u8DD1\uFF1A\u4E94\u56DE\u5408\u540E\u672A\u6B7B\u4EA1\u65F6\u4E22\u51FA\u70DF\u96FE\u5F39\u9003\u8DD1\uFF0C\u5E76\u4F7F\u7269\u54C1\u680F\u5185\u7B2C\u4E00\u683C\u6D88\u8017\u54C1\u6D88\u5931"
   spCost: 0
-  SpKillData: {fileID: 11400000, guid: 87ebd385568a8124bbb5ac27fb5b3679, type: 2}
+  SpKillData: {fileID: 0}
   DeadAnimationTime: 1
   UnitDeadData: {fileID: 11400000, guid: 1a22f7cb320861c4d8f7d9594b279010, type: 2}

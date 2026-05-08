@@ -5,32 +5,11 @@ using UnityEngine;
 
 public class FactorySystem : MonoBehaviour
 {
-    public static FactorySystem Instance;
-    public static FactorySystem instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(FactorySystem).Name);
-                Instance = Object.AddComponent<FactorySystem>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static FactorySystem instance { get; private set; }
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
     }
 
     public UnitDataSo EmptyFriendlyUnitData;

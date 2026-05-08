@@ -7,12 +7,10 @@ using UnityEngine.Playables;
 public class Knight_core : UnitSkillDataSo
 {
     [SerializeField] private GameObject buffPrefab;
-    [SerializeField] private GameObject particalPrefab;
 
     [SerializeField] private int skillListIndex;
 
     private GameObject buffEffect;
-    private GameObject particalEffect;
 
     public override void GameStartInit()
     {
@@ -21,8 +19,12 @@ public class Knight_core : UnitSkillDataSo
         buffEffect = Instantiate(buffPrefab, Vector3.zero, Quaternion.identity);
         buffEffect.SetActive(false);
 
-        //particalEffect = Instantiate(particalPrefab, Vector3.zero, Quaternion.identity);
-        //particalEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(buffEffect);
+    }
+
+    public override void GameEndAction()
+    {
+        buffEffect = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)

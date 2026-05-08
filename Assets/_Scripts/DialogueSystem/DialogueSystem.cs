@@ -8,25 +8,12 @@ using UnityEngine.UI;
 
 public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
 {
-    public static DialogueSystem Instance;
-    public static DialogueSystem instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                GameObject Object = new GameObject(typeof(DialogueSystem).Name);
-                Instance = Object.AddComponent<DialogueSystem>();
-                DontDestroyOnLoad(Object);
-            }
-            return Instance;
-        }
-    }
+    public static DialogueSystem instance { get;private set; }
 
     private bool isTeched = false;
     [SerializeField] private float dialogueDiaplayTime;
-    [SerializeField] private SpriteRenderer mask;
-    [SerializeField] private TextMesh dialogueText;
+    [SerializeField] private Image mask;
+    [SerializeField] private Text dialogueText;
     [SerializeField] private List<string> gameStartDialogues;
     [SerializeField] private List<string> gameLoseDialogue;
     [SerializeField] private List<string> gameWinDialogue;
@@ -41,17 +28,18 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
     [SerializeField] private List<Sprite> teachSprites;
     [SerializeField] private List<string> teachTextContent;
 
+    [SerializeField] private Button stopButton;
+    [SerializeField] private Button continueButton;
+    [SerializeField] private Button startMenuButton;
+    [SerializeField] private Button ExitButton;
+    [SerializeField] private GameObject stopPanel;
+    [SerializeField] private GameObject exitWarnPanel;
+    [SerializeField] private Button exitGameButton;
+    [SerializeField] private Button unContinueExitButton;
+
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
     }
 
     private void Start()
@@ -62,6 +50,12 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
         rightButton.onClick.AddListener(RightButton);
         closeButton.onClick.AddListener(CloseTeachUI);
         showButton.onClick.AddListener(SHowTeachUI);
+
+        stopButton.onClick.AddListener(StopButtonAction);
+        continueButton.onClick.AddListener(ContinueButtonAction);
+        startMenuButton.onClick.AddListener(StartMenuButtonAction);
+        ExitButton.onClick.AddListener(ExitButtonActon);
+        unContinueExitButton.onClick.AddListener(UnContinueExitAction);
     }
 
     #region DialogueFunction
@@ -72,7 +66,6 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
         mask.gameObject.SetActive(true);
         dialogueText.gameObject.SetActive(true);
 
-        mask.color = Color.black;
         dialogueText.text = gameStartDialogues[0];
         UIManager.instance.CloseAllUI();
 
@@ -82,7 +75,10 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
             DOVirtual.DelayedCall(time * dialogueDiaplayTime,
                 () =>
                 {
-                    dialogueText.text = gameStartDialogues[time];
+                    if (dialogueText != null)
+                    {
+                        dialogueText.text = gameStartDialogues[time];
+                    }
                 });
         }
 
@@ -92,9 +88,13 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
         DOVirtual.DelayedCall(gameStartDialogues.Count * dialogueDiaplayTime,
             () =>
             {
-                mask.DOFade(0, 1f).OnComplete(
-                    () => 
+                Debug.Log("mask !");
+                mask.DOFade(0, 1f);
+
+                TimerManager.instance.StartTimer(name + "Mask Close !", 1f, 
+                    () =>
                     {
+                        mask.gameObject.SetActive(false);
                         GameManager.instance.GameSceneStart();
                         TeachingDialogue();
                     });
@@ -104,6 +104,7 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
 
     public void GameLoseDialogue()
     {
+        AudioManager.instance.StopBGM();
         mask.gameObject.SetActive(true);
         dialogueText.gameObject.SetActive(true);
 
@@ -127,11 +128,10 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
         DOVirtual.DelayedCall(gameLoseDialogue.Count * dialogueDiaplayTime,
             () =>
             {
-                mask.DOFade(0, 1f).OnComplete(
+                mask.DOFade(1, 1f).OnComplete(
                     () =>
                     {
-                        GameManager.instance.GameSceneStart();
-                        TeachingDialogue();
+                        GameManager.instance.StartLoadScene(GameManager.instance.startSceneName);
                     });
                 dialogueText.gameObject.SetActive(false);
             });
@@ -162,11 +162,10 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
         DOVirtual.DelayedCall(gameWinDialogue.Count * dialogueDiaplayTime,
             () =>
             {
-                mask.DOFade(0, 1f).OnComplete(
+                mask.DOFade(1, 1f).OnComplete(
                     () =>
                     {
-                        GameManager.instance.GameSceneStart();
-                        TeachingDialogue();
+                        GameManager.instance.StartLoadScene(GameManager.instance.startSceneName);
                     });
                 dialogueText.gameObject.SetActive(false);
             });
@@ -217,6 +216,66 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
     private void SHowTeachUI()
     {
         teachObject.SetActive(true);
+    }
+    #endregion
+
+    #region ButtonAction
+    private void StopButtonAction()   
+    {
+        stopPanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    private void ContinueButtonAction()
+    {
+        Time.timeScale = 1f;
+        stopPanel.SetActive(false);
+    }
+
+    private void StartMenuButtonAction()
+    {
+        exitWarnPanel.SetActive(true);
+        exitGameButton.onClick.RemoveAllListeners();
+        exitGameButton.onClick.AddListener(ExitToMenuAction);
+    }
+
+    private void ExitButtonActon()
+    {
+        exitWarnPanel.SetActive(true);
+        exitGameButton.onClick.RemoveAllListeners();
+        exitGameButton.onClick.AddListener(ExitToDesktopAction);
+    }
+
+    private void ExitToMenuAction()
+    {
+        //GameSaveAndLoadSystem.SaveGame(out string error);
+        mask.gameObject.SetActive(true);
+        mask.color = Color.black;
+
+        DOVirtual.DelayedCall(1f, 
+            () => 
+            {
+                Debug.Log("StartMenu");
+                GameManager.instance.StartLoadScene(GameManager.instance.startSceneName);
+            });
+    }
+
+    private void ExitToDesktopAction()
+    {
+        //GameSaveAndLoadSystem.SaveGame(out string error);
+        mask.gameObject.SetActive(true);
+        mask.color = Color.black;
+
+        DOVirtual.DelayedCall(1f,
+           () =>
+           {
+               Application.Quit();
+           });
+    }
+
+    private void UnContinueExitAction()
+    {
+        exitWarnPanel.SetActive(false);
     }
     #endregion
 

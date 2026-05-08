@@ -9,4 +9,9 @@ public class Witch_pot : UnitSkillDataSo
     {
         
     }
+
+    public override void GameEndAction()
+    {
+        
+    }
 }

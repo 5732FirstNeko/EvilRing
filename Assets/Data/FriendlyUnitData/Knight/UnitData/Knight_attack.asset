@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ae4f94496ed5b46afd0c6d6b1542bb, type: 3}
   m_Name: Knight_attack
   m_EditorClassIdentifier: 
-  HP: 0
+  cardName: 
+  HP: 25
   Speed: 5
-  cost: 0
+  cost: 10
   Faction: 0
-  UnitSprite: {fileID: 0}
+  UnitSprite: {fileID: 21300000, guid: d5b8676956d2e994a8bc98be72971e33, type: 3}
   Skills:
   - {fileID: 11400000, guid: 23ea348b3f9cbed41bcdbfd07c23e683, type: 2}
+  description: "\u56DE\u5408\u4E2D\u5BF9\u654C\u4EBA\u9020\u6210\u8FDB\u884C\u65A9\u51FB\r\n\u5F53\u81EA\u8EAB\u62E5\u6709\u4F20\u627F\u65F6\uFF0C\u6D88\u51CF\u4F20\u627F\u5C42\u6570*10%\u7684\u6700\u5927\u751F\u547D\u503C\uFF0C\u589E\u52A0\u4F20\u627F\u5C42\u6570*8\u70B9\u4F24\u5BB3\u503C\u7684\u4F24\u5BB3\r\n\u5F53\u81EA\u8EAB\u6B7B\u4EA1\u65F6\uFF0C\u5982\u679C\u961F\u4F0D\u4E2D\u6709\u540C\u5361\u7EC4\u7684\u4FA0\u5BA2\uFF0C\u5C06\u4F20\u627F\u4F20\u9012\u7ED9\u540C\u5361\u7EC4\u7684\u4FA0\u5BA2\uFF0C\u5C42\u6570+1"
   spCost: 0
   SpKillData: {fileID: 0}
   DeadAnimationTime: 1

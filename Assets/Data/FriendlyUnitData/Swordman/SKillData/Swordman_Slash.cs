@@ -23,9 +23,11 @@ public class Swordman_Slash : UnitSkillDataSo
 
         slashEffect = Instantiate(slashPrefab, Vector3.zero, Quaternion.identity);
         slashEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(slashEffect);
 
         magicStaffEffect = Instantiate(magicStaffPrefab, Vector3.zero, Quaternion.identity);
         magicStaffEffect.SetActive(false);
+        BattleSystem.instance.destoryEffect.Add(magicStaffEffect);
 
         swordHitEffects = new List<GameObject>();
         for (int i = 0; i < 4; i++)
@@ -33,7 +35,16 @@ public class Swordman_Slash : UnitSkillDataSo
             GameObject effect = Instantiate(swordHitPrefab, Vector3.zero, Quaternion.identity);
             effect.SetActive(false);
             swordHitEffects.Add(effect);
+            BattleSystem.instance.destoryEffect.Add(effect);
         }
+    }
+
+    public override void GameEndAction()
+    {
+        slashEffect = null;
+        magicStaffEffect = null;
+
+        swordHitEffects = null;
     }
 
     public override void Action(ICollection<UnitPlat> unitPlats, UnitPlat user)
@@ -67,7 +78,7 @@ public class Swordman_Slash : UnitSkillDataSo
             () =>
             {
                 friTarget.unit.HP += recover;
-                friTarget.UnitPlatHurtAnimation();
+                friTarget.UnitPlatRecoveryAnimation();
 
                 magicStaffEffect.transform.position = user.transform.position;
                 magicStaffEffect.SetActive(true);
@@ -94,6 +105,11 @@ public class Swordman_Slash : UnitSkillDataSo
                 int i = 0;
                 foreach (var unit in unitPlats)
                 {
+                    if (unit.isDead || unit.unitData == FactorySystem.instance.EmptyHostitlyUnitData)
+                    {
+                        continue;
+                    }
+
                     int index = i;
                     unit.UnitPlatHurtAnimation(1, 0,
                         () =>
@@ -101,7 +117,7 @@ public class Swordman_Slash : UnitSkillDataSo
                             swordHitEffects[index].transform.position = unit.transform.position;
                             swordHitEffects[index].SetActive(true);
                             swordHitEffects[index].GetComponent<PlayableDirector>().Play();
-                            unit.unit.HP -= Damage;
+                            unit.unit.HP -= 10;
                         });
                     i++;
                 }

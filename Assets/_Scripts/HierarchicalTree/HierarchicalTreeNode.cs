@@ -55,11 +55,27 @@ public class HierarchicalTreeNode : MonoBehaviour, IPointerClickHandler
         if (InventoryManager.instance.ghost >= ghostCost &&
             InventoryManager.instance.gold >= goldCost)
         {
+            bool canUnLock = true;
+            foreach (var node in preconditionNodes)
+            {
+                if (node.isLocked)
+                {
+                    canUnLock = false;
+                    break;
+                }
+            }
+
+            if (!canUnLock) 
+            {
+                return;
+            }
+
             imageMask.DOKill(true);
             imageMask.DOColor(new Color(imageMask.color.r, imageMask.color.g, imageMask.color.b, 0), 1.5f).SetEase(Ease.InQuart).
                 OnComplete(HierarchicalTreeSystem.instance.HierarchicalTreeLockStateUpdate);
-            Debug.Log("NodeUnLock : " + OnUnLocalAction == null);
             OnUnLocalAction?.Invoke();
+            isLocked = false;
+            UIManager.instance.hierarchicalUnLockButton.gameObject.SetActive(false);
         }
         else
         {
