@@ -69,7 +69,7 @@ public class UnitCardSystem : MonoBehaviour
 
             friendlyUnitPlats[index].unitData = unitData;
 
-            unitPlat.iconSpriteRender.sprite = unitData.BattleSprite;
+            unitPlat.iconSpriteRender.sprite = unitData.UnitSprite;
             Vector3 originScale = unitPlat.transform.localScale;
             unitPlat.transform.localScale = Vector3.zero;
             unitPlat.transform.DOScale(originScale, 1.5f);
@@ -278,7 +278,7 @@ public class UnitCardSystem : MonoBehaviour
             }
 
             hostitlyUnitRefreshArea[i].image.gameObject.SetActive(true);
-            hostitlyUnitplat.iconSpriteRender.sprite = hostilityWaveData.hostilityDataList[i].BattleSprite;
+            hostitlyUnitplat.iconSpriteRender.sprite = hostilityWaveData.hostilityDataList[i].UnitSprite;
             Vector3 originScale = hostitlyUnitplat.transform.localScale;
             hostitlyUnitplat.transform.localScale = Vector3.zero;
             hostitlyUnitplat.transform.DOScale(originScale, 1.5f);

@@ -89,7 +89,7 @@ public class Daimon_ritual : UnitSkillDataSo
 
                 first.UnitPlatInit(tentacleCard, UnitSite.first);
 
-                first.iconSpriteRender.sprite = tentacleCard.BattleSprite;
+                first.iconSpriteRender.sprite = tentacleCard.UnitSprite;
                 Vector3 originScale = first.transform.localScale;
                 first.transform.localScale = Vector3.zero;
                 first.transform.DOScale(originScale, 1.5f);

@@ -96,7 +96,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
                 BattleSystem.instance.UnitReEnqueue(user);
                 Debug.LogError(user.isDead);
 
-                user.iconSpriteRender.sprite = slimeCard.BattleSprite;
+                user.iconSpriteRender.sprite = slimeCard.UnitSprite;
                 user.iconSpriteRender.material = GameManager.litMaterial;
                 Vector3 originScale = user.transform.localScale;
                 user.transform.localScale = Vector3.zero;
@@ -115,7 +115,7 @@ public class Slime_mucus_impact : UnitSkillDataSo
                 BattleSystem.instance.UnitReEnqueue(nearPlat);
                 Debug.LogError(nearPlat.isDead);
 
-                nearPlat.iconSpriteRender.sprite = slimeCard.BattleSprite;
+                nearPlat.iconSpriteRender.sprite = slimeCard.UnitSprite;
                 Vector3 nearoriginScale = nearPlat.transform.localScale;
                 nearPlat.transform.localScale = Vector3.zero;
                 nearPlat.transform.DOScale(nearoriginScale, 1.5f);
