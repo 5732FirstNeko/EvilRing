@@ -118,7 +118,7 @@ public class Witch_core_standrd : UnitSkillDataSo
                 GetUnitPlatByUnitSite(UnitSite.first).plat;
 
             pot.UnitPlatInit(FactorySystem.instance.EmptyHostitlyUnitData, UnitSite.first);
-            pot.iconSpriteRender.sprite = FactorySystem.instance.EmptyHostitlyUnitData.UnitSprite;
+            pot.iconSpriteRender.sprite = FactorySystem.instance.EmptyHostitlyUnitData.BattleSprite;
             user.costumvalue_second = 0;
         }
 
@@ -194,7 +194,7 @@ public class Witch_core_standrd : UnitSkillDataSo
 
                 spwanUnit.UnitPlatInit(potCard, UnitSite.first);
 
-                spwanUnit.iconSpriteRender.sprite = potCard.UnitSprite;
+                spwanUnit.iconSpriteRender.sprite = potCard.BattleSprite;
                 Vector3 originScale = spwanUnit.transform.localScale;
                 spwanUnit.transform.localScale = Vector3.zero;
                 spwanUnit.transform.DOScale(originScale, 1.5f);
