@@ -213,7 +213,7 @@ public class Thief_boss : UnitSkillDataSo
                 user.HPBarUnDisPlay();
                 user.UnitPlatInit(FactorySystem.instance.EmptyHostitlyUnitData, user.site);
 
-                user.iconSpriteRender.sprite = FactorySystem.instance.EmptyHostitlyUnitData.UnitSprite;
+                user.iconSpriteRender.sprite = FactorySystem.instance.EmptyHostitlyUnitData.BattleSprite;
                 Vector3 originScale = user.transform.localScale;
                 user.transform.localScale = Vector3.zero;
                 user.transform.DOScale(originScale, 1.5f).OnComplete(

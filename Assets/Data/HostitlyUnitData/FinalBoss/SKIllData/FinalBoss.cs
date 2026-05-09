@@ -339,7 +339,7 @@ public class FinalBoss : UnitSkillDataSo
 
                 unit.UnitPlatInit(FactorySystem.instance.EmptyHostitlyUnitData, unit.site);
 
-                unit.iconSpriteRender.sprite = tentacleData.UnitSprite;
+                unit.iconSpriteRender.sprite = tentacleData.BattleSprite;
                 Vector3 originScale = unit.transform.localScale;
                 unit.transform.localScale = Vector3.zero;
                 unit.transform.DOScale(originScale, 1.5f);
@@ -410,7 +410,7 @@ public class FinalBoss : UnitSkillDataSo
                     first.UnitPlatInit(tentacleData, UnitSite.first);
                     first.unitData.Skills[0].GameStartInit();
 
-                    first.iconSpriteRender.sprite = tentacleData.UnitSprite;
+                    first.iconSpriteRender.sprite = tentacleData.BattleSprite;
                     Vector3 originScale = first.transform.localScale;
                     first.transform.localScale = Vector3.zero;
                     first.transform.DOScale(originScale, 1.5f);
@@ -435,7 +435,7 @@ public class FinalBoss : UnitSkillDataSo
                     fourth.UnitPlatInit(tentacleData, UnitSite.fourth);
                     fourth.unitData.Skills[0].GameStartInit();
 
-                    fourth.iconSpriteRender.sprite = tentacleData.UnitSprite;
+                    fourth.iconSpriteRender.sprite = tentacleData.BattleSprite;
                     Vector3 scale = fourth.transform.localScale;
                     fourth.transform.localScale = Vector3.zero;
                     fourth.transform.DOScale(scale, 1.5f);
@@ -652,7 +652,7 @@ public class FinalBoss : UnitSkillDataSo
                             unit.UnitPlatInit(FactorySystem.instance.EmptyFriendlyUnitData, unit.site);
 
                             unit.iconSpriteRender.sprite = 
-                                FactorySystem.instance.EmptyFriendlyUnitData.UnitSprite;
+                                FactorySystem.instance.EmptyFriendlyUnitData.BattleSprite;
                             Vector3 originScale = unit.transform.localScale;
                             unit.transform.localScale = Vector3.zero;
                             unit.transform.DOScale(originScale, 1.5f);
