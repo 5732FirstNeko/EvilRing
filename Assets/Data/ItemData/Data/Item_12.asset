@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_12
   m_EditorClassIdentifier: 
   itemName: 
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 6a9a1ea783ef75e4c976c212e653cf06, type: 3}
   itemDescription: "\u7B2C\u4E00\u56DE\u5408\u6240\u6709\u654C\u4EBA\u4E0D\u8FDB\u884C\u4EFB\u4F55\u884C\u52A8\uFF0C\u4F46\u6240\u6709\u654C\u4EBA\u521D\u59CB\u83B7\u5F97x\u70B9\u989D\u5916hp"
   itemType: 2
   HPAdditive: 10

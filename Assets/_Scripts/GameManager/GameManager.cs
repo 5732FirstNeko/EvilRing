@@ -153,8 +153,10 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            gameState = GameState.Preparation;
+            UIManager.instance.BattleButtonDisPlaty();
+            UnitCardSystem.instance.RefreshHostitlyUnit();
             DialogueSystem.instance.GameLoseDialogue();
-
         }
     }
 

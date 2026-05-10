@@ -77,9 +77,8 @@ public class InventoryManager : MonoBehaviour
         globalInventoryList = new List<Inventory>();
         InventoryTargetMap = new Dictionary<Inventory, UnitPlat>();
 
-        gold = 1000;
-        ghost = 1000;
-        ghostTotal = 1000;
+        gold = 20;
+        ghost = 1;
     }
 
     public void AddInventoryToList(ItemDataSO itemData)

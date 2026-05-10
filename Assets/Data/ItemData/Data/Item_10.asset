@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Item_10
   m_EditorClassIdentifier: 
   itemName: 
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 315e591c6b251554b97348f8fe907f81, type: 3}
   itemDescription: "\u672C\u56DE\u5408\u53CC\u65B9\u5361\u724C\u6253\u51FA\u7684\u4F24\u5BB3\u7531\u4F24\u5BB3\u53D1\u52A8\u8005\u81EA\u8EAB\u627F\u53D7"
   itemType: 2

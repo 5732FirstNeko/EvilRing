@@ -60,7 +60,7 @@ public class UnitCardSystem : MonoBehaviour
 
     public void AddUnitToFriendlyList(UnitDataSo unitData, UnitSite site)
     {
-        if (InventoryManager.instance.gold > unitData.cost)
+        if (InventoryManager.instance.gold >= unitData.cost)
         {
             int index = BattleSystem.GetIndexByUnitSite(site);
             UnitPlat unitPlat = friendlyUnitPlats[index];
@@ -253,7 +253,7 @@ public class UnitCardSystem : MonoBehaviour
 
     public void RefreshHostitlyUnit()
     {
-        hostilityWaveData = FactorySystem.instance.GetHostitlyWaveDataByGhost(InventoryManager.instance.ghostTotal);
+        hostilityWaveData = FactorySystem.instance.GetHostitlyWaveDataByGhost();
 
         ghostCount.text = "Áé»êÊý : " + hostilityWaveData.ghostCost;
         for (int i = 0; i < hostitlyUnitRefreshArea.Count; i++)

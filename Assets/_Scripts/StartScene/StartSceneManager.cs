@@ -8,7 +8,7 @@ public class StartSceneManager : MonoBehaviour
 {
     [SerializeField] private string gameSceneName;
 
-    [SerializeField] private GameObject canves;
+    [SerializeField] public GameObject canves;
     [SerializeField] private GameObject thanksObject;
 
     [SerializeField] private Button startGameButton;

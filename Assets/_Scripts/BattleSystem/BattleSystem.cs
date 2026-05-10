@@ -447,15 +447,6 @@ public class BattleSystem : MonoBehaviour
                         ICollection<UnitPlat> targetPlats = GetActionTargetPlat(unitPlat.unit, OnRoundSkill);
                         OnRoundSkill.Action(targetPlats);
 
-
-                        Debug.Log("------Round-" + currentRound + "---");
-                        Debug.Log(unitPlat.name + unitPlat.unit.faction + " " + unitPlat.site + " Attack ");
-                        foreach (var tar in targetPlats)
-                        {
-                            Debug.Log(tar.unit.faction + " " + tar.site);
-                        }
-                        Debug.Log("----------------");
-
                         foreach (var buff in OnRoundSkill.UnitBuffs)
                         {
                             AddBuffToUnitPlat(buff, targetPlats);
@@ -627,10 +618,25 @@ public class BattleSystem : MonoBehaviour
         foreach (var plat in unitPlats)
         {
             Debug.Log(plat.unitData.name + " " + plat.unit.HP);
-            Debug.Log("FriEndlyDead " + friendlyDeadCount);
-            Debug.Log("HostitlyDead " + hostilityDeadCount);
+            Debug.Log("DeadState : " + plat.isDead);
 
-            if (plat.isDead) continue;
+            if (plat.isDead)
+            {
+                if (plat.unit.HP > 0)
+                {
+                    switch (plat.unit.faction)
+                    {
+                        case Faction.Friendly:
+                            friendlyDeadCount--;
+                            break;
+                        case Faction.Hostility:
+                            hostilityDeadCount--;
+                            break;
+                    }
+                    plat.iconSpriteRender.color = Color.white;
+                }
+                continue;
+            }
 
             if (plat.unit.HP <= 0)
             {
@@ -638,8 +644,6 @@ public class BattleSystem : MonoBehaviour
 
                 UnitDead(plat);
                 yield return new WaitForSecondsRealtime(plat.unit.DeadAnimationTime);
-                Debug.Log("FriEndlyDead " + friendlyDeadCount);
-                Debug.Log("HostitlyDead " + hostilityDeadCount);
 
                 if (hostilityDeadCount >= unitPlatQueueCount)
                 {
@@ -650,6 +654,8 @@ public class BattleSystem : MonoBehaviour
                     if (hostilityDeadCount >= unitPlatQueueCount)
                     {
                         Debug.Log("win");
+                        InventoryManager.instance.gold += 10;
+                        InventoryManager.instance.ghost += UnityEngine.Random.Range(0,11) > 5 ? 1 : 0;
                         StopAllCoroutines();
                         BattleEnd();
                         GameManager.instance.GameBattleEnd(true);
@@ -667,6 +673,7 @@ public class BattleSystem : MonoBehaviour
                     {
                         Debug.Log("lose");
                         StopAllCoroutines();
+                        BattleEnd();
                         GameManager.instance.GameBattleEnd(false);
                         yield break;
                     }
@@ -704,8 +711,6 @@ public class BattleSystem : MonoBehaviour
 
     private ICollection<UnitPlat> GetActionTargetPlat(Unit self, UnitSkill skill)
     {
-        Debug.Log(self.faction + " " + skill.SkillTarget);
-
         if (self.faction == Faction.Friendly)
         {
             if (skill.SkillTarget == Faction.Friendly)

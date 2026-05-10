@@ -27,11 +27,13 @@ public class lycorisDead_standrd : UnitDeadDataSo
 
     public override void DeadAction(UnitPlat user)
     {
+        user.unit.DeadAnimationTime = 5f;
         StandrdDead(user);
         user.isDead = false;
 
         if (user.costumvalue_first >= 1)
         {
+            user.unit.DeadAnimationTime = 1f;
             return;
         }
 

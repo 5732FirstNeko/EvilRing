@@ -41,7 +41,8 @@ public class FinalBoss_tentacle : UnitSkillDataSo
 
         foreach (var tar in unitPlats)
         {
-            if (!tar.isDead && tar.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
+            if (!tar.isDead && 
+                tar.unitData != FactorySystem.instance.EmptyFriendlyUnitData)
             {
                 target = tar;
                 break;

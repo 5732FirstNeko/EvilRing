@@ -50,39 +50,53 @@ public class LycorisSkill_core_Damage : UnitSkillDataSo
         UnitPlat target = null;
         foreach (var unit in unitPlats)
         {
-            if (!unit.isDead && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+            if (target == null && 
+                !unit.isDead && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
             {
                 target = unit;
-                break;
+                continue;
+            }
+
+            if (target != null && target.unit.HP < unit.unit.HP &&
+                !unit.isDead && unit.unitData != FactorySystem.instance.EmptyHostitlyUnitData)
+            {
+                target = unit;
             }
         }
 
         if (target == null)
         {
-            //user.unit.unitSkills[0].SkillTime = 0.5f;
+            user.unit.unitSkills[0].SkillTime = 0.5f;
             return;
         }
+
+        Debug.Log(target.unitData.name);
 
         GameManager.instance.GlobalLightControll(0.5f, 0.5f);
 
         UnitPlat deadTarget = null;
-        foreach (var unitPlat in
+        foreach (var unit in
                 BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
         {
-            if (FactorySystem.instance.LycorisCards.Contains(unitPlat.unitData))
+            if (FactorySystem.instance.LycorisCards.Contains(unit.unitData) 
+                && unit.unitData != user.unitData)
             {
-                deadTarget = unitPlat;
+                deadTarget = unit;
                 break;
             }
         }
+
+        Debug.LogError(deadTarget.unitData.name + ' ' + deadTarget == null);
+
         if (deadTarget == null)
         {
-            foreach (var unitPlat in
-            BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
+            foreach (var unit in
+                BattleSystem.instance.FriendlyUnitPlatsQueue.GetAllUnitPlat())
             {
-                if (unitPlat != user)
+                if (unit != user)
                 {
-                    deadTarget = unitPlat;
+                    deadTarget = unit;
+                    break;
                 }
             }
         }

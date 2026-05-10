@@ -351,9 +351,6 @@ public class FinalBoss : UnitSkillDataSo
         TimerManager.instance.StartTimer(name + "RecoveryEffect", 1.1f,
         () =>
         {
-            user.unit.HP += 10 * count;
-            user.UnitPlatRecoveryAnimation();
-
             user.DamageTextJump("ÉîÔ¨»ØÏì", GameManager.purple);
             user.costumvalue_second = 1;
         });
@@ -409,6 +406,7 @@ public class FinalBoss : UnitSkillDataSo
 
                     first.UnitPlatInit(tentacleData, UnitSite.first);
                     first.unitData.Skills[0].GameStartInit();
+                    BattleSystem.instance.hostilityDeadCount--;
 
                     first.iconSpriteRender.sprite = tentacleData.BattleSprite;
                     Vector3 originScale = first.transform.localScale;
@@ -434,6 +432,7 @@ public class FinalBoss : UnitSkillDataSo
 
                     fourth.UnitPlatInit(tentacleData, UnitSite.fourth);
                     fourth.unitData.Skills[0].GameStartInit();
+                    BattleSystem.instance.hostilityDeadCount--;
 
                     fourth.iconSpriteRender.sprite = tentacleData.BattleSprite;
                     Vector3 scale = fourth.transform.localScale;
@@ -568,7 +567,7 @@ public class FinalBoss : UnitSkillDataSo
                         unit.costumvlue_fourth >= 4)
             {
                 int index = count;
-                unit.unit.HP -= 0;
+                unit.unit.HP = 0;
                 unit.UnitPlatHurtAnimation();
 
                 hitEffects[index].transform.position = unit.transform.position;

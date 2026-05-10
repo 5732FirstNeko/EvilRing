@@ -26,6 +26,7 @@ public class lycorisDead_core : UnitDeadDataSo
 
     public override void DeadAction(UnitPlat user)
     {
+        user.unit.DeadAnimationTime = 5f;
         StandrdDead(user);
 
         UnitPlat recervePlat = null;
@@ -39,7 +40,11 @@ public class lycorisDead_core : UnitDeadDataSo
             }
         }
 
-        if (recervePlat == null) return;
+        if (recervePlat == null)
+        {
+            user.unit.DeadAnimationTime = 1f;
+            return;
+        }
 
         TimerManager.instance.StartTimer(name + "Resurrection", 1.3f, 
             () => 

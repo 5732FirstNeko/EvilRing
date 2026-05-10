@@ -17,7 +17,8 @@ MonoBehaviour:
   Speed: 5
   cost: 10
   Faction: 0
-  UnitSprite: {fileID: 21300000, guid: d7bd5f4a5d044b94cae409235d1f739c, type: 3}
+  UnitSprite: {fileID: 1628020191, guid: d7bd5f4a5d044b94cae409235d1f739c, type: 3}
+  BattleSprite: {fileID: -1968530085, guid: d7bd5f4a5d044b94cae409235d1f739c, type: 3}
   Skills:
   - {fileID: 11400000, guid: 1eb5be1d7a772a94198cb0f986cb4ebb, type: 2}
   description: "\u53D1\u5C04\u7279\u5B9A\u6570\u91CF\u7684\u5F39\u5E55\uFF0C\u5BF9\u654C\u4EBA\u9020\u6210\u4E00\u5B9A\u4F24\u5BB3"

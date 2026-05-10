@@ -131,7 +131,9 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
                 mask.DOFade(1, 1f).OnComplete(
                     () =>
                     {
-                        GameManager.instance.StartLoadScene(GameManager.instance.startSceneName);
+                        //GameManager.instance.StartLoadScene(GameManager.instance.startSceneName);
+                        UnitCardSystem.instance.RefreshAllFriendlyUnit();
+                        mask.gameObject.SetActive(false);
                     });
                 dialogueText.gameObject.SetActive(false);
             });
@@ -179,7 +181,7 @@ public class DialogueSystem : MonoBehaviour, IGameSaveAndLoad
         }
 
         teachObject.SetActive(true);
-        //teachImage.sprite = teachSprites[0];
+        teachImage.sprite = teachSprites[0];
         teachText.text = teachTextContent[0];
         currentIndex = 0;
     }

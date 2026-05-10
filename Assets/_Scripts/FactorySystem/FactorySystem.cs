@@ -45,7 +45,7 @@ public class FactorySystem : MonoBehaviour
 
     public List<ItemDataSO> items;
 
-    public HostilityWaveDataSo GetHostitlyWaveDataByGhost(int ghostCount)
+    public HostilityWaveDataSo GetHostitlyWaveDataByGhost()
     {
         return hostilityWaveDataList[GameManager.instance.currentLevel];
     }

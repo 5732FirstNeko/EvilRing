@@ -87,6 +87,10 @@ public class LycorisSkill_Standrd_Recovery : UnitSkillDataSo
             {
                 for (int i = 0; i < units.Count; i++)
                 {
+                    if (units[i].isDead ||
+                        units[i].unitData == FactorySystem.instance.EmptyFriendlyUnitData)
+                        continue;
+
                     units[i].unit.HP += Mathf.RoundToInt(0.5f * units[i].unit.MaxHP);
                     units[i].UnitPlatRecoveryAnimation();
                 }
